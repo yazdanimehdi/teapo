@@ -8,12 +8,14 @@
 
 <script>
     import { mapState } from 'vuex'
-    import ReadingSummary from "@/Views/ReadingSummary";
-    import ReadingNormalQuestion from './ReadingNormalQuestion'
-    import ReadingInsertion from './ReadingInsertion'
-    import ReadingPassage from './ReadingPassage'
+    import ReadingSummary from "@/Views/Reading/ReadingSummary";
+    import ReadingNormalQuestion from './Reading/ReadingNormalQuestion'
+    import ReadingInsertion from './Reading/ReadingInsertion'
+    import ReadingPassage from './Reading/ReadingPassage'
     import TimeEnded from './TimeEnded'
-    import ReviewReading from "@/Views/ReviewReading";
+    import ReviewReading from "@/Views/Reading/ReviewReading";
+    import {GET_DATA_READING} from "@/store/actions/reading";
+    import {COMPUTE_TIME} from "@/store/actions/time";
 
     export default {
         name: "tpoExam",
@@ -31,20 +33,18 @@
             }
         },
         computed:{
-            ...mapState(['currentComponent', 'questionNumber']),
+            ...mapState({
+                currentComponent: state => state.mainTPO.currentComponent
+            }),
         },
-        methods:{
-            // timeUpdate(val){
-            //     this.$store.dispatch('updateTimes', val)
-            // }
-        },
+
         mounted() {
-            this.$store.dispatch('getDataReading', 'tpo1');
+            this.$store.dispatch(GET_DATA_READING, 'tpo1');
         },
         created(){
             let self = this;
             setInterval(function() {
-                self.$store.dispatch('timeComputeAction')
+                self.$store.dispatch(COMPUTE_TIME)
             }, 1000)
 
         }

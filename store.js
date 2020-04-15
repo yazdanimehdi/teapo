@@ -21,7 +21,7 @@ export default new Vuex.Store({
         sections: ['Reading'],
         readingAnswers: {},
         readingTime: 10,
-        mode: 'practiceMode',
+        mode: 'reviewMode',
         listening_player_component: 'Player',
         listening_quote_player_component: 'QuotePlayer',
         listening_question_component: 'ListeningQuestions',
