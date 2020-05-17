@@ -274,6 +274,15 @@ const actions = {
     },
     [SAVE_ANSWER_LISTENING]: ({commit}, payload) => {
         commit('updateListeningAnswers', payload);
+        let knex = require('knex')({
+            client: 'sqlite3',
+            connection: {
+                filename: './db.sqlite3'
+            },
+            useNullAsDefault: true
+        });
+        knex('tpo_userlisteninganswers').insert({'answer': payload[1], 'question_id': payload[0], 'user_test_id': 1})
+
     },
 
     [QUOTE_PLAYED]: ({state, commit, dispatch}) => {

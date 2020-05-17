@@ -23,8 +23,22 @@
     import Player from "./Listening/Player";
     import QuotePlayer from "./Listening/QuotePlayer";
 
+    import SpeakingDirections from "@/Views/Speaking/SpeakingDirections";
+    import DirectionSpeaking from "@/Views/Speaking/DirectionSpeaking";
+    import Recorder from "@/Views/Speaking/Recorder";
+    import SpeakingPlayer from "@/Views/Speaking/SpeakingPlayer";
+    import SpeakingReading from "@/Views/Speaking/SpeakingReading";
+
+    import IndependentWritingDirection from "@/Views/Writing/IndependentWritingDirection";
+    import IntegratedWritingDirection from "@/Views/Writing/IntegratedWritingDirection";
+    import WritingIndependent from "@/Views/Writing/WritingIndependent";
+    import WritingIntegrated from "@/Views/Writing/WritingIntegrated";
+    import WritingPlayer from "@/Views/Writing/WritingPlayer";
+    import WritingReading from "@/Views/Writing/WritingReading";
+
     import {GET_DATA_READING} from "@/store/actions/reading";
     import {COMPUTE_TIME} from "@/store/actions/time";
+    import {GET_DATA_WRITING} from "@/store/actions/writing";
 
     export default {
         name: "tpoExam",
@@ -39,8 +53,18 @@
             ListeningDirection,
             Player,
             ListeningQuestions,
-            QuotePlayer
-
+            QuotePlayer,
+            SpeakingDirections,
+            DirectionSpeaking,
+            Recorder,
+            SpeakingPlayer,
+            SpeakingReading,
+            IndependentWritingDirection,
+            IntegratedWritingDirection,
+            WritingIndependent,
+            WritingIntegrated,
+            WritingPlayer,
+            WritingReading
         },
         data(){
             return{
@@ -55,6 +79,7 @@
 
         mounted() {
             this.$store.dispatch(GET_DATA_READING, 'tpo1');
+            this.$store.dispatch(GET_DATA_WRITING, 'tpo1');
         },
         created(){
             let self = this;

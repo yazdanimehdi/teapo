@@ -9,7 +9,7 @@
                             <v-col style="padding: 0">
                                 <v-btn dark rounded small style="margin-right: 10px;">Home</v-btn>
                             </v-col>
-                            <v-col cols="4" md="4" lg="4" sm="4" v-if="volume.enabled">
+                            <v-col cols="4" md="4" lg="4" sm="4" v-if="volume.enabled" style="padding: 0">
                                 <label>
                                     <input type="range" v-model="volume_slide">
                                 </label>
@@ -113,7 +113,6 @@
 <script>
     import {GO_TO_NEXT_LISTENING} from "@/store/actions/listening";
     import {mapGetters} from "vuex"
-    import {CHANGE_TIME} from "@/store/actions/time";
 
     export default {
         name: "ListeningDirection",
@@ -125,7 +124,6 @@
                         break;
                     case 1:
                         this.$store.dispatch(GO_TO_NEXT_LISTENING);
-                        this.$store.dispatch(CHANGE_TIME, )
                         break;
                 }
             },

@@ -1,7 +1,7 @@
 import {UPDATE_COMPONENT} from "../actions/mainTPO";
 
 const state = {
-    currentComponent: 'ListeningDirection',
+    currentComponent: 'IndependentWritingDirection',
 };
 
 const actions = {

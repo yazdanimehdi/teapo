@@ -270,6 +270,15 @@ const actions = {
 
     [SAVE_ANSWER_READING]: ({commit}, payload) => {
         commit('updateReadingAnswers', payload);
+        let knex = require('knex')({
+            client: 'sqlite3',
+            connection: {
+                filename: './db.sqlite3'
+            },
+            useNullAsDefault: true
+        });
+        knex('tpo_userreadinganswers').insert({'answer': payload[1], 'question_id': payload[0], 'user_test_id': 1})
+
     },
 
     [TOGGLE_REVIEW]: ({state, commit, dispatch}) => {

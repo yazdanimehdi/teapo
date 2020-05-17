@@ -3,6 +3,8 @@ import Vuex from "vuex";
 import time from './modules/time';
 import reading from './modules/reading';
 import listening from "./modules/listening";
+import speaking from "@/store/modules/speaking";
+import writing from "@/store/modules/writing";
 import mainTPO from "./modules/mainTPO";
 
 
@@ -16,6 +18,8 @@ export default new Vuex.Store({
         reading:reading,
         mainTPO: mainTPO,
         listening: listening,
+        speaking: speaking,
+        writing: writing,
 
     },
     strict: debug

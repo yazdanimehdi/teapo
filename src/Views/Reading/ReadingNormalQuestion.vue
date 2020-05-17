@@ -233,6 +233,7 @@
                 'readingQuestionAnswer',
             ]),
             ...mapState({
+                readingMode: state => state.reading.readingMode,
                 reading: state => state.reading.reading,
                 readingTest: state => state.reading.readingTest,
                 questionNumber: state => state.reading.questionNumber,
