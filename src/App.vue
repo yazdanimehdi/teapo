@@ -1,16 +1,19 @@
 <template>
   <div id="app">
-    <v-app>
       <router-view />
-    </v-app>
   </div>
 </template>
 
 <script>
 
+import {GET_DATA_LISTENING} from "@/store/actions/listening";
+
 export default {
   name: 'app',
   components: {
+  },
+  created(){
+      this.$store.dispatch(GET_DATA_LISTENING, 'tpo1');
   }
 }
 </script>

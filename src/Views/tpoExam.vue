@@ -1,6 +1,7 @@
 <template>
-    <span>
+    <span >
     <component
+            style="background-color: white"
             :is="currentComponent"
     />
         </span>
@@ -8,12 +9,20 @@
 
 <script>
     import { mapState } from 'vuex'
-    import ReadingSummary from "@/Views/Reading/ReadingSummary";
+    import ReadingSummary from "./Reading/ReadingSummary";
     import ReadingNormalQuestion from './Reading/ReadingNormalQuestion'
     import ReadingInsertion from './Reading/ReadingInsertion'
     import ReadingPassage from './Reading/ReadingPassage'
-    import TimeEnded from './TimeEnded'
-    import ReviewReading from "@/Views/Reading/ReviewReading";
+    import ReadingDirection from "./Reading/ReadingDirection";
+    import ReviewReading from "./Reading/ReviewReading";
+
+    import TimeEnded from './TimeEnded';
+
+    import ListeningDirection from "./Listening/ListeningDirection";
+    import ListeningQuestions from "@/Views/Listening/ListeningQuestions";
+    import Player from "./Listening/Player";
+    import QuotePlayer from "./Listening/QuotePlayer";
+
     import {GET_DATA_READING} from "@/store/actions/reading";
     import {COMPUTE_TIME} from "@/store/actions/time";
 
@@ -25,7 +34,13 @@
             ReadingPassage,
             ReadingSummary,
             TimeEnded,
-            ReviewReading
+            ReviewReading,
+            ReadingDirection,
+            ListeningDirection,
+            Player,
+            ListeningQuestions,
+            QuotePlayer
+
         },
         data(){
             return{
@@ -52,5 +67,4 @@
 </script>
 
 <style scoped>
-
 </style>

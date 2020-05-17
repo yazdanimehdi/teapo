@@ -9,6 +9,8 @@ import {
 
 import {UPDATE_COMPONENT} from "../actions/mainTPO";
 
+import {TIME_STOP} from "@/store/actions/time";
+
 const state = {
     readingAnswers: {},
     mode: 'reviewMode',
@@ -19,10 +21,11 @@ const state = {
     showReview: false,
     seenQuestionsReading: {},
     readingAllQuestionsNumber: 0,
-    taskNumber: 0,
-    questionNumber: 0,
+    taskNumber: -1,
+    questionNumber: -1,
     reading: [],
     readingTest: 'tpo1',
+    readingTime: 3600,
 };
 const getters = {
     readingTaskNumber: state => state.taskNumber,
@@ -84,10 +87,9 @@ const getters = {
         return str.trim().split(/\s+/).length > 1;
     },
     questionRelatedPassage: state => {
-        if(state.reading[state.taskNumber].questions[state.questionNumber]){
+        if (state.reading[state.taskNumber].questions[state.questionNumber]) {
             return state.reading[state.taskNumber].questions[state.questionNumber]['related_passage']
-        }
-        else {
+        } else {
             return ''
         }
     },
@@ -95,12 +97,11 @@ const getters = {
         if (state.reading[state.taskNumber].questions[state.questionNumber].id in state.readingAnswers) {
             return state.readingAnswers[state.reading[state.taskNumber].questions[state.questionNumber].id];
         } else {
-           return []
+            return []
         }
     },
     readingQuestionId: state => state.reading[state.taskNumber].questions[state.questionNumber].id,
     insertionSentence: state => state.reading[state.taskNumber].questions[state.questionNumber]['insertion_sentence']
-
 
 
 };
@@ -147,22 +148,18 @@ const actions = {
     [GO_TO_NEXT_READING]: ({state, commit, dispatch}) => {
         if (state.taskNumber === -1) {
             commit('updateTaskNumber', 0);
-            if (state.taskNumber === -1) {
-                dispatch(UPDATE_COMPONENT, 'ReadingDirection');
+            dispatch(TIME_STOP, false)
+            if (state.questionNumber === -1) {
+                dispatch(UPDATE_COMPONENT, state.reading_passage_component)
             } else {
-                commit('toggleTime', false);
-                if (state.questionNumber === -1) {
-                    dispatch(UPDATE_COMPONENT, state.reading_passage_component)
-                } else {
-                    if (state.reading[state.taskNumber].questions[state.questionNumber].question_type === 'Fact') {
-                        dispatch(UPDATE_COMPONENT, state.reading_normal_question_component);
-                    }
-                    if (state.reading[state.taskNumber].questions[state.questionNumber].question_type === 'Summary') {
-                        dispatch(UPDATE_COMPONENT, state.reading_summary_component)
-                    }
-                    if (state.reading[state.taskNumber].questions[state.questionNumber].question_type === 'Insertion') {
-                        dispatch(UPDATE_COMPONENT, state.reading_insertion_component)
-                    }
+                if (state.reading[state.taskNumber].questions[state.questionNumber].question_type === 'Fact') {
+                    dispatch(UPDATE_COMPONENT, state.reading_normal_question_component);
+                }
+                if (state.reading[state.taskNumber].questions[state.questionNumber].question_type === 'Summary') {
+                    dispatch(UPDATE_COMPONENT, state.reading_summary_component)
+                }
+                if (state.reading[state.taskNumber].questions[state.questionNumber].question_type === 'Insertion') {
+                    dispatch(UPDATE_COMPONENT, state.reading_insertion_component)
                 }
             }
         } else {
@@ -189,31 +186,8 @@ const actions = {
 
                     commit('updateTaskNumber', state.taskNumber + 1);
                     commit('updateQuestionNumber', -1);
-                    if (state.taskNumber === -1) {
-                        dispatch(UPDATE_COMPONENT, 'ReadingDirection');
-                    } else {
-                        commit('toggleTime', false);
-                        if (state.questionNumber === -1) {
-                            dispatch(UPDATE_COMPONENT, state.reading_passage_component)
-                        } else {
-                            if (state.reading[state.taskNumber].questions[state.questionNumber].question_type === 'Fact') {
-                                dispatch(UPDATE_COMPONENT, state.reading_normal_question_component);
-                            }
-                            if (state.reading[state.taskNumber].questions[state.questionNumber].question_type === 'Summary') {
-                                dispatch(UPDATE_COMPONENT, state.reading_summary_component)
-                            }
-                            if (state.reading[state.taskNumber].questions[state.questionNumber].question_type === 'Insertion') {
-                                dispatch(UPDATE_COMPONENT, state.reading_insertion_component)
-                            }
-                        }
-                    }
-                }
-            } else {
-                commit('updateQuestionNumber', state.questionNumber + 1);
-                if (state.taskNumber === -1) {
-                    dispatch(UPDATE_COMPONENT, 'ReadingDirection');
-                } else {
-                    commit('toggleTime', false);
+
+                    dispatch(TIME_STOP, false)
                     if (state.questionNumber === -1) {
                         dispatch(UPDATE_COMPONENT, state.reading_passage_component)
                     } else {
@@ -226,6 +200,22 @@ const actions = {
                         if (state.reading[state.taskNumber].questions[state.questionNumber].question_type === 'Insertion') {
                             dispatch(UPDATE_COMPONENT, state.reading_insertion_component)
                         }
+                    }
+                }
+            } else {
+                commit('updateQuestionNumber', state.questionNumber + 1);
+                dispatch(TIME_STOP, false)
+                if (state.questionNumber === -1) {
+                    dispatch(UPDATE_COMPONENT, state.reading_passage_component)
+                } else {
+                    if (state.reading[state.taskNumber].questions[state.questionNumber].question_type === 'Fact') {
+                        dispatch(UPDATE_COMPONENT, state.reading_normal_question_component);
+                    }
+                    if (state.reading[state.taskNumber].questions[state.questionNumber].question_type === 'Summary') {
+                        dispatch(UPDATE_COMPONENT, state.reading_summary_component)
+                    }
+                    if (state.reading[state.taskNumber].questions[state.questionNumber].question_type === 'Insertion') {
+                        dispatch(UPDATE_COMPONENT, state.reading_insertion_component)
                     }
                 }
             }
@@ -353,10 +343,10 @@ const mutations = {
     updateQuestionAll(state, payload) {
         state.readingAllQuestionsNumber = state.readingAllQuestionsNumber + payload
     },
-    updateReviewShow(state){
+    updateReviewShow(state) {
         state.showReview = !state.showReview;
     },
-    toggleTime(state, payload){
+    toggleTime(state, payload) {
         state.timeStop = payload;
     }
 };

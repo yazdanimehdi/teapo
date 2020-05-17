@@ -1,170 +1,176 @@
 <template>
-    <div style="position: fixed">
-        <link rel="stylesheet"
-              href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
-              integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ"
-              crossorigin="anonymous">
-        <div v-show="!review.enable">
-            <v-container fluid class="toolbar" style="padding: 0">
-                <v-row justify="space-between" align="start" style="padding: 0; padding-top: 9px; padding-bottom: 12px">
-                    <v-col sm="6" lg="6" cols="6" md="6" style="padding: 0; padding-left: 20px">
-                        <v-container fluid>
-                            <v-row justify="start" align="start">
-                                <v-col style="padding: 0">
-                                    <v-btn dark rounded small style="margin-right: 10px">Home</v-btn>
-                                    <v-btn style="background-color: lime; margin-right: 10px" rounded
-                                           @click="dialogCorrect = true"
-                                           v-if="readingMode ==='practiceMode' || readingMode === 'reviewMode'" x-small>
-                                        Correct Answer
-                                    </v-btn>
-                                    <v-btn rounded @click="selected === '' ? dialog=false : dialog=true"
-                                           :disabled="selected ===''" x-small
-                                           v-if="readingMode ==='practiceMode' || readingMode === 'reviewMode'">
-                                        Dictionary
-                                    </v-btn>
+    <v-app>
+        <div style="position: fixed">
+            <link rel="stylesheet"
+                  href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
+                  integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ"
+                  crossorigin="anonymous">
+            <div v-show="!review.enable">
+                <v-container fluid class="toolbar" style="padding: 0">
+                    <v-row justify="space-between" align="start"
+                           style="padding: 0; padding-top: 29px; padding-bottom: 12px">
+                        <v-col sm="6" lg="6" cols="6" md="6" style="padding: 0; padding-left: 20px">
+                            <v-container fluid>
+                                <v-row justify="start" align="start">
+                                    <v-col style="padding: 0">
+                                        <v-btn dark rounded small style="margin-right: 10px">Home</v-btn>
+                                        <v-btn style="background-color: lime; margin-right: 10px" rounded
+                                               @click="dialogCorrect = true"
+                                               v-if="readingMode ==='practiceMode' || readingMode === 'reviewMode'"
+                                               x-small>
+                                            Correct Answer
+                                        </v-btn>
+                                        <v-btn rounded @click="selected === '' ? dialog=false : dialog=true"
+                                               :disabled="selected ===''" x-small
+                                               v-if="readingMode ==='practiceMode' || readingMode === 'reviewMode'">
+                                            Dictionary
+                                        </v-btn>
+                                    </v-col>
+                                </v-row>
+                            </v-container>
+                        </v-col>
+                        <v-col sm="6" lg="4" cols="6" md="4" style="padding: 0;padding-right: 30px; ">
+                            <v-container fluid style="padding: 0">
+                                <v-row justify="end" align="start" style="padding: 0">
+                                    <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
+                                        <v-img src="../../assets/review.png" @click="toggleReviewShow" contain
+                                               max-height="60px" min-height="40px"></v-img>
+                                    </v-col>
+
+                                    <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
+                                        <v-img src="../../assets/vold.png" contain max-height="60px"
+                                               min-height="40px"></v-img>
+                                    </v-col>
+                                    <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
+                                        <v-img src="../../assets/helpd.png" contain max-height="60px"
+                                               min-height="40px"></v-img>
+
+                                    </v-col>
+                                    <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
+                                        <v-img src="../../assets/back.png" @click="goToBack" contain
+                                               max-height="60px" min-height="40px"></v-img>
+                                    </v-col>
+                                    <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
+                                        <v-img src="../../assets/next.png" @click="goToNext" contain
+                                               max-height="60px" min-height="40px"></v-img>
+                                    </v-col>
+                                </v-row>
+                            </v-container>
+                        </v-col>
+                    </v-row>
+                    <v-row justify="center" align="start">
+                        <v-container fluid style="margin: 0; padding:0">
+                            <v-row justify="end" align="start">
+                                <v-col sm="8" lg="10" md="9" style="padding: 0">
+                                    <div class="qanounce">
+                                        Question {{this.questionCount + this.questionNumber + 1}} of
+                                        {{readingAllQuestionsNumber}}
+                                    </div>
+                                </v-col>
+                                <v-col sm="4" lg="2" md="3" style="padding: 0; max-width: 250px">
+                                    <template v-if="time_component.enable">
+                                        <img src="../../assets/hidetime.png" class="clock" @click="toggleTimeShow">
+                                    </template>
+                                    <template v-else>
+                                        <img src="../../assets/showtime.png" class="clock" @click="toggleTimeShow">
+                                    </template>
+                                    <span class='time' v-if="this.time_component.enable">{{formattedHours}} : {{formattedMinutes}} : {{formattedSeconds}}</span>
                                 </v-col>
                             </v-row>
                         </v-container>
-                    </v-col>
-                    <v-col sm="6" lg="4" cols="6" md="4" style="padding: 0;padding-right: 30px; ">
-                        <v-container fluid style="padding: 0">
-                            <v-row justify="end" align="start" style="padding: 0">
-                                <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
-                                    <v-img src="../../assets/review.png" @click="toggleReviewShow" contain
-                                           max-height="60px" min-height="40px"></v-img>
-                                </v-col>
-
-                                <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
-                                    <v-img src="../../assets/vold.png" contain max-height="60px" min-height="40px"></v-img>
-                                </v-col>
-                                <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
-                                    <v-img src="../../assets/helpd.png" contain max-height="60px"
-                                           min-height="40px"></v-img>
-
-                                </v-col>
-                                <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
-                                    <v-img src="../../assets/back.png" @click="goToBack" contain
-                                           max-height="60px" min-height="40px"></v-img>
-                                </v-col>
-                                <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
-                                    <v-img src="../../assets/next.png" @click="goToNext" contain
-                                           max-height="60px" min-height="40px"></v-img>
-                                </v-col>
-                            </v-row>
-                        </v-container>
-                    </v-col>
-                </v-row>
-                <v-row justify="center" align="start">
-                    <v-container fluid style="margin: 0; padding:0">
-                        <v-row justify="end" align="start">
-                            <v-col sm="8" lg="10" md="9" style="padding: 0">
-                                <div class="qanounce">
-                                    Question {{this.questionCount + this.questionNumber + 1}} of
-                                    {{readingAllQuestionsNumber}}
+                    </v-row>
+                </v-container>
+                <div style="margin: 0.5%">
+                    <v-container fluid>
+                        <v-row>
+                            <v-col cols="12" lg="6" sm="6">
+                                <div style="width: 100%; height: 100%; border: black thin solid; margin-right: 1px">
+                                    <v-card class="my_class" flat height="73vh"
+                                            :style="{'font-size': 6 + 24*size/100 + 'px'}">
+                                        <br>
+                                        <br>
+                                        <div class="question"><span>{{readingQuestion}}}</span>
+                                        </div>
+                                        <br>
+                                        <div class="question"><span
+                                                style="font-weight: bold">{{insertionSentence}}</span>
+                                        </div>
+                                        <br>
+                                        <span>Paragraph {{questionRelatedParagraph}} is marked with an arrow [<i
+                                                class="fas fa-arrow-right"></i>]</span>
+                                    </v-card>
                                 </div>
                             </v-col>
-                            <v-col sm="4" lg="2" md="3" style="padding: 0; max-width: 250px">
-                                <template v-if="time_component.enable">
-                                    <img src="../../assets/hidetime.png" class="clock" @click="toggleTimeShow">
-                                </template>
-                                <template v-else>
-                                    <img src="../../assets/showtime.png" class="clock" @click="toggleTimeShow">
-                                </template>
-                                <span class='time' v-if="this.time_component.enable">{{formattedHours}} : {{formattedMinutes}} : {{formattedSeconds}}</span>
+                            <v-col cols="12" lg="6" sm="6">
+                                <div style="width: 100%; height: 100%; border: black thin solid; margin-left: 1px">
+                                    <div style="background-color: #1A01CC; height: 20px; text-align: right; color: white">
+                                        <span v-if="scrolled < 0.6">Beginning</span><span
+                                            v-if="0.6 < scrolled & scrolled < 0.9">More Available</span><span
+                                            v-if="scrolled >= 0.9">End</span></div>
+                                    <v-card class="my_class1" flat height="73vh" v-on:scroll.native="onScroll"
+                                            :style="{'font-size': 6 + 24*size/100 + 'px'}">
+                                        <br>
+                                        <h2 style="text-align: center;">
+                                            {{questionReadingTitle}}</h2>
+                                        <br>
+                                        <div id="passage"></div>
+
+                                    </v-card>
+                                </div>
                             </v-col>
                         </v-row>
                     </v-container>
-                </v-row>
-            </v-container>
-            <div style="margin: 0.5%">
-                <v-container fluid>
-                    <v-row>
-                        <v-col cols="12" lg="6" sm="6">
-                            <div style="width: 100%; height: 100%; border: black thin solid; margin-right: 1px">
-                                <v-card class="my_class" flat height="73vh"
-                                        :style="{'font-size': 6 + 24*size/100 + 'px'}">
-                                    <br>
-                                    <br>
-                                    <div class="question"><span>{{readingQuestion}}}</span>
-                                    </div>
-                                    <br>
-                                    <div class="question"><span style="font-weight: bold">{{insertionSentence}}</span>
-                                    </div>
-                                    <br>
-                                    <span>Paragraph {{questionRelatedParagraph}} is marked with an arrow [<i
-                                            class="fas fa-arrow-right"></i>]</span>
-                                </v-card>
-                            </div>
-                        </v-col>
-                        <v-col cols="12" lg="6" sm="6">
-                            <div style="width: 100%; height: 100%; border: black thin solid; margin-left: 1px">
-                                <div style="background-color: #1A01CC; height: 20px; text-align: right; color: white">
-                                    <span v-if="scrolled < 0.6">Beginning</span><span
-                                        v-if="0.6 < scrolled & scrolled < 0.9">More Available</span><span
-                                        v-if="scrolled >= 0.9">End</span></div>
-                                <v-card class="my_class1" flat height="73vh" v-on:scroll.native="onScroll"
-                                        :style="{'font-size': 6 + 24*size/100 + 'px'}">
-                                    <br>
-                                    <h2 style="text-align: center;">
-                                        {{questionReadingTitle}}</h2>
-                                    <br>
-                                    <div id="passage"></div>
-
-                                </v-card>
-                            </div>
-                        </v-col>
-                    </v-row>
-                </v-container>
+                </div>
             </div>
+            <v-dialog
+                    v-model="dialog"
+                    max-width="500px"
+            >
+                <v-card>
+                    <v-card-title>
+                        {{selected}}
+                    </v-card-title>
+                    <v-card-text>
+                        <v-btn
+                                color="primary"
+                                dark
+                        >
+                            Open Dialog 3
+                        </v-btn>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-btn
+                                color="primary"
+                                text
+                                @click="dialog = false"
+                        >
+                            Close
+                        </v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
+            <v-dialog
+                    v-model="dialogCorrect"
+                    max-width="500px"
+            >
+                <v-card>
+                    <v-card-title>
+                        The Correct Answer Is: <span style="color: green">{{readingQuestionCorrectAnswer}}</span>
+                    </v-card-title>
+                    <v-card-actions>
+                        <div class="flex-grow-1"></div>
+                        <v-btn
+                                color="primary"
+                                text
+                                @click="dialogCorrect = false"
+                        >
+                            Close
+                        </v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
         </div>
-        <v-dialog
-                v-model="dialog"
-                max-width="500px"
-        >
-            <v-card>
-                <v-card-title>
-                    {{selected}}
-                </v-card-title>
-                <v-card-text>
-                    <v-btn
-                            color="primary"
-                            dark
-                    >
-                        Open Dialog 3
-                    </v-btn>
-                </v-card-text>
-                <v-card-actions>
-                    <v-btn
-                            color="primary"
-                            text
-                            @click="dialog = false"
-                    >
-                        Close
-                    </v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
-        <v-dialog
-                v-model="dialogCorrect"
-                max-width="500px"
-        >
-            <v-card>
-                <v-card-title>
-                    The Correct Answer Is: <span style="color: green">{{readingQuestionCorrectAnswer}}</span>
-                </v-card-title>
-                <v-card-actions>
-                    <div class="flex-grow-1"></div>
-                    <v-btn
-                            color="primary"
-                            text
-                            @click="dialogCorrect = false"
-                    >
-                        Close
-                    </v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
-    </div>
+    </v-app>
 </template>
 
 <script>
@@ -238,7 +244,7 @@
                 }
                 this.answer = this.readingQuestionAnswer;
                 if (this.answer !== []) {
-                    document.getElementById("insert"+this.answer).innerText = '[' + this.insertionSentence + ']';
+                    document.getElementById("insert" + this.answer).innerText = '[' + this.insertionSentence + ']';
 
                 }
             }
@@ -338,7 +344,7 @@
             });
             this.answer = this.readingQuestionAnswer;
             if (this.answer !== []) {
-                document.getElementById("insert"+this.answer).innerText = '[' + self.insertionSentence + ']';
+                document.getElementById("insert" + this.answer).innerText = '[' + self.insertionSentence + ']';
 
             }
         },
@@ -431,8 +437,11 @@
     /*    font-size: 16px;*/
     /*}*/
     .toolbar {
-        height: 110px;
+        height: 130px;
+        padding-top: 20px;
         background: linear-gradient(to right, rgb(61, 83, 135), rgb(113, 53, 60));
+        -webkit-user-select: none;
+        -webkit-app-region: drag;
     }
 
     .view_text {

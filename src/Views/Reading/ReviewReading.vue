@@ -1,36 +1,38 @@
 <template>
-    <div>
-        <v-container style="padding: 0" class="toolbar" fluid>
-            <v-row style="padding-right: 20px; padding-top: 9px; padding-bottom: 12px">
-                <v-img src="../../assets/back.png" @click="closeReview" contain max-height="60px"
-                       min-height="40px" position="right"></v-img>
-            </v-row>
-        </v-container>
-        <div style="overflow-y: scroll; max-height: 850px;">
-            <table class="tg" style="table-layout: fixed; width: 100%">
-                <colgroup>
-                    <template v-if="mode === 'reviewMode'">
-                        <col style="width: 80%">
-                        <col style="width: 10%">
-                        <col style="width: 10%">
-                    </template>
-                    <template v-else>
-                        <col style="width: 90%">
-                        <col style="width: 10%">
-                    </template>
-                </colgroup>
-                <tr>
-                    <th class="tg-veie">Questions</th>
-                    <th class="tg-oe15">Correct Answer</th>
-                    <th class="tg-oe15" v-if="mode === 'reviewMode'">Your Answer</th>
-                </tr>
-                <template v-for="(readingi, index) in reading">
-                    <tr v-for="(question, qindex) in readingi.questions" :key="question.id">
-                        <template v-if="seenQuestionsReading[[index, qindex]] === true">
-                            <td class="tg-hvao" @click="gotoQuestion([index, qindex])" :id="[index, qindex].toString()"
-                                style="color: blue">{{question.question}}
-                            </td>
-                            <td class="tg-hvao" style="text-align: center;" v-if="mode === 'reviewMode'">
+    <v-app>
+        <div>
+            <v-container style="padding: 0" class="toolbar" fluid>
+                <v-row style="padding-right: 20px; padding-top: 29px; padding-bottom: 12px">
+                    <v-img src="../../assets/back.png" @click="closeReview" contain max-height="60px"
+                           min-height="40px" position="right"></v-img>
+                </v-row>
+            </v-container>
+            <div style="overflow-y: scroll; max-height: 850px;">
+                <table class="tg" style="table-layout: fixed; width: 100%">
+                    <colgroup>
+                        <template v-if="mode === 'reviewMode'">
+                            <col style="width: 80%">
+                            <col style="width: 10%">
+                            <col style="width: 10%">
+                        </template>
+                        <template v-else>
+                            <col style="width: 90%">
+                            <col style="width: 10%">
+                        </template>
+                    </colgroup>
+                    <tr>
+                        <th class="tg-veie">Questions</th>
+                        <th class="tg-oe15">Correct Answer</th>
+                        <th class="tg-oe15" v-if="mode === 'reviewMode'">Your Answer</th>
+                    </tr>
+                    <template v-for="(readingi, index) in reading">
+                        <tr v-for="(question, qindex) in readingi.questions" :key="question.id">
+                            <template v-if="seenQuestionsReading[[index, qindex]] === true">
+                                <td class="tg-hvao" @click="gotoQuestion([index, qindex])"
+                                    :id="[index, qindex].toString()"
+                                    style="color: blue">{{question.question}}
+                                </td>
+                                <td class="tg-hvao" style="text-align: center;" v-if="mode === 'reviewMode'">
             <span v-for="code in reading[index].questions[qindex].right_answer" :key="code">
             <span v-if="code === '1'">
               A
@@ -52,8 +54,8 @@
             </span>
 
               </span>
-                            </td>
-                            <td class="tg-hvao" style="text-align: center">
+                                </td>
+                                <td class="tg-hvao" style="text-align: center">
               <span v-for="code in readingAnswers[question.id]" :key="code">
               <span v-if="code === '1'">
                 A
@@ -75,14 +77,15 @@
               </span>
 
                 </span>
-                            </td>
-                        </template>
-                    </tr>
-                </template>
-            </table>
+                                </td>
+                            </template>
+                        </tr>
+                    </template>
+                </table>
 
+            </div>
         </div>
-    </div>
+    </v-app>
 </template>
 
 <script>
@@ -100,7 +103,8 @@
                 reading: state => state.reading.reading,
                 readingAnswers: state => state.reading.readingAnswers,
                 seenQuestionsReading: state => state.reading.seenQuestionsReading,
-                mode: state=> state.reading.mode})
+                mode: state => state.reading.mode
+            })
         },
         methods: {
             gotoQuestion(indices) {
@@ -162,10 +166,12 @@
 
 <style scoped>
     .toolbar {
-        height: 110px;
-        background: linear-gradient(to right, #4148a2, #822a42);
+        height: 130px;
         width: 100%;
-
+        padding-top: 20px;
+        background: linear-gradient(to right, rgb(61, 83, 135), rgb(113, 53, 60));
+        -webkit-user-select: none;
+        -webkit-app-region: drag;
     }
 
     .btn {

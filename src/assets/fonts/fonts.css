@@ -1,0 +1,20 @@
+@font-face {
+    font-family: 'kalam';
+    src: url('Kalam-Regular.ttf') format('truetype');
+    font-style: normal;
+    font-weight: 400;
+}
+
+@font-face {
+    font-family: 'kalam';
+    src: url('Kalam-Bold.ttf') format('truetype');
+    font-style: normal;
+    font-weight: 800;
+}
+
+@font-face {
+    font-family: 'kalam';
+    src: url('Kalam-Light.ttf') format('truetype');
+    font-style: normal;
+    font-weight: 200;
+}

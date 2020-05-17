@@ -2,6 +2,7 @@ import Vue from "vue";
 import Vuex from "vuex";
 import time from './modules/time';
 import reading from './modules/reading';
+import listening from "./modules/listening";
 import mainTPO from "./modules/mainTPO";
 
 
@@ -14,6 +15,8 @@ export default new Vuex.Store({
         time: time,
         reading:reading,
         mainTPO: mainTPO,
+        listening: listening,
+
     },
     strict: debug
 });

@@ -13,8 +13,3 @@ new Vue({
   vuetify,
   render: h => h(App)
 }).$mount('#app')
-
-Vue.filter('formatTime', function (d) {
-  var value = d.toString();
-  return value.length >= 2 ? value : new Array(2 - value.length + 1).join('0') + value;
-}) ;

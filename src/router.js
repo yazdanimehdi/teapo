@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Login from "@/Views/Login";
-import Signup from "@/Views/Signup";
+import RegisterLogin from "@/Views/RegisterLogin";
 
 // import ReadingNormalQuestion from "@/Views/ReadingNormalQuestion";
 // import ReadingInsertion from "@/Views/ReadingInsertion";
@@ -19,7 +19,7 @@ export default new Router({
         {
             path: '/signup',
             name: 'signup',
-            component: Signup
+            component: RegisterLogin
         },
         {
             path: '/login',
