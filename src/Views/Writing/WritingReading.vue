@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app style="position: fixed">
     <v-container fluid class="toolbar" style="padding: 0">
       <v-row justify="space-between" align="start"
              style="padding: 0; padding-top: 19px; padding-bottom: 12px">

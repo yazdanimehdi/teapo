@@ -38,7 +38,7 @@
         </v-container>
         <v-container>
             <v-row align="center" justify="center">
-                <img :src="'data:image/jpeg;base64,' + writingImageSource">
+                <img :src="'data:image/jpeg;base64,' + writingImageSource" width="500px">
             </v-row>
             <v-row align="center" justify="center">
                 <audio id="listening" autoplay :controls="(writingMode === 'reviewMode' || writingMode === 'practiceMode')" v-on:ended="listeningEnded" v-on:timeupdate="progressListening">
@@ -93,8 +93,10 @@
           },
           progressListening(){
               let listening = document.getElementById('listening');
-              let duration = listening.duration;
-              this.audio.percentage = (listening.currentTime / duration) * 100;
+              if(listening !== null){
+                  let duration = listening.duration;
+                  this.audio.percentage = (listening.currentTime / duration) * 100;
+              }
           },
           show_vol() {
               this.volume.enabled = !this.volume.enabled;

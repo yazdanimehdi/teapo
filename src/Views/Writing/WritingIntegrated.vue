@@ -78,7 +78,7 @@
             <v-row>
                 <v-col>
                     <div class="right" :style="{'height': `${this.windowSize.height - 360}px`}">
-                        <div style="padding: 15px;">{{writingQuestion}}</div>
+                        <div style="padding: 15px;">{{writingReading}}</div>
                     </div>
                 </v-col>
                 <v-col>
@@ -86,7 +86,7 @@
                         <v-row class="control_buttons" style="margin: 0; padding: 0">
                             <v-container fluid>
                                 <v-row align="start" justify="start">
-                                    <v-col cols="9" sm="8" lg="8" md="8" style="padding: 0; margin: 0">
+                                    <v-col cols="7" sm="7" lg="7" md="7" style="padding: 0; margin: 0">
                                         <v-row align="start" justify="start" style="padding: 0; margin: 0">
                                             <v-col cols="2" sm="2" lg="2" md="2"
                                                    style="padding: 0; margin: 0; margin-bottom: 10px;">
@@ -106,14 +106,14 @@
                                             </v-col>
                                         </v-row>
                                     </v-col>
-                                    <v-col cols="3" sm="4" lg="4" md="4"
+                                    <v-col cols="5" sm="5" lg="5" md="5"
                                            style="margin: 0; padding: 0">
                                         <v-row justify="start" align="start">
                                             <v-col cols="10" sm="10" lg="10" md="10" style="padding: 0; margin: 0;">
-                                                <div v-if="wordCount"><img class="btn_writing"
+                                                <div v-if="wordCount" style="padding: 0; margin: 0;"><img class="btn_writing"
                                                                            src="../../assets/hide_word_count.png"
                                                                            @click="triggerWordCount"></div>
-                                                <div v-else><img class="btn_writing"
+                                                <div v-else style="padding: 0; margin: 0;"><img class="btn_writing"
                                                                  src="../../assets/show_word_count.png"
                                                                  @click="triggerWordCount"></div>
                                             </v-col>
@@ -130,7 +130,7 @@
                             </v-container>
                         </v-row>
                         <v-row justify="center" align="start">
-                            <textarea id="input" class="input" v-model="wordString"
+                            <textarea id="input" class="input" v-model="wordString" :disabled="writingMode === 'reviewMode'"
                                       :style="{'height': `${this.windowSize.height - 415}px`}"></textarea>
                         </v-row>
                     </v-container>
@@ -158,7 +158,7 @@
                     <v-card-actions>
                         <v-btn
                                 color="success"
-                                flat
+                                text
                                 @click="dialog = false"
                         >
                             Continue Writing
@@ -167,7 +167,7 @@
 
                         <v-btn
                                 color="error"
-                                flat
+                                text
                                 @click="goToNext"
                         >
                             Exit
@@ -183,7 +183,12 @@
 <script>
     import {mapState, mapGetters} from 'vuex'
     import $ from 'jquery'
-    import {GO_TO_NEXT_WRITING, GO_TO_PREVIOUS_WRITING} from "@/store/actions/writing";
+    import {
+        GO_TO_NEXT_WRITING,
+        GO_TO_PREVIOUS_WRITING,
+        SAVE_ANSWER_WRITING,
+        WRITING_TIME_ENDED
+    } from "@/store/actions/writing";
 
     export default {
         name: "WritingIntegrated",
@@ -209,18 +214,33 @@
         created() {
             window.addEventListener('resize', this.handleResize);
             this.handleResize();
-
         },
         destroyed() {
             window.removeEventListener('resize', this.handleResize);
         },
+        mounted(){
+            if(this.writingAnswer[this.writingId]=== undefined){
+                this.wordString = "";
+            }
+            else {
+                this.wordString = this.writingAnswer[this.writingId]
+            }
+        },
         computed: {
-            ...mapGetters(['writingQuestionNumber', 'writingLength', 'writingQuestion', 'writingReading', 'formattedHours', 'formattedMinutes', 'formattedSeconds']),
+            ...mapGetters(['writingQuestionNumber', 'writingLength', 'writingQuestion', 'writingReading', 'formattedHours', 'formattedMinutes', 'formattedSeconds', 'writingId']),
             ...mapState({
-                writingMode: state => state.writing.writingMode
+                writingMode: state => state.writing.writingMode,
+                totalTime: state => state.time.totalTime,
+                writingAnswer: state => state.writing.answers,
             })
         },
         watch: {
+            totalTime: function (newVal) {
+                if(newVal === 0){
+                    this.$store.dispatch(SAVE_ANSWER_WRITING, [this.writingId, this.wordString]);
+                    this.$store.dispatch(WRITING_TIME_ENDED);
+                }
+            },
             wordString: function (str) {
                 this.wordCount.count = str.trim().split(/\s+/).length;
                 if (str[str.length - 1] === ' ') {
@@ -242,10 +262,11 @@
             },
             goToNext: function () {
                 this.$store.dispatch(GO_TO_NEXT_WRITING);
-                // this.$store.dispatch('saveWritingAnswers', [this.exam['writing'][this.task_number].id, this.wordcount]) ;
+                this.$store.dispatch(SAVE_ANSWER_WRITING, [this.writingId, this.wordString]);
             },
             goToBack() {
                 this.$store.dispatch(GO_TO_PREVIOUS_WRITING);
+                this.$store.dispatch(SAVE_ANSWER_WRITING, [this.writingId, this.wordString]);
             },
             triggerUndo() {
                 $('.input').focus()
