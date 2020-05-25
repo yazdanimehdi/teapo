@@ -173,7 +173,7 @@
 </template>
 
 <script>
-    import {mapGetters} from 'vuex'
+    import {mapGetters, mapState} from 'vuex'
     import $ from 'jquery'
     import {
         GO_TO_NEXT_READING,
@@ -186,12 +186,14 @@
             ...mapGetters(['formattedHours',
                 'formattedMinutes',
                 'formattedSeconds',
-                'readingMode',
                 'readingTitle',
                 'passage',
                 'readingLength',
                 'currentReading',
-                'readingTaskNumber'])
+                'readingTaskNumber']),
+            ...mapState({
+                readingMode: state => state.mainTPO.mode,
+            })
         },
         data() {
             return {

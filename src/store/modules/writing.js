@@ -1,12 +1,12 @@
 import {
     GET_DATA_WRITING, GO_TO_NEXT_WRITING,
     SAVE_ANSWER_WRITING, GO_TO_PREVIOUS_WRITING,
-    WRITING_TIME_ENDED, GO_TO_WRITING_QUESTION
+    WRITING_TIME_ENDED, GO_TO_WRITING_QUESTION, UPDATE_STATE_WRITING
 
 } from '../actions/writing'
 
-import {UPDATE_COMPONENT} from "../actions/mainTPO";
-import {TIME_STOP} from "@/store/actions/time";
+import {NEXT_SECTION, PREVIOUS_SECTION, UPDATE_COMPONENT} from "../actions/mainTPO";
+import {TIME_STOP, UPDATE_REMAINED_WRITING_TIME} from "@/store/actions/time";
 
 const state = {
     taskNumber: 0,
@@ -50,144 +50,86 @@ const actions = {
             commit('updateWritingData', rows)
         });
     },
+    [UPDATE_STATE_WRITING]: ({state, dispatch}) => {
+        if (state.writing[state.taskNumber].type === 'Integrated') {
+            if (state.stateNumber === -1) {
+                dispatch(TIME_STOP, true);
+                dispatch(UPDATE_COMPONENT, 'IntegratedWritingDirection')
+            }
+            if (state.stateNumber === 0) {
+                dispatch(TIME_STOP, false)
+                dispatch(UPDATE_COMPONENT, 'WritingReading')
+            }
+            if (state.stateNumber === 1) {
+                dispatch(TIME_STOP, true)
+                dispatch(UPDATE_COMPONENT, 'WritingPlayer')
+            }
+            if (state.stateNumber === 2) {
+                dispatch(TIME_STOP, false)
+                dispatch(UPDATE_COMPONENT, 'WritingIntegrated')
+            }
+        }
+        if (state.writing[state.taskNumber].type === 'Independent') {
+            if (state.stateNumber === -1) {
+                dispatch(TIME_STOP, true)
+                dispatch(UPDATE_COMPONENT, 'IndependentWritingDirection')
+            }
+            if (state.stateNumber === 0) {
+                dispatch(TIME_STOP, false)
+                dispatch(UPDATE_COMPONENT, 'WritingIndependent')
+            }
+        }
+    },
+
     [WRITING_TIME_ENDED]: ({dispatch}) => {
         dispatch(TIME_STOP, true)
         dispatch(UPDATE_COMPONENT, 'TimeEndedWriting')
     },
     [GO_TO_PREVIOUS_WRITING]: ({state, commit, dispatch}) => {
-        function updateWritingState() {
-            if (state.writing[state.taskNumber].type === 'Integrated') {
-                if (state.stateNumber === -1) {
-                    dispatch(TIME_STOP, true);
-                    dispatch(UPDATE_COMPONENT, 'IntegratedWritingDirection')
-                }
-                if (state.stateNumber === 0) {
-                    dispatch(TIME_STOP, false)
-                    dispatch(UPDATE_COMPONENT, 'WritingReading')
-                }
-                if (state.stateNumber === 1) {
-                    dispatch(TIME_STOP, true)
-                    dispatch(UPDATE_COMPONENT, 'WritingPlayer')
-                }
-                if (state.stateNumber === 2) {
-                    dispatch(TIME_STOP, false)
-                    dispatch(UPDATE_COMPONENT, 'WritingIntegrated')
-                }
-            }
-            if (state.writing[state.taskNumber].type === 'Independent') {
-                if (state.stateNumber === -1) {
-                    dispatch(TIME_STOP, true)
-                    dispatch(UPDATE_COMPONENT, 'IndependentWritingDirection')
-                }
-                if (state.stateNumber === 0) {
-                    dispatch(TIME_STOP, false)
-                    dispatch(UPDATE_COMPONENT, 'WritingIndependent')
-                }
-            }
-        }
 
         if (state.taskNumber === -1) {
             commit('updateTaskNumber', 0);
         } else {
             if (state.stateNumber - 1 < -1) {
                 if (state.taskNumber - 1 < 0) {
-                    console.log('previous section')
+                    dispatch(UPDATE_REMAINED_WRITING_TIME, state.taskNumber);
+                    dispatch(PREVIOUS_SECTION)
                 } else {
                     commit('updateTaskNumber', state.taskNumber - 1);
                     commit('updateStateNumber', state.writing[state.taskNumber].sections - 2);
-                    updateWritingState();
+                    dispatch(UPDATE_STATE_WRITING);
                 }
             } else {
                 commit('updateStateNumber', state.stateNumber - 1);
-                updateWritingState();
+                dispatch(UPDATE_STATE_WRITING);
             }
         }
 
     },
     [GO_TO_NEXT_WRITING]: ({state, commit, dispatch}) => {
-        function updateWritingState() {
-            if (state.writing[state.taskNumber].type === 'Integrated') {
-                if (state.stateNumber === -1) {
-                    dispatch(TIME_STOP, true);
-                    dispatch(UPDATE_COMPONENT, 'IntegratedWritingDirection')
-                }
-                if (state.stateNumber === 0) {
-                    dispatch(TIME_STOP, false)
-                    dispatch(UPDATE_COMPONENT, 'WritingReading')
-                }
-                if (state.stateNumber === 1) {
-                    dispatch(TIME_STOP, true)
-                    dispatch(UPDATE_COMPONENT, 'WritingPlayer')
-                }
-                if (state.stateNumber === 2) {
-                    dispatch(TIME_STOP, false)
-                    dispatch(UPDATE_COMPONENT, 'WritingIntegrated')
-                }
-            }
-            if (state.writing[state.taskNumber].type === 'Independent') {
-                if (state.stateNumber === -1) {
-                    dispatch(TIME_STOP, true)
-                    dispatch(UPDATE_COMPONENT, 'IntegratedWritingDirection')
-                }
-                if (state.stateNumber === 0) {
-                    dispatch(TIME_STOP, false)
-                    dispatch(UPDATE_COMPONENT, 'WritingIndependent')
-                }
-            }
-        }
 
         if (state.taskNumber === -1) {
             commit('updateTaskNumber', 0);
         } else {
             if (state.stateNumber + 2 >= state.writing[state.taskNumber].sections) {
                 if (state.taskNumber + 1 >= state.writing.length) {
-                    console.log('next section')
+                    dispatch(UPDATE_REMAINED_WRITING_TIME, state.taskNumber);
+                    dispatch(NEXT_SECTION)
                 } else {
                     commit('updateTaskNumber', state.taskNumber + 1);
                     commit('updateStateNumber', -1);
-                    updateWritingState();
+                    dispatch(UPDATE_STATE_WRITING);
                 }
             } else {
                 commit('updateStateNumber', state.stateNumber + 1);
-                updateWritingState();
+                dispatch(UPDATE_STATE_WRITING);
             }
         }
     },
     [GO_TO_WRITING_QUESTION]: ({commit, dispatch}, payload) => {
-        function updateWritingState() {
-            if (state.writing[state.taskNumber].type === 'Integrated') {
-                if (state.stateNumber === -1) {
-                    dispatch(TIME_STOP, true);
-                    dispatch(UPDATE_COMPONENT, 'IntegratedWritingDirection')
-                }
-                if (state.stateNumber === 0) {
-                    dispatch(TIME_STOP, false)
-                    dispatch(UPDATE_COMPONENT, 'WritingReading')
-                }
-                if (state.stateNumber === 1) {
-                    dispatch(TIME_STOP, true)
-                    dispatch(UPDATE_COMPONENT, 'WritingPlayer')
-                }
-                if (state.stateNumber === 2) {
-                    dispatch(TIME_STOP, false)
-                    dispatch(UPDATE_COMPONENT, 'WritingIntegrated')
-                }
-            }
-            if (state.writing[state.taskNumber].type === 'Independent') {
-                if (state.stateNumber === -1) {
-                    dispatch(TIME_STOP, true)
-                    dispatch(UPDATE_COMPONENT, 'IntegratedWritingDirection')
-                }
-                if (state.stateNumber === 0) {
-                    dispatch(TIME_STOP, false)
-                    dispatch(UPDATE_COMPONENT, 'WritingIndependent')
-                }
-            }
-        }
-
-        commit('updateTaskNumber', payload[0]);
-        commit('updateStateNumber', payload[1]);
-        updateWritingState();
+        commit('updateTaskNumber', payload);
+        commit('updateStateNumber', -1);
+        dispatch(UPDATE_STATE_WRITING);
 
     },
     [SAVE_ANSWER_WRITING]: ({commit}, payload) => {

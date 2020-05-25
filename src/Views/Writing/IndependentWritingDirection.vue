@@ -69,7 +69,7 @@
   import {mapState} from 'vuex'
 
   export default {
-    name: "SpeakingDirections",
+    name: "IndependentWritingDirection",
     methods: {
       goToNext : function() {
         this.$store.dispatch(GO_TO_NEXT_WRITING)
@@ -80,7 +80,7 @@
     },
     computed:{
       ...mapState({
-        writingMode: state => state.writing.writingMode
+        writingMode: state => state.mainTPO.mode
       })
     },
     data() {

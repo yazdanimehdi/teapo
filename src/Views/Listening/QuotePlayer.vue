@@ -24,6 +24,12 @@
                                 <v-img src="../../assets/vol.png" contain max-height="60px"
                                        min-height="40px" @click="show_vol"></v-img>
                             </v-col>
+                            <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0"
+                                   v-if="listeningMode === 'practiceMode' || listeningMode === 'reviewMode'">
+                                <v-img src="../../assets/back.png" contain max-height="60px" @click="goToBack"
+                                       min-height="40px"></v-img>
+
+                            </v-col>
                         </v-row>
                     </v-container>
                 </v-col>
@@ -49,7 +55,7 @@
 
 <script>
     import { mapGetters, mapState} from 'vuex'
-    import { QUOTE_PLAYED } from '@/store/actions/listening'
+    import {GO_TO_PREVIOUS_LISTENING, QUOTE_PLAYED} from '@/store/actions/listening'
 
     export default {
         name: 'QuotePlayer',
@@ -79,7 +85,7 @@
         computed: {
             ...mapGetters(['quoteAudioFile']),
             ...mapState({
-                listeningMode: state => state.listening.listeningMode
+                listeningMode: state => state.mainTPO.mode
             })
 
         },
@@ -98,6 +104,9 @@
             toggleTimeShow() {
                 this.time.enable = !this.time.enable;
             },
+            goToBack() {
+                this.$store.dispatch(GO_TO_PREVIOUS_LISTENING);
+            }
 
         },
     }

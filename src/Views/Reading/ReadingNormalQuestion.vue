@@ -233,7 +233,8 @@
                 'readingQuestionAnswer',
             ]),
             ...mapState({
-                readingMode: state => state.reading.readingMode,
+                taskNumber: state => state.reading.taskNumber,
+                readingMode: state => state.mainTPO.mode,
                 reading: state => state.reading.reading,
                 readingTest: state => state.reading.readingTest,
                 questionNumber: state => state.reading.questionNumber,

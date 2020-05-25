@@ -38,7 +38,11 @@
                                 </v-col>
                                 <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
                                     <v-img src="../../assets/backd.png" contain max-height="60px"
-                                           min-height="40px"></v-img>
+                                           min-height="40px" v-if="!backAvailable"></v-img>
+                                    <v-img src="../../assets/back.png" contain max-height="60px"
+                                           min-height="40px"
+                                           v-else-if="readingMode === 'practiceMode' || readingMode === 'reviewMode'"
+                                           @click="goToBack"></v-img>
                                 </v-col>
 
                                 <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
@@ -61,7 +65,7 @@
                                 have <span style="font-weight: bold">{{parseInt(totalTime/60)}} minutes</span>
                                 ({{initialHours}} hour and {{initialMinute}} minutes) to read and answer questions
                                 about <span style="font-weight: bold">{{readingLength}} passages</span>. A clock at the
-                                top of the screen will display the starting time as <span style="font-weight: bold">{{initialHours}} : {{initialMinute}} : {{initialSeconds}}</span>
+                                top of the screen will display the starting time as <span style="font-weight: bold">{{initialHours | formatTime}} : {{initialMinute | formatTime}} : {{initialSeconds | formatTime}}</span>
                                 ({{initialHours}} hour and {{initialMinute}} minutes) and show you how much time is
                                 remaining.</p>
                             <p>Most questions are worth 1 point, but the last question of each passage is worth more
@@ -91,7 +95,7 @@
 <script>
     import {mapGetters, mapState} from 'vuex'
     import {
-        GO_TO_NEXT_READING,
+        GO_TO_NEXT_READING, GO_TO_PREVIOUS_READING,
     } from "@/store/actions/reading";
 
     export default {
@@ -99,6 +103,9 @@
         methods: {
             goToNext: function () {
                 this.$store.dispatch(GO_TO_NEXT_READING);
+            },
+            goToBack() {
+                this.$store.dispatch(GO_TO_PREVIOUS_READING);
             }
         },
         data() {
@@ -108,9 +115,10 @@
             }
         },
         computed: {
-            ...mapGetters(['initialMinute', 'initialHours', 'initialSeconds', 'readingLength']),
+            ...mapGetters(['initialMinute', 'initialHours', 'initialSeconds', 'readingLength', 'backAvailable']),
             ...mapState({
                 totalTime: state => state.time.totalTime,
+                readingMode: state => state.mainTPO.mode,
 
             })
         }

@@ -210,7 +210,6 @@
                 'formattedHours',
                 'formattedMinutes',
                 'formattedSeconds',
-                'readingMode',
                 'questionReadingTitle',
                 'passage',
                 'readingLength',
@@ -227,11 +226,13 @@
                 'insertionSentence'
             ]),
             ...mapState({
+                taskNumber: state => state.reading.taskNumber,
                 reading: state => state.reading.reading,
                 readingTest: state => state.reading.readingTest,
                 questionNumber: state => state.reading.questionNumber,
                 readingAnswers: state => state.reading.readingAnswers,
                 readingAllQuestionsNumber: state => state.reading.readingAllQuestionsNumber,
+                readingMode: state => state.mainTPO.mode,
             }),
         },
 
@@ -244,7 +245,9 @@
                 }
                 this.answer = this.readingQuestionAnswer;
                 if (this.answer !== []) {
-                    document.getElementById("insert" + this.answer).innerText = '[' + this.insertionSentence + ']';
+                    if(document.getElementById("insert" + this.answer) !== null){
+                        document.getElementById("insert" + this.answer).innerText = '[' + this.insertionSentence + ']';
+                    }
 
                 }
             }
@@ -344,8 +347,10 @@
             });
             this.answer = this.readingQuestionAnswer;
             if (this.answer !== []) {
-                document.getElementById("insert" + this.answer).innerText = '[' + self.insertionSentence + ']';
+                if(document.getElementById("insert" + this.answer) !== null){
+                    document.getElementById("insert" + this.answer).innerText = '[' + self.insertionSentence + ']';
 
+                }
             }
         },
     }

@@ -4,12 +4,17 @@ import {
     GO_TO_PREVIOUS_LISTENING,
     SAVE_ANSWER_LISTENING,
     GO_TO_LISTENING_QUESTION,
-    QUOTE_PLAYED
+    QUOTE_PLAYED, UPDATE_STATE_LISTENING
 } from '../actions/listening'
 
-import {UPDATE_COMPONENT} from "../actions/mainTPO";
+import {
+    UPDATE_COMPONENT,
+    PREVIOUS_SECTION,
+    NEXT_SECTION,
+    SET_NEW_TIME
+} from "../actions/mainTPO";
 
-import {TIME_STOP} from "@/store/actions/time";
+import {TIME_STOP, UPDATE_REMAINED_LISTENING_TIME} from "@/store/actions/time";
 
 const state = {
     listening_player_component: 'Player',
@@ -21,8 +26,6 @@ const state = {
     taskNumber: 0,
     questionNumber: -1,
     quotePlayed: false,
-    listeningMode: 'reviewMode',
-    listeningTimes: [600, 600]
 
 }
 
@@ -37,12 +40,12 @@ const getters = {
         }
         return typeNumber;
     },
-    listeningQuestionNumber : state => {
+    listeningQuestionNumber: state => {
         let qNumber = 0;
-      for(let i = 0; i < state.taskNumber; i++){
-          qNumber = qNumber + state.listening[state.sectionNumber][i].questions.length
-      }
-      return qNumber + state.questionNumber + 1
+        for (let i = 0; i < state.taskNumber; i++) {
+            qNumber = qNumber + state.listening[state.sectionNumber][i].questions.length
+        }
+        return qNumber + state.questionNumber + 1
     },
     listeningImageSource: state => {
         if (state.listening[state.sectionNumber][state.taskNumber]['listening_image'][0] === 'b' && state.listening[state.sectionNumber][state.taskNumber]['listening_image'][1] === '\'') {
@@ -81,7 +84,7 @@ const getters = {
     listeningTranscript: state => state.listening[state.sectionNumber][state.taskNumber].transcript,
     listeningQuestionLength: state => {
         let qLength = 0
-        for(let i = 0; i < state.listening[state.sectionNumber].length; i++){
+        for (let i = 0; i < state.listening[state.sectionNumber].length; i++) {
             qLength = qLength + state.listening[state.sectionNumber][i].questions.length
         }
         return qLength
@@ -97,7 +100,7 @@ const getters = {
     },
     listeningQuestionAnswers: state => state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber].answers,
     listeningQuestionMulti: state => state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber]['right_answer'].length > 1,
-    listeningQuestionId : state => state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber].id,
+    listeningQuestionId: state => state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber].id,
     listeningQuestionAnswer: state => state.listeningAnswers[state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber].id],
     quoteAudioFile: state => {
         if (state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber]['quote_audio_file'][0] === 'b'
@@ -166,112 +169,83 @@ const actions = {
             }
         });
     },
-
-    [GO_TO_NEXT_LISTENING]: ({state, commit, dispatch}) => {
-        let updateListeningState = function () {
-            if (state.questionNumber === -1) {
-                dispatch(UPDATE_COMPONENT, state.listening_player_component)
-            } else {
-                if (state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber].quote === 0) {
-                    dispatch(UPDATE_COMPONENT, state.listening_question_component)
+    [UPDATE_STATE_LISTENING]: ({state, commit, dispatch}) => {
+        if (state.questionNumber === -1) {
+            dispatch(UPDATE_COMPONENT, state.listening_player_component)
+        } else {
+            if (state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber].quote === 0) {
+                dispatch(UPDATE_COMPONENT, state.listening_question_component)
+            }
+            if (state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber].quote === 1) {
+                if (state.quotePlayed === false) {
+                    dispatch(UPDATE_COMPONENT, state.listening_quote_player_component)
+                } else {
+                    dispatch(UPDATE_COMPONENT, state.listening_question_component);
+                    commit('updateQuotePlayed', false);
                 }
-                if (state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber].quote === 1) {
-                    if (state.quotePlayed === false) {
-                        dispatch(UPDATE_COMPONENT, state.listening_quote_player_component)
-                    } else {
-                        dispatch(UPDATE_COMPONENT, state.listening_question_component);
-                        commit('updateQuotePlayed', false);
-                    }
 
-                }
             }
         }
+    },
+    [GO_TO_NEXT_LISTENING]: ({state, commit, dispatch}) => {
         if (state.sectionNumber === -1) {
             dispatch(TIME_STOP, true)
             commit('updateListeningSectionNumber', 0);
-            updateListeningState();
+            dispatch(UPDATE_STATE_LISTENING);
         } else {
             if (state.questionNumber + 1 >= state.listening[state.sectionNumber][state.taskNumber].questions.length) {
                 if (state.taskNumber + 1 >= state.listening[state.sectionNumber].length) {
                     if (state.sectionNumber + 1 >= state.listening.length) {
-                        console.log('next section')
+                        dispatch(TIME_STOP);
+                        dispatch(UPDATE_REMAINED_LISTENING_TIME, state.sectionNumber)
+                        dispatch(NEXT_SECTION)
                     } else {
+                        dispatch(TIME_STOP);
+                        dispatch(UPDATE_REMAINED_LISTENING_TIME, state.sectionNumber);
                         commit('updateListeningSectionNumber', state.sectionNumber + 1)
+                        dispatch(SET_NEW_TIME, state.sectionNumber)
                         commit('updateListeningTaskNumber', 0);
                         commit('updateListeningQuestionNumber', -1);
-                        updateListeningState();
+                        dispatch(UPDATE_STATE_LISTENING);
                     }
                 } else {
                     commit('updateListeningTaskNumber', state.taskNumber + 1);
                     commit('updateListeningQuestionNumber', -1);
-                    updateListeningState();
+                    dispatch(UPDATE_STATE_LISTENING);
                 }
             } else {
                 commit('updateListeningQuestionNumber', state.questionNumber + 1);
-                updateListeningState()
+                dispatch(UPDATE_STATE_LISTENING);
             }
         }
 
     },
 
     [GO_TO_PREVIOUS_LISTENING]: ({state, commit, dispatch}) => {
-        let updateListeningState = function () {
-            if (state.questionNumber === -1) {
-                dispatch(UPDATE_COMPONENT, state.listening_player_component)
-            } else {
-                if (state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber].quote === 0) {
-                    dispatch(UPDATE_COMPONENT, state.listening_question_component)
-                }
-                if (state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber].quote === 1) {
-                    if (state.quotePlayed === false) {
-                        dispatch(UPDATE_COMPONENT, state.listening_quote_player_component)
-                    } else {
-                        dispatch(UPDATE_COMPONENT, state.listening_question_component);
-                        commit('updateQuotePlayed', false);
-                    }
-
-                }
-            }
-        }
         if (state.questionNumber - 1 < -1) {
-            if (state.taskNumber - 1 < -1) {
-                // go to previous section of the test
+            if (state.taskNumber - 1 < 0) {
+                dispatch(UPDATE_REMAINED_LISTENING_TIME, state.sectionNumber);
+                dispatch(PREVIOUS_SECTION)
             } else {
+                dispatch(UPDATE_REMAINED_LISTENING_TIME, state.sectionNumber);
                 commit('updateListeningTaskNumber', state.taskNumber - 1);
                 commit('updateListeningQuestionNumber', -1);
-                updateListeningState();
+                dispatch(UPDATE_STATE_LISTENING);
             }
         } else {
             commit('updateListeningQuestionNumber', state.questionNumber - 1);
-            updateListeningState();
+            dispatch(UPDATE_STATE_LISTENING);
         }
 
     },
 
-    [GO_TO_LISTENING_QUESTION]: ({state, commit, dispatch}, payload) => {
-        let updateListeningState = function () {
-            if (state.questionNumber === -1) {
-                dispatch(UPDATE_COMPONENT, state.listening_player_component)
-            } else {
-                if (state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber].quote === 0) {
-                    dispatch(UPDATE_COMPONENT, state.listening_question_component)
-                }
-                if (state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber].quote === 1) {
-                    if (state.quotePlayed === false) {
-                        dispatch(UPDATE_COMPONENT, state.listening_quote_player_component)
-                    } else {
-                        dispatch(UPDATE_COMPONENT, state.listening_question_component);
-                        commit('updateQuotePlayed', false);
-                    }
-
-                }
-            }
-        }
+    [GO_TO_LISTENING_QUESTION]: ({commit, dispatch}, payload) => {
         commit('updateListeningSectionNumber', payload[0]);
         commit('updateListeningTaskNumber', payload[1]);
         commit('updateListeningQuestionNumber', payload[2]);
-        updateListeningState();
+        dispatch(UPDATE_STATE_LISTENING);
     },
+
     [SAVE_ANSWER_LISTENING]: ({commit}, payload) => {
         commit('updateListeningAnswers', payload);
         let knex = require('knex')({
@@ -285,27 +259,9 @@ const actions = {
 
     },
 
-    [QUOTE_PLAYED]: ({state, commit, dispatch}) => {
-        let updateListeningState = function () {
-            if (state.questionNumber === -1) {
-                dispatch(UPDATE_COMPONENT, state.listening_player_component)
-            } else {
-                if (state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber].quote === 0) {
-                    dispatch(UPDATE_COMPONENT, state.listening_question_component)
-                }
-                if (state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber].quote === 1) {
-                    if (state.quotePlayed === false) {
-                        dispatch(UPDATE_COMPONENT, state.listening_quote_player_component)
-                    } else {
-                        dispatch(UPDATE_COMPONENT, state.listening_question_component);
-                        commit('updateQuotePlayed', false);
-                    }
-
-                }
-            }
-        }
+    [QUOTE_PLAYED]: ({commit, dispatch}) => {
         commit('updateQuotePlayed', true)
-        updateListeningState();
+        dispatch(UPDATE_STATE_LISTENING);
     }
 }
 

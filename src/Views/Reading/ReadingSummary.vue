@@ -240,7 +240,6 @@
                 'formattedHours',
                 'formattedMinutes',
                 'formattedSeconds',
-                'readingMode',
                 'questionReadingTitle',
                 'readingTitle',
                 'passage',
@@ -264,6 +263,7 @@
                 taskNumber: state => state.reading.taskNumber,
                 readingAnswers: state => state.reading.readingAnswers,
                 readingAllQuestionsNumber: state => state.reading.readingAllQuestionsNumber,
+                readingMode: state => state.mainTPO.mode
             }),
         },
         methods: {
@@ -396,7 +396,7 @@
             if (this.reading[this.taskNumber].questions[this.questionNumber].id in this.readingAnswers) {
                 this.answer = this.readingAnswers[this.reading[this.taskNumber].questions[this.questionNumber].id];
             }
-            var now_i = 0, $dropBasket = $("#drophere");
+            let now_i = 0, $dropBasket = $("#drophere");
             let l;
             for (l in this.answer) {
                 let el = $('span').find(`[data="${this.answer[l]}"]`).children();
@@ -407,8 +407,8 @@
             function addChoose($item) {
                 if (now_i < $dropBasket.find('span').length) {
                     //$item.fadeOut(function() {
-                    var $trash1 = $dropBasket.find('span').eq(now_i);
-                    for (var i = 0; i < 3; i++) {
+                    let $trash1 = $dropBasket.find('span').eq(now_i);
+                    for (let i = 0; i < 3; i++) {
                         if (!$dropBasket.find('span').eq(i).find('ul .b1').length) {
                             $trash1 = $dropBasket.find('span').eq(i);
                             break;
@@ -418,7 +418,7 @@
                     //ua1[now_i] = $item.attr('data'); save_drop_answer(ua1);
                     $item.hide();
                     $item.hide(function () {
-                        var $list = $("ul", $trash1).length ?
+                        let $list = $("ul", $trash1).length ?
                             $("ul", $trash1) :
                             $("<ul class='gallery ui-helper-reset'></ul>").appendTo($trash1);
                         $item.appendTo($list).show();

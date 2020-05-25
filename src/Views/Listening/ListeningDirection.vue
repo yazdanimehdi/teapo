@@ -41,6 +41,15 @@
                             </v-col>
 
                             <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
+                                <v-img src="../../assets/backd.png" contain max-height="60px"
+                                       min-height="40px" v-if="!backAvailable"></v-img>
+                                <v-img src="../../assets/back.png" contain max-height="60px"
+                                       min-height="40px"
+                                       v-else-if="listeningMode === 'practiceMode' || listeningMode === 'reviewMode'"
+                                       @click="goToBack"></v-img>
+                            </v-col>
+
+                            <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
                                 <v-img src="../../assets/nextd.png" contain max-height="60px"
                                        min-height="40px"></v-img>
                             </v-col>
@@ -111,8 +120,8 @@
 </template>
 
 <script>
-    import {GO_TO_NEXT_LISTENING} from "@/store/actions/listening";
-    import {mapGetters} from "vuex"
+    import {GO_TO_NEXT_LISTENING, GO_TO_PREVIOUS_LISTENING} from "@/store/actions/listening";
+    import {mapGetters, mapState} from "vuex"
 
     export default {
         name: "ListeningDirection",
@@ -130,6 +139,16 @@
             show_vol() {
                 this.volume.enabled = !this.volume.enabled;
             },
+            goToBack(){
+                switch (this.state) {
+                    case 1:
+                        this.state = 0;
+                        break;
+                    case 0:
+                        this.$store.dispatch(GO_TO_PREVIOUS_LISTENING);
+                        break;
+                }
+            }
         },
         data() {
             return {
@@ -142,7 +161,10 @@
             }
         },
         computed:{
-            ...mapGetters(['sectionCount', 'initialMinute', 'conversationCount', 'lectureCount']),
+            ...mapGetters(['sectionCount', 'initialMinute', 'conversationCount', 'lectureCount', 'backAvailable']),
+            ...mapState({
+                listeningMode: state => state.mainTPO.mode
+            })
 
         },
         mounted: function () {

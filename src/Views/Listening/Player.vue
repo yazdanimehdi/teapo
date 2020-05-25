@@ -29,6 +29,14 @@
                                 <v-img src="../../assets/vol.png" contain max-height="60px"
                                        min-height="40px" @click="show_vol"></v-img>
                             </v-col>
+                            <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
+                                <v-img src="../../assets/backd.png" contain max-height="60px"
+                                       min-height="40px" v-if="!backAvailable"></v-img>
+                                <v-img src="../../assets/back.png" contain max-height="60px"
+                                       min-height="40px"
+                                       v-else-if="listeningMode === 'practiceMode' || listeningMode === 'reviewMode'"
+                                       @click="goToBack"></v-img>
+                            </v-col>
                         </v-row>
                     </v-container>
                 </v-col>
@@ -36,10 +44,10 @@
             <v-row justify="center" align="start">
                 <v-container fluid style="margin: 0; padding:0">
                     <v-row justify="center" align="start">
-                            <div class="qanounce">
-                                {{taskType}} {{taskTypeNumber}} of
-                                {{taskType === 'Conversation' ? conversationCount: lectureCount}}
-                            </div>
+                        <div class="qanounce">
+                            {{taskType}} {{taskTypeNumber}} of
+                            {{taskType === 'Conversation' ? conversationCount: lectureCount}}
+                        </div>
                     </v-row>
                 </v-container>
             </v-row>
@@ -49,15 +57,17 @@
                 <img :src="'data:image/jpeg;base64,' + listeningImageSource">
             </v-row>
             <v-row align="center" justify="center">
-              <audio id="listening" autoplay :controls="(listeningMode === 'reviewMode' || listeningMode === 'practiceMode')" v-on:ended="listeningEnded" v-on:timeupdate="progressListening">
-                <source :src="'data:audio/mp3;base64,' + listeningSource">
-              </audio>
+                <audio id="listening" autoplay
+                       :controls="(listeningMode === 'reviewMode' || listeningMode === 'practiceMode')"
+                       v-on:ended="listeningEnded" v-on:timeupdate="progressListening">
+                    <source :src="'data:audio/mp3;base64,' + listeningSource">
+                </audio>
             </v-row>
-          <v-row justify="center" align="center">
-            <div style="border: black solid 2px">
-              <progress :value="audio.percentage" max="100"></progress>
-            </div>
-          </v-row>
+            <v-row justify="center" align="center">
+                <div style="border: black solid 2px">
+                    <progress :value="audio.percentage" max="100"></progress>
+                </div>
+            </v-row>
 
             <v-row style="padding: 30px" v-if="listeningMode === 'practiceMode' || listeningMode === 'reviewMode'">
                 <v-bottom-sheet v-model="sheet" :inset="false" :hide-overlay="true" persistent scrollable>
@@ -93,39 +103,39 @@
             </v-row>
 
         </v-container>
-      <v-dialog
-              v-model="dialog"
-              max-width="500px"
-      >
-        <v-card>
-          <v-card-title>
-            {{selected}}
-          </v-card-title>
-          <v-card-text>
-            <v-btn
-                    color="primary"
-                    dark
-            >
-              Open Dialog 3
-            </v-btn>
-          </v-card-text>
-          <v-card-actions>
-            <v-btn
-                    color="primary"
-                    text
-                    @click="dialog = false"
-            >
-              Close
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+        <v-dialog
+                v-model="dialog"
+                max-width="500px"
+        >
+            <v-card>
+                <v-card-title>
+                    {{selected}}
+                </v-card-title>
+                <v-card-text>
+                    <v-btn
+                            color="primary"
+                            dark
+                    >
+                        Open Dialog 3
+                    </v-btn>
+                </v-card-text>
+                <v-card-actions>
+                    <v-btn
+                            color="primary"
+                            text
+                            @click="dialog = false"
+                    >
+                        Close
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </v-app>
 </template>
 
 <script>
     import {mapGetters, mapState} from 'vuex'
-    import {GO_TO_NEXT_LISTENING} from "@/store/actions/listening";
+    import {GO_TO_NEXT_LISTENING, GO_TO_PREVIOUS_LISTENING} from "@/store/actions/listening";
 
     export default {
         name: 'Player',
@@ -149,7 +159,7 @@
             volume_slide: function (val) {
                 document.getElementById("listening").volume = parseInt(val) / 100.0;
             },
-          
+
         },
         computed: {
             ...mapGetters(['taskType',
@@ -159,16 +169,17 @@
                 'listeningImageSource',
                 'listeningSource',
                 'listeningTitle',
-                'listeningTranscript']),
+                'listeningTranscript',
+                'backAvailable']),
             ...mapState({
-                listeningMode: state => state.listening.listeningMode
+                listeningMode: state => state.mainTPO.mode
             })
         },
         methods: {
-            listeningEnded(){
+            listeningEnded() {
                 this.$store.dispatch(GO_TO_NEXT_LISTENING);
             },
-            progressListening(){
+            progressListening() {
                 let listening = document.getElementById('listening');
                 let duration = listening.duration;
                 this.audio.percentage = (listening.currentTime / duration) * 100;
@@ -179,6 +190,9 @@
             toggleTimeShow() {
                 this.time.enable = !this.time.enable;
             },
+            goToBack() {
+                this.$store.dispatch(GO_TO_PREVIOUS_LISTENING);
+            }
 
         },
         updated() {

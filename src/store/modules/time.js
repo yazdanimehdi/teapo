@@ -1,4 +1,16 @@
-import {COMPUTE_TIME, TIME_STOP} from '../actions/time'
+import {
+    COMPUTE_TIME,
+    TIME_STOP,
+    UPDATE_TIME,
+    UPDATE_REMAINED_LISTENING_TIME,
+    UPDATE_REMAINED_READING_TIME,
+    UPDATE_REMAINED_WRITING_TIME
+} from '../actions/time'
+import {
+    UPDATE_REMAINING_TIME_LISTENING,
+    UPDATE_REMAINING_TIME_READING,
+    UPDATE_REMAINING_TIME_WRITING
+} from "@/store/actions/mainTPO";
 
 const state = {
     totalUnchangedTime: 600,
@@ -12,9 +24,9 @@ const getters = {
     formattedHours: state => state.hours.toString().length >= 2 ? state.hours.toString() : new Array(2 - state.hours.toString().length + 1).join('0') + state.hours.toString(),
     formattedMinutes: state => state.minutes.toString().length >= 2 ? state.minutes.toString() : new Array(2 - state.minutes.toString().length + 1).join('0') + state.minutes.toString(),
     formattedSeconds: state => state.seconds.toString().length >= 2 ? state.seconds.toString() : new Array(2 - state.seconds.toString().length + 1).join('0') + state.seconds.toString(),
-    initialHours: state => parseInt((state.totalUnchangedTime/60)/60),
-    initialMinute: state => parseInt(state.totalUnchangedTime/60)%60,
-    initialSeconds: state => state.totalUnchangedTime%60
+    initialHours: state => parseInt((state.totalUnchangedTime / 60) / 60),
+    initialMinute: state => parseInt(state.totalUnchangedTime / 60) % 60,
+    initialSeconds: state => state.totalUnchangedTime % 60
 };
 const actions = {
     [COMPUTE_TIME]: ({state, commit}) => {
@@ -25,6 +37,18 @@ const actions = {
     [TIME_STOP]: ({commit}, payload) => {
         commit('stopTime', payload)
     },
+    [UPDATE_TIME]: ({commit}, payload) => {
+        commit('updateTime', payload)
+    },
+    [UPDATE_REMAINED_READING_TIME]: ({state, dispatch}) => {
+        dispatch(UPDATE_REMAINING_TIME_READING, state.totalTime)
+    },
+    [UPDATE_REMAINED_LISTENING_TIME]: ({state, dispatch}, payload) => {
+        dispatch(UPDATE_REMAINING_TIME_LISTENING, {'sectionNumber': payload, 'time': state.totalTime})
+    },
+    [UPDATE_REMAINED_WRITING_TIME]: ({state, dispatch}, payload) => {
+        dispatch(UPDATE_REMAINING_TIME_WRITING, {'sectionNumber': payload, 'time': state.totalTime})
+    }
 };
 
 const mutations = {
@@ -39,9 +63,13 @@ const mutations = {
         state.minutes = state.minutes % 60;
         state.seconds = state.totalTime % 60;
     },
-    stopTime(state, payload){
+    stopTime(state, payload) {
         state.timeStop = payload;
     },
+    updateTime(state, payload) {
+        state.totalTime = payload;
+        state.totalUnchangedTime = payload;
+    }
 
 };
 

@@ -1,11 +1,11 @@
 import {
     GET_DATA_SPEAKING,
     GO_TO_NEXT_SPEAKING,
-    GO_TO_PREVIOUS_SPEAKING, SAVE_ANSWER_SPEAKING,
+    GO_TO_PREVIOUS_SPEAKING, GO_TO_SPEAKING_QUESTION, SAVE_ANSWER_SPEAKING, UPDATE_STATE_SPEAKING,
 
 } from '../actions/speaking'
 
-import {UPDATE_COMPONENT} from "@/store/actions/mainTPO";
+import {NEXT_SECTION, PREVIOUS_SECTION, UPDATE_COMPONENT} from "@/store/actions/mainTPO";
 import {TIME_STOP} from "@/store/actions/time";
 
 
@@ -92,195 +92,125 @@ const actions = {
             commit('updateSpeakingData', rows)
         });
     },
-    [GO_TO_NEXT_SPEAKING]: ({state, commit, dispatch}) => {
-        let updateSpeakingState = function () {
-            if (state.taskNumber === -1) {
-                dispatch(TIME_STOP, true)
-                dispatch(UPDATE_COMPONENT, SpeakingDirections)
-            } else {
-                if (state.speaking[state.taskNumber].number === 1) {
-                    if (state.stateNumber === -1) {
-                        dispatch(UPDATE_COMPONENT, DirectionSpeaking)
-                    }
-                    if (state.stateNumber === 0) {
-                        dispatch(UPDATE_COMPONENT, Recorder)
-                    }
+    [UPDATE_STATE_SPEAKING]: ({state, dispatch}) => {
+        if (state.taskNumber === -1) {
+            dispatch(TIME_STOP, true)
+            dispatch(UPDATE_COMPONENT, SpeakingDirections)
+        } else {
+            if (state.speaking[state.taskNumber].number === 1) {
+                if (state.stateNumber === -1) {
+                    dispatch(UPDATE_COMPONENT, DirectionSpeaking)
                 }
-                if (state.speaking[state.taskNumber].number === 2) {
-                    if (state.stateNumber === -1) {
-                        dispatch(UPDATE_COMPONENT, DirectionSpeaking)
-                    }
-                    if (state.stateNumber === 0) {
-                        dispatch(UPDATE_COMPONENT, Recorder);
-                    }
+                if (state.stateNumber === 0) {
+                    dispatch(UPDATE_COMPONENT, Recorder)
                 }
-                if (state.speaking[state.taskNumber].number === 3) {
-                    if (state.stateNumber === -1) {
-                        dispatch(UPDATE_COMPONENT, DirectionSpeaking)
-                    }
-                    if (state.stateNumber === 0) {
-                        dispatch(UPDATE_COMPONENT, SpeakingReading)
-                    }
-                    if (state.stateNumber === 1) {
-                        dispatch(UPDATE_COMPONENT, SpeakingPlayer)
-                    }
-                    if (state.stateNumber === 2) {
-                        dispatch(UPDATE_COMPONENT, Recorder)
-                    }
+            }
+            if (state.speaking[state.taskNumber].number === 2) {
+                if (state.stateNumber === -1) {
+                    dispatch(UPDATE_COMPONENT, DirectionSpeaking)
+                }
+                if (state.stateNumber === 0) {
+                    dispatch(UPDATE_COMPONENT, Recorder);
+                }
+            }
+            if (state.speaking[state.taskNumber].number === 3) {
+                if (state.stateNumber === -1) {
+                    dispatch(UPDATE_COMPONENT, DirectionSpeaking)
+                }
+                if (state.stateNumber === 0) {
+                    dispatch(UPDATE_COMPONENT, SpeakingReading)
+                }
+                if (state.stateNumber === 1) {
+                    dispatch(UPDATE_COMPONENT, SpeakingPlayer)
+                }
+                if (state.stateNumber === 2) {
+                    dispatch(UPDATE_COMPONENT, Recorder)
+                }
 
+            }
+            if (state.speaking[state.taskNumber].number === 4) {
+                if (state.stateNumber === -1) {
+                    dispatch(UPDATE_COMPONENT, DirectionSpeaking)
                 }
-                if (state.speaking[state.taskNumber].number === 4) {
-                    if (state.stateNumber === -1) {
-                        dispatch(UPDATE_COMPONENT, DirectionSpeaking)
-                    }
-                    if (state.stateNumber === 0) {
-                        dispatch(UPDATE_COMPONENT, SpeakingReading)
-                    }
-                    if (state.stateNumber === 1) {
-                        dispatch(UPDATE_COMPONENT, SpeakingPlayer)
-                    }
-                    if (state.stateNumber === 2) {
-                        dispatch(UPDATE_COMPONENT, Recorder)
-                    }
+                if (state.stateNumber === 0) {
+                    dispatch(UPDATE_COMPONENT, SpeakingReading)
+                }
+                if (state.stateNumber === 1) {
+                    dispatch(UPDATE_COMPONENT, SpeakingPlayer)
+                }
+                if (state.stateNumber === 2) {
+                    dispatch(UPDATE_COMPONENT, Recorder)
+                }
 
+            }
+            if (state.speaking[state.taskNumber].number === 5) {
+                if (state.stateNumber === -1) {
+                    dispatch(UPDATE_COMPONENT, DirectionSpeaking)
                 }
-                if (state.speaking[state.taskNumber].number === 5) {
-                    if (state.stateNumber === -1) {
-                        dispatch(UPDATE_COMPONENT, DirectionSpeaking)
-                    }
-                    if (state.stateNumber === 0) {
-                        dispatch(UPDATE_COMPONENT, SpeakingPlayer)
-                    }
-                    if (state.stateNumber === 1) {
-                        dispatch(UPDATE_COMPONENT, Recorder)
-                    }
+                if (state.stateNumber === 0) {
+                    dispatch(UPDATE_COMPONENT, SpeakingPlayer)
+                }
+                if (state.stateNumber === 1) {
+                    dispatch(UPDATE_COMPONENT, Recorder)
+                }
 
+            }
+            if (state.speaking[state.taskNumber].number === 6) {
+                if (state.stateNumber === -1) {
+                    dispatch(UPDATE_COMPONENT, DirectionSpeaking)
                 }
-                if (state.speaking[state.taskNumber].number === 6) {
-                    if (state.stateNumber === -1) {
-                        dispatch(UPDATE_COMPONENT, DirectionSpeaking)
-                    }
-                    if (state.stateNumber === 0) {
-                        dispatch(UPDATE_COMPONENT, SpeakingPlayer)
-                    }
-                    if (state.stateNumber === 1) {
-                        dispatch(UPDATE_COMPONENT, Recorder)
-                    }
+                if (state.stateNumber === 0) {
+                    dispatch(UPDATE_COMPONENT, SpeakingPlayer)
+                }
+                if (state.stateNumber === 1) {
+                    dispatch(UPDATE_COMPONENT, Recorder)
                 }
             }
         }
+    },
+
+    [GO_TO_NEXT_SPEAKING]: ({state, commit, dispatch}) => {
         if (state.taskNumber === -1) {
             commit('updateSpeakingTaskNumber', 0);
-            updateSpeakingState()
+            dispatch(UPDATE_STATE_SPEAKING)
         } else {
             if (state.stateNumber + 2 >= state.speaking[state.taskNumber].sections) {
                 if (state.taskNumber + 1 >= state.speaking.length) {
-                    // next section
+                    dispatch(NEXT_SECTION)
 
                 } else {
                     commit('updateSpeakingTaskNumber', state.taskNumber + 1);
                     commit('updateSpeakingStateNumber', -1);
-                    updateSpeakingState()
+                    dispatch(UPDATE_STATE_SPEAKING)
                 }
             } else {
                 commit('updateSpeakingStateNumber', state.stateNumber + 1);
-                updateSpeakingState()
+                dispatch(UPDATE_STATE_SPEAKING)
             }
         }
 
     },
 
     [GO_TO_PREVIOUS_SPEAKING]: ({state, commit, dispatch}) => {
-        let updateSpeakingState = function () {
-            if (state.taskNumber === -1) {
-                dispatch(TIME_STOP, true)
-                dispatch(UPDATE_COMPONENT, SpeakingDirections)
-            } else {
-                if (state.speaking[state.taskNumber].number === 1) {
-                    if (state.stateNumber === -1) {
-                        dispatch(UPDATE_COMPONENT, DirectionSpeaking)
-                    }
-                    if (state.stateNumber === 0) {
-                        dispatch(UPDATE_COMPONENT, Recorder)
-                    }
-                }
-                if (state.speaking[state.taskNumber].number === 2) {
-                    if (state.stateNumber === -1) {
-                        dispatch(UPDATE_COMPONENT, DirectionSpeaking)
-                    }
-                    if (state.stateNumber === 0) {
-                        dispatch(UPDATE_COMPONENT, Recorder);
-                    }
-                }
-                if (state.speaking[state.taskNumber].number === 3) {
-                    if (state.stateNumber === -1) {
-                        dispatch(UPDATE_COMPONENT, DirectionSpeaking)
-                    }
-                    if (state.stateNumber === 0) {
-                        dispatch(UPDATE_COMPONENT, SpeakingReading)
-                    }
-                    if (state.stateNumber === 1) {
-                        dispatch(UPDATE_COMPONENT, SpeakingPlayer)
-                    }
-                    if (state.stateNumber === 2) {
-                        dispatch(UPDATE_COMPONENT, Recorder)
-                    }
-
-                }
-                if (state.speaking[state.taskNumber].number === 4) {
-                    if (state.stateNumber === -1) {
-                        dispatch(UPDATE_COMPONENT, DirectionSpeaking)
-                    }
-                    if (state.stateNumber === 0) {
-                        dispatch(UPDATE_COMPONENT, SpeakingReading)
-                    }
-                    if (state.stateNumber === 1) {
-                        dispatch(UPDATE_COMPONENT, SpeakingPlayer)
-                    }
-                    if (state.stateNumber === 2) {
-                        dispatch(UPDATE_COMPONENT, Recorder)
-                    }
-
-                }
-                if (state.speaking[state.taskNumber].number === 5) {
-                    if (state.stateNumber === -1) {
-                        dispatch(UPDATE_COMPONENT, DirectionSpeaking)
-                    }
-                    if (state.stateNumber === 0) {
-                        dispatch(UPDATE_COMPONENT, SpeakingPlayer)
-                    }
-                    if (state.stateNumber === 1) {
-                        dispatch(UPDATE_COMPONENT, Recorder)
-                    }
-
-                }
-                if (state.speaking[state.taskNumber].number === 6) {
-                    if (state.stateNumber === -1) {
-                        dispatch(UPDATE_COMPONENT, DirectionSpeaking)
-                    }
-                    if (state.stateNumber === 0) {
-                        dispatch(UPDATE_COMPONENT, SpeakingPlayer)
-                    }
-                    if (state.stateNumber === 1) {
-                        dispatch(UPDATE_COMPONENT, Recorder)
-                    }
-                }
-            }
-        }
 
         if (state.stateNumber - 1 < -1) {
             if (state.taskNumber - 1 < -1) {
-                // previous section
+                dispatch(PREVIOUS_SECTION)
 
             } else {
                 commit('updateSpeakingTaskNumber', state.taskNumber - 1);
                 commit('updateSpeakingStateNumber', -1);
-                updateSpeakingState()
+                dispatch(UPDATE_STATE_SPEAKING)
             }
         } else {
             commit('updateSpeakingStateNumber', state.stateNumber - 1);
-            updateSpeakingState()
+            dispatch(UPDATE_STATE_SPEAKING)
         }
+    },
+    [GO_TO_SPEAKING_QUESTION]: ({commit, dispatch}, payload) => {
+        commit('updateSpeakingTaskNumber', payload);
+        commit('updateSpeakingStateNumber', -1);
+        dispatch(UPDATE_STATE_SPEAKING)
     },
 
     [SAVE_ANSWER_SPEAKING]: ({commit}, payload) => {

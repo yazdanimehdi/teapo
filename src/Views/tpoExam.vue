@@ -1,5 +1,5 @@
 <template>
-    <span >
+    <span>
     <component
             style="background-color: white"
             :is="currentComponent"
@@ -8,7 +8,7 @@
 </template>
 
 <script>
-    import { mapState } from 'vuex'
+    import {mapState} from 'vuex'
     import ReadingSummary from "./Reading/ReadingSummary";
     import ReadingNormalQuestion from './Reading/ReadingNormalQuestion'
     import ReadingInsertion from './Reading/ReadingInsertion'
@@ -29,6 +29,7 @@
     import SpeakingPlayer from "@/Views/Speaking/SpeakingPlayer";
     import SpeakingReading from "@/Views/Speaking/SpeakingReading";
 
+    import WritingDirection from "@/Views/Writing/WritingDirection";
     import IndependentWritingDirection from "@/Views/Writing/IndependentWritingDirection";
     import IntegratedWritingDirection from "@/Views/Writing/IntegratedWritingDirection";
     import WritingIndependent from "@/Views/Writing/WritingIndependent";
@@ -36,9 +37,9 @@
     import WritingPlayer from "@/Views/Writing/WritingPlayer";
     import WritingReading from "@/Views/Writing/WritingReading";
 
-    import {GET_DATA_READING} from "@/store/actions/reading";
     import {COMPUTE_TIME} from "@/store/actions/time";
-    import {GET_DATA_WRITING} from "@/store/actions/writing";
+
+    import {START_TPO} from "@/store/actions/mainTPO";
 
     export default {
         name: "tpoExam",
@@ -64,26 +65,29 @@
             WritingIndependent,
             WritingIntegrated,
             WritingPlayer,
-            WritingReading
+            WritingReading,
+            WritingDirection
         },
-        data(){
-            return{
+        data() {
+            return {
                 dialog: true,
             }
         },
-        computed:{
+        computed: {
             ...mapState({
                 currentComponent: state => state.mainTPO.currentComponent
             }),
         },
 
         mounted() {
-            this.$store.dispatch(GET_DATA_READING, 'tpo1');
-            this.$store.dispatch(GET_DATA_WRITING, 'tpo1');
+            this.$store.dispatch(START_TPO, {
+                'examArray': ['Reading', 'Listening', 'Speaking', 'Writing'],
+                'TPO': 'tpo1'
+            })
         },
-        created(){
+        created() {
             let self = this;
-            setInterval(function() {
+            setInterval(function () {
                 self.$store.dispatch(COMPUTE_TIME)
             }, 1000)
 

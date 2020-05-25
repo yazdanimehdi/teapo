@@ -191,7 +191,7 @@
                 'ListeningQuestionCorrectAnswer']),
             ...mapState({
                 questionNumber: state => state.listening.questionNumber,
-                listeningMode: state => state.listening.listeningMode,
+                listeningMode: state => state.mainTPO.mode,
             })
         },
         methods: {

@@ -103,7 +103,7 @@
                 reading: state => state.reading.reading,
                 readingAnswers: state => state.reading.readingAnswers,
                 seenQuestionsReading: state => state.reading.seenQuestionsReading,
-                mode: state => state.reading.mode
+                mode: state => state.mainTPO.mode
             })
         },
         methods: {
