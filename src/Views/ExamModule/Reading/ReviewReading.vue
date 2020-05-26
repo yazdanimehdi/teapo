@@ -3,7 +3,7 @@
         <div>
             <v-container style="padding: 0" class="toolbar" fluid>
                 <v-row style="padding-right: 20px; padding-top: 29px; padding-bottom: 12px">
-                    <v-img src="../../assets/back.png" @click="closeReview" contain max-height="60px"
+                    <v-img src="../../../assets/back.png" @click="closeReview" contain max-height="60px"
                            min-height="40px" position="right"></v-img>
                 </v-row>
             </v-container>

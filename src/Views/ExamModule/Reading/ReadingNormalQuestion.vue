@@ -34,25 +34,25 @@
                             <v-container fluid style="padding: 0">
                                 <v-row justify="end" align="start" style="padding: 0">
                                     <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
-                                        <v-img src="../../assets/review.png" @click="toggleReviewShow" contain
+                                        <v-img src="../../../assets/review.png" @click="toggleReviewShow" contain
                                                max-height="60px" min-height="40px"></v-img>
                                     </v-col>
 
                                     <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
-                                        <v-img src="../../assets/vold.png" contain max-height="60px"
+                                        <v-img src="../../../assets/vold.png" contain max-height="60px"
                                                min-height="40px"></v-img>
                                     </v-col>
                                     <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
-                                        <v-img src="../../assets/helpd.png" contain max-height="60px"
+                                        <v-img src="../../../assets/helpd.png" contain max-height="60px"
                                                min-height="40px"></v-img>
 
                                     </v-col>
                                     <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
-                                        <v-img src="../../assets/back.png" @click="goToBack" contain
+                                        <v-img src="../../../assets/back.png" @click="goToBack" contain
                                                max-height="60px" min-height="40px"></v-img>
                                     </v-col>
                                     <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
-                                        <v-img src="../../assets/next.png" @click="goToNext" contain
+                                        <v-img src="../../../assets/next.png" @click="goToNext" contain
                                                max-height="60px" min-height="40px"></v-img>
                                     </v-col>
                                 </v-row>
@@ -70,10 +70,10 @@
                                 </v-col>
                                 <v-col sm="4" lg="2" md="3" style="padding: 0; max-width: 250px">
                                     <template v-if="time_component.enable">
-                                        <img src="../../assets/hidetime.png" class="clock" @click="toggleTimeShow">
+                                        <img src="../../../assets/hidetime.png" class="clock" @click="toggleTimeShow">
                                     </template>
                                     <template v-else>
-                                        <img src="../../assets/showtime.png" class="clock" @click="toggleTimeShow">
+                                        <img src="../../../assets/showtime.png" class="clock" @click="toggleTimeShow">
                                     </template>
                                     <span class='time' v-if="this.time_component.enable">{{formattedHours}} : {{formattedMinutes}} : {{formattedSeconds}}</span>
                                 </v-col>

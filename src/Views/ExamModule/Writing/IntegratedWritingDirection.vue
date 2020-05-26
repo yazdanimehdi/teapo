@@ -17,28 +17,28 @@
             <v-row justify="end" align="start" style="padding: 0">
 
               <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
-                <v-img src="../../assets/continue.png" contain max-height="60px"
+                <v-img src="../../../assets/continue.png" contain max-height="60px"
                        min-height="40px" @click="goToNext"></v-img>
               </v-col>
 
 
               <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
-                <v-img src="../../assets/vold.png" contain max-height="60px"
+                <v-img src="../../../assets/vold.png" contain max-height="60px"
                        min-height="40px"></v-img>
               </v-col>
               <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
-                <v-img src="../../assets/helpd.png" contain max-height="60px"
+                <v-img src="../../../assets/helpd.png" contain max-height="60px"
                        min-height="40px"></v-img>
 
               </v-col>
 
               <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0" v-if="writingMode ==='practiceMode' || writingMode === 'reviewMode'">
-                <v-img src="../../assets/back.png" contain max-height="60px"
+                <v-img src="../../../assets/back.png" contain max-height="60px"
                        min-height="40px" @click="goToBack"></v-img>
               </v-col>
 
               <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
-                <v-img src="../../assets/nextd.png" contain max-height="60px"
+                <v-img src="../../../assets/nextd.png" contain max-height="60px"
                        min-height="40px"></v-img>
               </v-col>
             </v-row>
@@ -48,7 +48,7 @@
     </v-container>
     <v-container v-show="state === 0" fluid>
       <v-row justify="center" align="center">
-        <img src="../../assets/direction_pic.png" height="300" width="350">
+        <img src="../../../assets/direction_pic.png" height="300" width="350">
       </v-row>
       <v-row justify="center" align="center">
         <p class="direction_headset">Now put your headset</p>

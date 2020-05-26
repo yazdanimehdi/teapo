@@ -18,7 +18,7 @@
 
                             <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0"
                                    v-if="writingMode === 'reviewMode' || writingMode === 'practiceMode'">
-                                <v-img src="../../assets/back.png" contain max-height="60px" min-height="40px"
+                                <v-img src="../../../assets/back.png" contain max-height="60px" min-height="40px"
                                        @click="goToBack"></v-img>
                             </v-col>
 
@@ -28,7 +28,7 @@
                                 </label>
                             </v-col>
                             <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
-                                <v-img src="../../assets/vol.png" contain max-height="60px"
+                                <v-img src="../../../assets/vol.png" contain max-height="60px"
                                        min-height="40px" @click="show_vol"></v-img>
                             </v-col>
                         </v-row>

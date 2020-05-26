@@ -1,11 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Login from "@/Views/Login";
 import RegisterLogin from "@/Views/RegisterLogin";
+import Dashboard from "@/Views/Dashboard";
 
-// import ReadingNormalQuestion from "@/Views/ReadingNormalQuestion";
-// import ReadingInsertion from "@/Views/ReadingInsertion";
-import tpoExam from "@/Views/tpoExam";
+import tpoExam from "@/Views/ExamModule/tpoExam";
 
 Vue.use(Router);
 
@@ -13,18 +11,19 @@ export default new Router({
     routes: [
         {
             path: '/',
-            name: 'Reading',
+            name: 'Dashboard',
+            component: Dashboard
+        },
+        {
+            path: '/tpo_test',
+            name: 'TPOExam',
             component: tpoExam
         },
         {
-            path: '/signup',
-            name: 'signup',
+            path: '/register_login',
+            name: 'RegisterLogin',
             component: RegisterLogin
         },
-        {
-            path: '/login',
-            name: 'login',
-            component: Login
-        },
+
     ]
 })

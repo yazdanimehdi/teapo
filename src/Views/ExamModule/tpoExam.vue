@@ -19,23 +19,23 @@
     import TimeEnded from './TimeEnded';
 
     import ListeningDirection from "./Listening/ListeningDirection";
-    import ListeningQuestions from "@/Views/Listening/ListeningQuestions";
+    import ListeningQuestions from "./Listening/ListeningQuestions";
     import Player from "./Listening/Player";
     import QuotePlayer from "./Listening/QuotePlayer";
 
-    import SpeakingDirections from "@/Views/Speaking/SpeakingDirections";
-    import DirectionSpeaking from "@/Views/Speaking/DirectionSpeaking";
-    import Recorder from "@/Views/Speaking/Recorder";
-    import SpeakingPlayer from "@/Views/Speaking/SpeakingPlayer";
-    import SpeakingReading from "@/Views/Speaking/SpeakingReading";
+    import SpeakingDirections from "./Speaking/SpeakingDirections";
+    import DirectionSpeaking from "./Speaking/DirectionSpeaking";
+    import Recorder from "./Speaking/Recorder";
+    import SpeakingPlayer from "./Speaking/SpeakingPlayer";
+    import SpeakingReading from "./Speaking/SpeakingReading";
 
-    import WritingDirection from "@/Views/Writing/WritingDirection";
-    import IndependentWritingDirection from "@/Views/Writing/IndependentWritingDirection";
-    import IntegratedWritingDirection from "@/Views/Writing/IntegratedWritingDirection";
-    import WritingIndependent from "@/Views/Writing/WritingIndependent";
-    import WritingIntegrated from "@/Views/Writing/WritingIntegrated";
-    import WritingPlayer from "@/Views/Writing/WritingPlayer";
-    import WritingReading from "@/Views/Writing/WritingReading";
+    import WritingDirection from "./Writing/WritingDirection";
+    import IndependentWritingDirection from "./Writing/IndependentWritingDirection";
+    import IntegratedWritingDirection from "./Writing/IntegratedWritingDirection";
+    import WritingIndependent from "./Writing/WritingIndependent";
+    import WritingIntegrated from "./Writing/WritingIntegrated";
+    import WritingPlayer from "./Writing/WritingPlayer";
+    import WritingReading from "./Writing/WritingReading";
 
     import {COMPUTE_TIME} from "@/store/actions/time";
 
@@ -81,7 +81,7 @@
 
         mounted() {
             this.$store.dispatch(START_TPO, {
-                'examArray': ['Reading', 'Listening', 'Speaking', 'Writing'],
+                'examArray': ['Listening', 'Speaking', 'Writing'],
                 'TPO': 'tpo1'
             })
         },

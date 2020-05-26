@@ -104,7 +104,15 @@ const actions = {
     [PREVIOUS_SECTION]: ({state, commit, dispatch}) => {
         if (state.examSectionNumber - 1 >= 0) {
             commit('updateExamSectionNumber', state.examSectionNumber - 1)
-            dispatch(SET_NEW_TIME, 0)
+            if(state.examArray[state.examSectionNumber] === 'Reading'){
+                dispatch(SET_NEW_TIME, 0)
+            }
+            if(state.examArray[state.examSectionNumber] === 'Listening'){
+                dispatch(SET_NEW_TIME, state.listeningTimes.length)
+            }
+            if(state.examArray[state.examSectionNumber] === 'Writing'){
+                dispatch(SET_NEW_TIME, state.writingTimes.length)
+            }
             dispatch(UPDATE_INITIAL_STATE);
         }
     },
@@ -144,10 +152,14 @@ const mutations = {
         state.readingTime = payload
     },
     updateListeningTime(state, payload) {
-        state.listeningTimes[payload['sectionNumber']] = payload['time']
+        if (payload['sectionNumber'] !== -1){
+            state.listeningTimes[payload['sectionNumber']] = payload['time']
+        }
     },
     updateWritingTime(state, payload) {
-        state.writingTimes[payload['sectionNumber']] = payload['time']
+        if (payload['sectionNumber'] !== -1){
+            state.writingTimes[payload['sectionNumber']] = payload['time']
+        }
     },
     updateSeenArray(state, payload) {
         if(state.seenArray.indexOf(payload) === -1){

@@ -18,7 +18,7 @@
 
                             <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0"
                                    v-if="speakingMode === 'reviewMode' || speakingMode === 'practiceMode'">
-                                <v-img src="../../assets/back.png" contain max-height="60px" min-height="40px"
+                                <v-img src="../../../assets/back.png" contain max-height="60px" min-height="40px"
                                        @click="goToBack"></v-img>
                             </v-col>
 
@@ -28,7 +28,7 @@
                                 </label>
                             </v-col>
                             <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
-                                <v-img src="../../assets/vol.png" contain max-height="60px"
+                                <v-img src="../../../assets/vol.png" contain max-height="60px"
                                        min-height="40px" @click="show_vol"></v-img>
                             </v-col>
                         </v-row>
@@ -48,8 +48,8 @@
                 <div style="width: 100%; text-align: center; font-family: Verdana; font-size: 16px; border-top:thin solid black; margin-right: 40px; margin-left: 40px"
                      v-show="speakings.enable">
                     <br>
-                    <img src="../../assets/micd.png" style="height: 80px;" v-if="this.speakings.prepare_time > 0">
-                    <img src="../../assets/mic.png" style="height: 80px" v-else>
+                    <img src="../../../assets/micd.png" style="height: 80px;" v-if="this.speakings.prepare_time > 0">
+                    <img src="../../../assets/mic.png" style="height: 80px" v-else>
                     <div>Preparation Time: &nbsp; &nbsp; {{speakingQuestionPrepareTime}} Seconds</div>
                     <div>Response Time: &nbsp; &nbsp; {{speakingTime}} Seconds</div>
                     <br>

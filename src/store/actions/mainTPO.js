@@ -5,5 +5,5 @@ export const PREVIOUS_SECTION = 'previousSection';
 export const UPDATE_INITIAL_STATE = 'updateInitialState';
 export const SET_NEW_TIME = 'setNewTime';
 export const UPDATE_REMAINING_TIME_READING = 'updateRemainingTimeReading';
-export const UPDATE_REMAINING_TIME_LISTENING = 'updateRemainingTimeReading';
+export const UPDATE_REMAINING_TIME_LISTENING = 'updateRemainingTimeListening';
 export const UPDATE_REMAINING_TIME_WRITING = 'updateRemainingTimeWriting';

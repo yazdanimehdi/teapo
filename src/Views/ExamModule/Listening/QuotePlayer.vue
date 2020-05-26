@@ -21,12 +21,12 @@
                                 </label>
                             </v-col>
                             <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
-                                <v-img src="../../assets/vol.png" contain max-height="60px"
+                                <v-img src="../../../assets/vol.png" contain max-height="60px"
                                        min-height="40px" @click="show_vol"></v-img>
                             </v-col>
                             <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0"
                                    v-if="listeningMode === 'practiceMode' || listeningMode === 'reviewMode'">
-                                <v-img src="../../assets/back.png" contain max-height="60px" @click="goToBack"
+                                <v-img src="../../../assets/back.png" contain max-height="60px" @click="goToBack"
                                        min-height="40px"></v-img>
 
                             </v-col>
@@ -37,7 +37,7 @@
         </v-container>
         <v-container fluid>
             <v-row justify="center" align="center">
-                <img src="../../assets/quote_pic.png" height="300vh">
+                <img src="../../../assets/quote_pic.png" height="300vh">
             </v-row>
             <v-row justify="center" align="center">
                 <audio id="listening" autoplay v-on:ended="quoteEnded" v-on:timeupdate="progressListening" :controls="(listeningMode === 'reviewMode' || listeningMode === 'practiceMode')">
@@ -116,7 +116,7 @@
 
 <style scoped>
     .toolbar {
-        height: 110px;
+        height: 115px;
         background: linear-gradient(to right, #4148a2, #822a42);
 
     }

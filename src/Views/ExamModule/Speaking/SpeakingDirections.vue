@@ -17,12 +17,12 @@
             <v-row justify="end" align="start" style="padding: 0">
 
               <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0; padding-right: 6px">
-                <v-img src="../../assets/continue.png" contain max-height="60px"
+                <v-img src="../../../assets/continue.png" contain max-height="60px"
                        min-height="40px" @click="goToNext"></v-img>
               </v-col>
 
               <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
-                <v-img src="../../assets/vol.png" contain max-height="60px"
+                <v-img src="../../../assets/vol.png" contain max-height="60px"
                        min-height="40px" @click="show_vol"></v-img>
               </v-col>
               <v-col cols="4" md="4" lg="4" sm="4" v-if="volume.enabled" style="padding: 0">

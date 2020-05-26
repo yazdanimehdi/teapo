@@ -38,7 +38,8 @@ const actions = {
         commit('stopTime', payload)
     },
     [UPDATE_TIME]: ({commit}, payload) => {
-        commit('updateTime', payload)
+        commit('updateTime', payload);
+        commit('updateTimeModules');
     },
     [UPDATE_REMAINED_READING_TIME]: ({state, dispatch}) => {
         dispatch(UPDATE_REMAINING_TIME_READING, state.totalTime)
@@ -52,10 +53,16 @@ const actions = {
 };
 
 const mutations = {
+    updateTimeModules(state){
+        state.minutes = parseInt(state.totalTime / 60);
+        state.hours = parseInt(state.minutes / 60);
+        state.minutes = state.minutes % 60;
+        state.seconds = state.totalTime % 60;
+    },
     computeTime(state) {
         state.totalTime = state.totalTime - 1;
         if (state.totalTime <= 0) {
-            state.currentComponent = 'TimeEnded';
+            console.log('Time Ended')
 
         }
         state.minutes = parseInt(state.totalTime / 60);

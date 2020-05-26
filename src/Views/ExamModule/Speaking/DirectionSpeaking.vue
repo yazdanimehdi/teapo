@@ -18,13 +18,13 @@
 
 
               <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0; padding-right: 6px">
-                <v-img src="../../assets/continue.png" contain max-height="60px"
+                <v-img src="../../../assets/continue.png" contain max-height="60px"
                        min-height="40px" @click="goToNext"></v-img>
               </v-col>
 
               <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0"
                      v-if="speakingMode === 'reviewMode' || speakingMode === 'practiceMode'">
-                <v-img src="../../assets/back.png" contain max-height="60px" min-height="40px"
+                <v-img src="../../../assets/back.png" contain max-height="60px" min-height="40px"
                        @click="goToBack"></v-img>
               </v-col>
 
@@ -36,7 +36,7 @@
 
 
               <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
-                <v-img src="../../assets/vol.png" contain max-height="60px"
+                <v-img src="../../../assets/vol.png" contain max-height="60px"
                        min-height="40px" @click="show_vol"></v-img>
               </v-col>
 
@@ -47,7 +47,7 @@
     </v-container>
     <v-container>
       <v-row align="center" justify="center">
-        <img src="../../assets/direction_pic.png" height="300" width="350">
+        <img src="../../../assets/direction_pic.png" height="300" width="350">
       </v-row>
       <v-row>
         <audio id="guide" autoplay v-on:ended="goToNext">

@@ -29,33 +29,33 @@
                         <v-row justify="end" align="start" style="padding: 0">
 
                             <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
-                                <v-img src="../../assets/vol.png" contain max-height="60px"
+                                <v-img src="../../../assets/vol.png" contain max-height="60px"
                                        min-height="40px" @click="show_vol"></v-img>
                             </v-col>
                             <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
-                                <v-img src="../../assets/helpd.png" contain max-height="60px"
+                                <v-img src="../../../assets/helpd.png" contain max-height="60px"
                                        min-height="40px"></v-img>
 
                             </v-col>
 
                             <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0"
                                    v-if="listeningMode === 'practiceMode' || listeningMode === 'reviewMode'">
-                                <v-img src="../../assets/back.png" contain max-height="60px" @click="goToBack"
+                                <v-img src="../../../assets/back.png" contain max-height="60px" @click="goToBack"
                                        min-height="40px"></v-img>
 
                             </v-col>
 
                             <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
-                                <v-img src="../../assets/okd.png" contain max-height="60px"
+                                <v-img src="../../../assets/okd.png" contain max-height="60px"
                                        min-height="40px" v-if="ok.enabled === false"></v-img>
-                                <v-img src="../../assets/ok.png" contain max-height="60px"
+                                <v-img src="../../../assets/ok.png" contain max-height="60px"
                                        min-height="40px" v-else @click="goToNext"></v-img>
                             </v-col>
 
                             <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
-                                <v-img src="../../assets/nextd.png" contain max-height="60px"
+                                <v-img src="../../../assets/nextd.png" contain max-height="60px"
                                        min-height="40px" v-if="ok.enabled === true || ok.audio_ended === false"></v-img>
-                                <v-img src="../../assets/next.png" contain max-height="60px"
+                                <v-img src="../../../assets/next.png" contain max-height="60px"
                                        min-height="40px" v-else @click="toggleOk"></v-img>
                             </v-col>
                         </v-row>
@@ -72,10 +72,10 @@
                         </v-col>
                         <v-col sm="4" lg="2" md="3" style="padding: 0; max-width: 250px">
                             <template v-if="time_component.enable">
-                                <img src="../../assets/hidetime.png" class="clock" @click="toggleTimeShow">
+                                <img src="../../../assets/hidetime.png" class="clock" @click="toggleTimeShow">
                             </template>
                             <template v-else>
-                                <img src="../../assets/showtime.png" class="clock" @click="toggleTimeShow">
+                                <img src="../../../assets/showtime.png" class="clock" @click="toggleTimeShow">
                             </template>
                             <span class='time' v-if="this.time_component.enable">{{formattedHours}} : {{formattedMinutes}} : {{formattedSeconds}}</span>
                         </v-col>
@@ -96,7 +96,7 @@
                 </div>
                 <div v-if="listeningQuestionMulti === true"
                      style="background-color: rgb(196, 199, 215); font-family: Verdana; width: 100%; height: 40px; text-align: center; margin-bottom: 5px">
-                    <span>Click on 2 answers</span></div>
+                    <span>Click on {{listeningQuestionAnswerCount}} answers</span></div>
                 <v-container>
                     <v-row v-for="ans in listeningQuestionAnswers" :key="ans.id" v-show="answers.enabled">
                         <label class="container_checkbox" v-if="listeningQuestionMulti === true">{{ans.answer}}
@@ -188,7 +188,8 @@
                 'listeningQuestionId',
                 'listeningQuestionAnswer',
                 'listeningQuestionNumber',
-                'ListeningQuestionCorrectAnswer']),
+                'ListeningQuestionCorrectAnswer',
+                'listeningQuestionAnswerCount']),
             ...mapState({
                 questionNumber: state => state.listening.questionNumber,
                 listeningMode: state => state.mainTPO.mode,

@@ -22,35 +22,35 @@
                         <v-row justify="end" align="start" style="padding: 0">
 
                             <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0; padding-right: 6px">
-                                <v-img src="../../assets/continue.png" contain max-height="60px"
+                                <v-img src="../../../assets/continue.png" contain max-height="60px"
                                        min-height="40px" @click="goToNext"></v-img>
                             </v-col>
 
                             <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
-                                <v-img src="../../assets/vol.png" contain max-height="60px"
+                                <v-img src="../../../assets/vol.png" contain max-height="60px"
                                        min-height="40px" @click="show_vol"></v-img>
                             </v-col>
                             <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
-                                <v-img src="../../assets/helpd.png" contain max-height="60px"
+                                <v-img src="../../../assets/helpd.png" contain max-height="60px"
                                        min-height="40px"></v-img>
 
                             </v-col>
                             <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
-                                <v-img src="../../assets/okd.png" contain max-height="60px"
+                                <v-img src="../../../assets/okd.png" contain max-height="60px"
                                        min-height="40px"></v-img>
                             </v-col>
 
                             <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
-                                <v-img src="../../assets/backd.png" contain max-height="60px"
+                                <v-img src="../../../assets/backd.png" contain max-height="60px"
                                        min-height="40px" v-if="!backAvailable"></v-img>
-                                <v-img src="../../assets/back.png" contain max-height="60px"
+                                <v-img src="../../../assets/back.png" contain max-height="60px"
                                        min-height="40px"
                                        v-else-if="listeningMode === 'practiceMode' || listeningMode === 'reviewMode'"
                                        @click="goToBack"></v-img>
                             </v-col>
 
                             <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
-                                <v-img src="../../assets/nextd.png" contain max-height="60px"
+                                <v-img src="../../../assets/nextd.png" contain max-height="60px"
                                        min-height="40px"></v-img>
                             </v-col>
                         </v-row>
@@ -62,13 +62,13 @@
             <v-container>
                 <v-row justify="center" align="center">
                     <div v-if="state === 0">
-                        <img src="../../assets/direction_pic.png" height="300" width="350" style="margin-top: 80px">
+                        <img src="../../../assets/direction_pic.png" height="300" width="350" style="margin-top: 80px">
                         <br>
                         <p class="direction_headset">Now put your headset</p>
                     </div>
                     <div class="direction" v-if="state === 1">
                         <audio autoplay id="listening_direction">
-                            <source src="../../assets/listening_direction.mp3">
+                            <source src="../../../assets/listening_direction.mp3">
                         </audio>
                         <div style="height: 10%"></div>
                         <h2 style="text-align: center; text-shadow: 2px 2px rgba(128, 129, 120, 0.4); color: rgb(66,63,91)">

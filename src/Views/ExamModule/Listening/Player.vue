@@ -26,13 +26,13 @@
                                 </label>
                             </v-col>
                             <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
-                                <v-img src="../../assets/vol.png" contain max-height="60px"
+                                <v-img src="../../../assets/vol.png" contain max-height="60px"
                                        min-height="40px" @click="show_vol"></v-img>
                             </v-col>
                             <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
-                                <v-img src="../../assets/backd.png" contain max-height="60px"
+                                <v-img src="../../../assets/backd.png" contain max-height="60px"
                                        min-height="40px" v-if="!backAvailable"></v-img>
-                                <v-img src="../../assets/back.png" contain max-height="60px"
+                                <v-img src="../../../assets/back.png" contain max-height="60px"
                                        min-height="40px"
                                        v-else-if="listeningMode === 'practiceMode' || listeningMode === 'reviewMode'"
                                        @click="goToBack"></v-img>
@@ -54,7 +54,7 @@
         </v-container>
         <v-container>
             <v-row align="center" justify="center">
-                <img :src="'data:image/jpeg;base64,' + listeningImageSource">
+                <img :src="'data:image/jpeg;base64,' + listeningImageSource" style="max-height: 350px" >
             </v-row>
             <v-row align="center" justify="center">
                 <audio id="listening" autoplay
@@ -246,7 +246,7 @@
     }
 
     .toolbar {
-        height: 110px;
+        height: 115px;
         background: linear-gradient(to right, #4148a2, #822a42);
 
     }

@@ -100,6 +100,7 @@ const getters = {
     },
     listeningQuestionAnswers: state => state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber].answers,
     listeningQuestionMulti: state => state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber]['right_answer'].length > 1,
+    listeningQuestionAnswerCount: state => state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber]['right_answer'].trim().split(/\s+/).length,
     listeningQuestionId: state => state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber].id,
     listeningQuestionAnswer: state => state.listeningAnswers[state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber].id],
     quoteAudioFile: state => {

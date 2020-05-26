@@ -5,7 +5,7 @@
       <v-layout column justify-center align-space-between fill-height>
         <v-layout justify-space-between  fill-height>
           <v-spacer></v-spacer>
-          <img class="btn" src="../assets/continue.png" @click="goToNext">
+          <img class="btn" src="../../assets/continue.png" @click="goToNext">
         </v-layout>
       </v-layout>
     </div>
