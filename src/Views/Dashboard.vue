@@ -3,7 +3,7 @@
 
         <div class="teapo_title" :style="{'height': `${height*0.08}px`,
          'width': `${mini? width*0.08 : width*0.230}px`,
-          'max-width': '280px'}">
+          'max-width': '280px', 'position': 'fixed'}">
 
             <div style="margin: 0" v-if="!mini">
                 <div class="teapo_title_text">TEAPO</div>
@@ -20,7 +20,7 @@
                 :height="height*0.08"
                 flat
                 src="../assets/icon_group.png"
-                style="padding: 0; margin: 0;"
+                style="padding: 0; margin: 0;position: fixed"
         >
             <v-spacer></v-spacer>
             <div style="font-size: 18px; font-family: kalam">Mehdi Yazdani</div>
@@ -64,7 +64,7 @@
                 :permanent="true"
                 absolute
                 :width="width*0.230"
-                :style="{'padding-top': `${height*0.1}px`, 'max-width': '280px'}"
+                :style="{'padding-top': `${height*0.1}px`, 'max-width': '280px', 'position': 'fixed'}"
                 :mini-variant-width="width*0.08"
         >
             <div></div>
@@ -162,7 +162,12 @@
                 </v-list-item>
             </v-list>
         </v-navigation-drawer>
-        <DashboardComponent :width="mini? width*0.91 : width*0.76" v-if="linkSelected.dashboard" :style="{'margin-left': mini? `${width*0.08 + 10}px`:`${width*0.23 + 10}px`, 'margin-right': '50px'}"/>
+        <DashboardComponent :width="mini? width*0.91 : width*0.76" v-if="linkSelected.dashboard"
+                            :style="{'margin-left': mini? `${width*0.08 + 10}px`:`${width*0.23 + 10}px`, 'margin-right': '50px', 'margin-top': `${height*0.08}px`}"/>
+        <WordsComponent :width="mini? width*0.91 : width*0.76" v-if="linkSelected.words"
+                        :style="{'margin-left': mini? `${width*0.08 + 10}px`:`${width*0.23 + 10}px`, 'margin-right': '50px', 'margin-top': `${height*0.08}px`}"/>
+        <MockTestComponent :width="mini? width*0.91 : width*0.76" v-if="linkSelected.mockTest"
+                        :style="{'margin-left': mini? `${width*0.08 + 10}px`:`${width*0.23 + 10}px`, 'margin-right': '50px', 'margin-top': `${height*0.08}px`}"/>
     </v-app>
 </template>
 
@@ -181,10 +186,14 @@
     } from '@mdi/js'
 
     import DashboardComponent from "@/components/DashboardComponent";
+    import WordsComponent from "@/components/WordsComponent";
+    import MockTestComponent from "@/components/MockTestComponent";
 
     export default {
         name: "Dashboard",
-        components:{
+        components: {
+            MockTestComponent,
+            WordsComponent,
             DashboardComponent
         },
         data() {
@@ -223,15 +232,15 @@
             window.removeEventListener('resize', this.handleResize);
         },
         methods: {
-            dashboardSelected(){
-              this.linkSelected.TPO = false;
-              this.linkSelected.words = false;
-              this.linkSelected.mockTest = false;
-              this.linkSelected.orders = false;
+            dashboardSelected() {
+                this.linkSelected.TPO = false;
+                this.linkSelected.words = false;
+                this.linkSelected.mockTest = false;
+                this.linkSelected.orders = false;
                 this.linkSelected.analytics = false;
                 this.linkSelected.dashboard = true;
             },
-            TPOSelected(){
+            TPOSelected() {
                 this.mini = true
                 this.linkSelected.dashboard = false;
                 this.linkSelected.words = false;
@@ -240,7 +249,7 @@
                 this.linkSelected.analytics = false;
                 this.linkSelected.TPO = true;
             },
-            wordsSelected(){
+            wordsSelected() {
                 this.linkSelected.dashboard = false;
                 this.linkSelected.TPO = false;
                 this.linkSelected.mockTest = false;
@@ -248,7 +257,7 @@
                 this.linkSelected.analytics = false;
                 this.linkSelected.words = true;
             },
-            mockSelected(){
+            mockSelected() {
                 this.linkSelected.dashboard = false;
                 this.linkSelected.TPO = false;
                 this.linkSelected.words = false;
@@ -256,7 +265,7 @@
                 this.linkSelected.analytics = false;
                 this.linkSelected.mockTest = true;
             },
-            ordersSelected(){
+            ordersSelected() {
                 this.linkSelected.dashboard = false;
                 this.linkSelected.TPO = false;
                 this.linkSelected.words = false;
@@ -264,7 +273,7 @@
                 this.linkSelected.analytics = false;
                 this.linkSelected.orders = true;
             },
-            analyticsSelected(){
+            analyticsSelected() {
                 this.linkSelected.dashboard = false;
                 this.linkSelected.TPO = false;
                 this.linkSelected.words = false;
@@ -276,10 +285,12 @@
                 this.width = window.innerWidth;
                 this.height = window.innerHeight;
             },
-            appClick(event){
+            appClick(event) {
                 let myElementToCheckIfClicksAreInsideOf = document.querySelector('#navdrawer_element');
-                if (!myElementToCheckIfClicksAreInsideOf.contains(event.target)) {
-                    this.mini = true;
+                if (myElementToCheckIfClicksAreInsideOf !== null) {
+                    if (!myElementToCheckIfClicksAreInsideOf.contains(event.target)) {
+                        this.mini = true;
+                    }
                 }
             }
         }
@@ -305,6 +316,7 @@
         font-size: 22px;
         font-family: kalam;
     }
+
     .teapo_title_text_mini {
         color: #1C0153;
         font-weight: bold;
@@ -326,7 +338,8 @@
         font-family: kalam;
         font-size: 22px
     }
-    .menu_class{
+
+    .menu_class {
         font-family: kalam;
         font-size: 14px;
     }

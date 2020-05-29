@@ -1,6 +1,6 @@
 <template>
     <div :style="{'width': `${width}px`, 'font-family':'kalam'}">
-        <v-container fluid>
+        <v-container fluid style="overflow-y: scroll">
             <v-row>
                 <v-col cols="12" sm="8" md="8" lg="8" xl="8">
                     <v-card class="mx-auto"
@@ -158,7 +158,7 @@
                                 <v-container>
                                     <v-row>
                                         <v-col cols="4" sm="4" md="4" lg="4" xl="4" >
-                                            <div style="font-weight: bolder; font-size: 50px; text-align: center">26</div>
+                                            <div style="font-weight: bolder; font-size: 45px; text-align: center">26</div>
                                         </v-col>
                                         <v-col cols="4" sm="4" md="4" lg="4" xl="4" >
                                             <div style="font-weight: bold; font-size: 20px; text-align: center">Words</div>

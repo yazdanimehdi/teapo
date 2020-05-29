@@ -16,8 +16,8 @@ protocol.registerSchemesAsPrivileged([{scheme: 'app', privileges: {secure: true,
 
 function createWindow() {
     win = new BrowserWindow({
-        width: 870, height: 700,
-        minWidth: 800,
+        width: 904, height: 700,
+        minWidth: 904,
         minHeight: 700,
         titleBarStyle: 'hidden',
         frame: false,
@@ -29,7 +29,7 @@ function createWindow() {
     const template = [
         // { role: 'appMenu' }
         ...(process.platform === 'darwin' ? [{
-            label: app.getName(),
+            label: app.name,
             submenu: [
                 {role: 'about'},
                 {role: 'quit'}
