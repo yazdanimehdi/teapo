@@ -3,7 +3,7 @@
 
         <div class="teapo_title" :style="{'height': `${height*0.08}px`,
          'width': `${mini? width*0.08 : width*0.230}px`,
-          'max-width': '280px', 'position': 'fixed'}">
+          'max-width': '280px', 'position': 'fixed', 'z-index': '20'}">
 
             <div style="margin: 0" v-if="!mini">
                 <div class="teapo_title_text">TEAPO</div>
@@ -18,9 +18,9 @@
                 color="#1C0153"
                 dark
                 :height="height*0.08"
-                flat
+
                 src="../assets/icon_group.png"
-                style="padding: 0; margin: 0;position: fixed"
+                style="padding: 0; margin: 0;position: fixed; z-index: 10"
         >
             <v-spacer></v-spacer>
             <div style="font-size: 18px; font-family: kalam">Mehdi Yazdani</div>
@@ -168,6 +168,10 @@
                         :style="{'margin-left': mini? `${width*0.08 + 10}px`:`${width*0.23 + 10}px`, 'margin-right': '50px', 'margin-top': `${height*0.08}px`}"/>
         <MockTestComponent :width="mini? width*0.91 : width*0.76" v-if="linkSelected.mockTest"
                         :style="{'margin-left': mini? `${width*0.08 + 10}px`:`${width*0.23 + 10}px`, 'margin-right': '50px', 'margin-top': `${height*0.08}px`}"/>
+        <TPOComponent :width="mini? width*0.91 : width*0.76" v-if="linkSelected.TPO"
+                           :style="{'margin-left': mini? `${width*0.08 + 10}px`:`${width*0.23 + 10}px`, 'margin-right': '50px', 'margin-top': `${height*0.08}px`}"/>
+        <Analytics :width="mini? width*0.91 : width*0.76" v-if="linkSelected.analytics"
+                      :style="{'margin-left': mini? `${width*0.08 + 10}px`:`${width*0.23 + 10}px`, 'margin-right': '50px', 'margin-top': `${height*0.08}px`}"/>
     </v-app>
 </template>
 
@@ -188,10 +192,14 @@
     import DashboardComponent from "@/components/DashboardComponent";
     import WordsComponent from "@/components/WordsComponent";
     import MockTestComponent from "@/components/MockTestComponent";
+    import TPOComponent from "@/components/TPOComponent";
+    import Analytics from "@/components/Analytics";
 
     export default {
         name: "Dashboard",
         components: {
+            Analytics,
+            TPOComponent,
             MockTestComponent,
             WordsComponent,
             DashboardComponent
