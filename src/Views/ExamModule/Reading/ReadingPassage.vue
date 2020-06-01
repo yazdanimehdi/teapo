@@ -9,8 +9,8 @@
                             <v-row justify="start" align="start">
                                 <v-col style="padding: 0">
                                     <v-btn dark rounded small style="margin-right: 10px">Home</v-btn>
-                                    <v-btn rounded @click="selected === '' ? dialogDict=false : dialogDict=true"
-                                           :disabled="selected ===''" x-small
+                                    <v-btn rounded @click="openDictionary"
+                                            x-small
                                            v-if="readingMode ==='practiceMode' || readingMode === 'reviewMode'">
                                         Dictionary
                                     </v-btn>
@@ -146,26 +146,40 @@
                     max-width="500px"
             >
                 <v-card>
-                    <v-card-title>
-                        {{selected}}
-                    </v-card-title>
+                    <v-card-subtitle style="padding:10px 0 0 10px">
+                        <v-btn
+                                color="primary"
+                                icon
+                                @click="closeDialogDict"
+                        >
+                            <v-icon>{{icons.mdiClose}}</v-icon>
+                        </v-btn>
+                    </v-card-subtitle>
                     <v-card-text>
-                        <v-btn
-                                color="primary"
-                                dark
-                        >
-                            Open Dialog 3
-                        </v-btn>
+                        <DictionaryComponent :width="400" flat v-if="selected !== ''"/>
+                        <v-container fluid v-else>
+                            <v-row align="center" justify="center">
+                                <v-col cols="11" md="11" sm="11" lg="11" xl="11" style="padding: 0">
+                                    <v-text-field
+                                            v-model="wordSearch"
+                                            label="Word"
+                                            required
+                                            color="#1C0153"
+                                            style="font-weight: bold; font-size: 20px"
+                                            @keypress="searchDictionaryEnter($event)"
+                                    ></v-text-field>
+                                </v-col>
+                                <v-col cols="1" md="1" sm="1" lg="1" xl="1">
+                                    <v-btn @click="searchDictionary" icon>
+                                        <v-icon x-large>{{icons.mdiCardSearch}}</v-icon>
+                                    </v-btn>
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <DictionaryComponent :width="400" v-if="!minimized" :flat="false"/>
+                            </v-row>
+                        </v-container>
                     </v-card-text>
-                    <v-card-actions>
-                        <v-btn
-                                color="primary"
-                                text
-                                @click="dialogDict = false"
-                        >
-                            Close
-                        </v-btn>
-                    </v-card-actions>
                 </v-card>
             </v-dialog>
         </div>
@@ -173,15 +187,31 @@
 </template>
 
 <script>
+    import {
+        mdiBookAlphabet,
+        mdiPlusCircle,
+        mdiChevronRight,
+        mdiChevronLeft,
+        mdiChevronUp,
+        mdiChevronDown,
+        mdiBookSearch,
+        mdiCardSearch,
+        mdiClose
+    } from '@mdi/js'
     import {mapGetters, mapState} from 'vuex'
     import $ from 'jquery'
     import {
         GO_TO_NEXT_READING,
         GO_TO_PREVIOUS_READING
     } from "@/store/actions/reading";
+    import {LOAD_DICTIONARY} from "@/store/actions/dictionary";
+    import DictionaryComponent from "@/components/DictionaryComponent";
 
     export default {
         name: "ReadingPassage",
+        components:{
+            DictionaryComponent
+        },
         computed: {
             ...mapGetters(['formattedHours',
                 'formattedMinutes',
@@ -198,6 +228,7 @@
         data() {
             return {
                 scrolledToBottom: false,
+                minimized: true,
                 scrolled: 0,
                 size: 50,
                 dialogDict: false,
@@ -210,6 +241,18 @@
                 dialog: false,
                 offsetTop: 0,
                 selected: '',
+                wordSearch: '',
+                icons: {
+                    mdiBookAlphabet,
+                    mdiPlusCircle,
+                    mdiChevronRight,
+                    mdiChevronLeft,
+                    mdiChevronUp,
+                    mdiChevronDown,
+                    mdiBookSearch,
+                    mdiCardSearch,
+                    mdiClose
+                },
             }
         },
 
@@ -230,9 +273,29 @@
             }
             this.selected = selectedText.toString();
 
+
         },
 
         methods: {
+            closeDialogDict(){
+                this.dialogDict = false;
+                this.minimized = true;
+                this.wordSearch = '';
+            },
+            searchDictionaryEnter(ev){
+                if (ev.charCode === 13) {
+                    this.minimized = false;
+                    this.$store.dispatch(LOAD_DICTIONARY, this.wordSearch)
+                }
+            },
+            searchDictionary() {
+                this.minimized = false;
+                this.$store.dispatch(LOAD_DICTIONARY, this.wordSearch)
+            },
+            openDictionary(){
+              this.dialogDict = true;
+              this.$store.dispatch(LOAD_DICTIONARY, this.selected)
+            },
             goToBack() {
                 this.$store.dispatch(GO_TO_PREVIOUS_READING);
             },

@@ -15,7 +15,7 @@ export default new Router({
             component: Dashboard
         },
         {
-            path: '/tpo_test',
+            path: '/tpo',
             name: 'TPOExam',
             component: tpoExam
         },

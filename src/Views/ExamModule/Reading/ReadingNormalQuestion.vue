@@ -21,8 +21,8 @@
                                                @click="dialogCorrect = true" x-small>
                                             Correct Answer
                                         </v-btn>
-                                        <v-btn rounded @click="selected === '' ? dialog=false : dialog=true"
-                                               :disabled="selected ===''" x-small
+                                        <v-btn rounded @click="openDictionary"
+                                               x-small
                                                v-if="readingMode ==='practiceMode' || readingMode === 'reviewMode'">
                                             Dictionary
                                         </v-btn>
@@ -131,30 +131,44 @@
                 </v-container>
             </div>
             <v-dialog
-                    v-model="dialog"
+                    v-model="dialogDict"
                     max-width="500px"
             >
                 <v-card>
-                    <v-card-title>
-                        {{selected}}
-                    </v-card-title>
+                    <v-card-subtitle style="padding:10px 0 0 10px">
+                        <v-btn
+                                color="primary"
+                                icon
+                                @click="closeDialogDict"
+                        >
+                            <v-icon>{{icons.mdiClose}}</v-icon>
+                        </v-btn>
+                    </v-card-subtitle>
                     <v-card-text>
-                        <v-btn
-                                color="primary"
-                                dark
-                        >
-                            Open Dialog 3
-                        </v-btn>
+                        <DictionaryComponent :width="400" flat v-if="selected !== ''"/>
+                        <v-container fluid v-else>
+                            <v-row align="center" justify="center">
+                                <v-col cols="11" md="11" sm="11" lg="11" xl="11" style="padding: 0">
+                                    <v-text-field
+                                            v-model="wordSearch"
+                                            label="Word"
+                                            required
+                                            color="#1C0153"
+                                            style="font-weight: bold; font-size: 20px"
+                                            @keypress="searchDictionaryEnter($event)"
+                                    ></v-text-field>
+                                </v-col>
+                                <v-col cols="1" md="1" sm="1" lg="1" xl="1">
+                                    <v-btn @click="searchDictionary" icon>
+                                        <v-icon x-large>{{icons.mdiCardSearch}}</v-icon>
+                                    </v-btn>
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <DictionaryComponent :width="400" v-if="!minimized" :flat="false"/>
+                            </v-row>
+                        </v-container>
                     </v-card-text>
-                    <v-card-actions>
-                        <v-btn
-                                color="primary"
-                                text
-                                @click="dialog = false"
-                        >
-                            Close
-                        </v-btn>
-                    </v-card-actions>
                 </v-card>
             </v-dialog>
             <v-dialog
@@ -190,9 +204,25 @@
         TOGGLE_REVIEW,
         SAVE_ANSWER_READING
     } from "@/store/actions/reading";
+    import DictionaryComponent from "@/components/DictionaryComponent";
+    import {LOAD_DICTIONARY} from "@/store/actions/dictionary";
+    import {
+        mdiBookAlphabet,
+        mdiPlusCircle,
+        mdiChevronRight,
+        mdiChevronLeft,
+        mdiChevronUp,
+        mdiChevronDown,
+        mdiBookSearch,
+        mdiCardSearch,
+        mdiClose
+    } from '@mdi/js'
 
     export default {
         name: "ReadingNormalQuestion",
+        components:{
+          DictionaryComponent
+        },
         data() {
             return {
                 size: 50,
@@ -201,7 +231,7 @@
                     enable: true,
                 },
                 answer: [],
-                dialog: false,
+                dialogDict: false,
                 dialogCorrect: false,
                 multi: false,
                 review: {
@@ -209,6 +239,19 @@
                 },
                 questionCount: 0,
                 selected: '',
+                wordSearch: '',
+                minimized: true,
+                icons: {
+                    mdiBookAlphabet,
+                    mdiPlusCircle,
+                    mdiChevronRight,
+                    mdiChevronLeft,
+                    mdiChevronUp,
+                    mdiChevronDown,
+                    mdiBookSearch,
+                    mdiCardSearch,
+                    mdiClose
+                },
             };
         },
 
@@ -288,6 +331,25 @@
             }
         },
         methods: {
+            closeDialogDict(){
+                this.dialogDict = false;
+                this.minimized = true;
+                this.wordSearch = '';
+            },
+            searchDictionaryEnter(ev){
+                if (ev.charCode === 13) {
+                    this.minimized = false;
+                    this.$store.dispatch(LOAD_DICTIONARY, this.wordSearch)
+                }
+            },
+            searchDictionary() {
+                this.minimized = false;
+                this.$store.dispatch(LOAD_DICTIONARY, this.wordSearch)
+            },
+            openDictionary(){
+                this.dialogDict = true;
+                this.$store.dispatch(LOAD_DICTIONARY, this.selected)
+            },
             toggleTimeShow() {
                 this.time_component.enable = !this.time_component.enable;
             },

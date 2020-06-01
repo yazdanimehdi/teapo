@@ -72,7 +72,6 @@ const getters = {
         } else {
             return ''
         }
-
     },
     speakingId: state => state.speaking[state.taskNumber].id
 

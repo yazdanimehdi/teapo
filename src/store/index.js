@@ -6,6 +6,7 @@ import listening from "./modules/listening";
 import speaking from "@/store/modules/speaking";
 import writing from "@/store/modules/writing";
 import mainTPO from "./modules/mainTPO";
+import dictionary from "@/store/modules/dictionary";
 
 
 Vue.use(Vuex);
@@ -20,6 +21,7 @@ export default new Vuex.Store({
         listening: listening,
         speaking: speaking,
         writing: writing,
+        dictionary: dictionary,
 
     },
     strict: debug

@@ -2,6 +2,50 @@
     <div :style="{'width': `${width}px`, 'font-family':'kalam'}">
         <v-container fluid style="overflow-y: scroll">
             <v-row>
+                <v-col cols="12" sm="12" lg="12" md="12" xl="12">
+                    <v-card style="background-image: linear-gradient(#00bfa5, #4dd0e1); border-radius: 15px"
+                            :style="{'height': minimized? '160px': '700px'}">
+                        <v-card-subtitle>
+                            <div>
+                                <v-icon>{{icons.mdiBookSearch}}</v-icon>
+                                <span style="margin-left: 8px; font-size: 18px; font-weight: bold">Dictionary</span>
+
+                                <v-btn icon @click="minimized = !minimized">
+                                    <v-icon v-if="!minimized">{{icons.mdiChevronUp}}</v-icon>
+                                    <v-icon v-else>{{icons.mdiChevronDown}}</v-icon>
+                                </v-btn>
+                            </div>
+
+
+                        </v-card-subtitle>
+                        <v-card-text>
+                            <v-container fluid>
+                                <v-row align="center" justify="center">
+                                    <v-col cols="11" md="11" sm="11" lg="11" xl="11" style="padding: 0">
+                                        <v-text-field
+                                                v-model="wordSearch"
+                                                label="Word"
+                                                required
+                                                color="#1C0153"
+                                                style="font-weight: bold; font-size: 20px"
+                                                @keypress="searchDictionaryEnter($event)"
+                                        ></v-text-field>
+                                    </v-col>
+                                    <v-col cols="1" md="1" sm="1" lg="1" xl="1">
+                                        <v-btn @click="searchDictionary" icon>
+                                            <v-icon x-large>{{icons.mdiCardSearch}}</v-icon>
+                                        </v-btn>
+                                    </v-col>
+                                </v-row>
+                                <v-row>
+                                    <DictionaryComponent :width="width -60" v-if="!minimized" :flat="false"/>
+                                </v-row>
+                            </v-container>
+                        </v-card-text>
+                    </v-card>
+                </v-col>
+            </v-row>
+            <v-row>
                 <v-col cols="12" sm="5" md="5" lg="5" xl="5">
                     <v-card @click="$router.push('/study_words')"
                             style="background-image: linear-gradient(#A0B271, #B6F51F); height: 300px; border-radius: 15px">
@@ -38,7 +82,7 @@
                 </v-col>
 
                 <v-col cols="12" sm="7" md="7" lg="7" xl="7">
-                    <v-card style="background-image: linear-gradient(#79EC37, #7BCF4B); height: 300px">
+                    <v-card style="background-image: linear-gradient(#79EC37, #7BCF4B); height: 300px; border-radius: 15px">
                         <v-card-subtitle>
                             <div>
                                 <v-icon>{{icons.mdiPlusCircle}}</v-icon>
@@ -219,8 +263,12 @@
         mdiChevronRight,
         mdiChevronLeft,
         mdiChevronUp,
-        mdiChevronDown
+        mdiChevronDown,
+        mdiBookSearch,
+        mdiCardSearch
     } from '@mdi/js'
+    import {LOAD_DICTIONARY} from "@/store/actions/dictionary";
+    import DictionaryComponent from "@/components/DictionaryComponent";
 
     export default {
         name: "WordsComponent",
@@ -230,6 +278,9 @@
                 type: Number
             }
         },
+        components: {
+            DictionaryComponent
+        },
         data() {
             return {
                 icons: {
@@ -238,9 +289,13 @@
                     mdiChevronRight,
                     mdiChevronLeft,
                     mdiChevronUp,
-                    mdiChevronDown
+                    mdiChevronDown,
+                    mdiBookSearch,
+                    mdiCardSearch
                 },
                 word: '',
+                minimized: true,
+                wordSearch: '',
                 definition: '',
                 itemsPerPageArray: [4, 8, 12],
                 search: '',
@@ -378,9 +433,17 @@
             formerPage() {
                 if (this.page - 1 >= 1) this.page -= 1
             },
-            updateItemsPerPage(number) {
-                this.itemsPerPage = number
+            searchDictionaryEnter(ev){
+                if (ev.charCode === 13) {
+                    this.minimized = false;
+                    this.$store.dispatch(LOAD_DICTIONARY, this.wordSearch)
+                }
             },
+            searchDictionary() {
+                this.minimized = false;
+                this.$store.dispatch(LOAD_DICTIONARY, this.wordSearch)
+            }
+
         },
     }
 </script>

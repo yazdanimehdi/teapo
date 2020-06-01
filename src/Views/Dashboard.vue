@@ -176,6 +176,7 @@
 </template>
 
 <script>
+    import {LOAD_DICTIONARY} from "@/store/actions/dictionary";
     import {
         mdiViewDashboard,
         mdiBookOpenPageVariant,
@@ -238,6 +239,9 @@
         },
         destroyed() {
             window.removeEventListener('resize', this.handleResize);
+        },
+        mounted(){
+            this.$store.dispatch(LOAD_DICTIONARY, 'beauty');
         },
         methods: {
             dashboardSelected() {

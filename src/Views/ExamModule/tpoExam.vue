@@ -81,7 +81,7 @@
 
         mounted() {
             this.$store.dispatch(START_TPO, {
-                'examArray': ['Listening', 'Speaking', 'Writing'],
+                'examArray': ['Reading'],
                 'TPO': 'tpo1'
             })
         },
