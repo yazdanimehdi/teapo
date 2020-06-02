@@ -4,6 +4,7 @@ import RegisterLogin from "@/Views/RegisterLogin";
 import Dashboard from "@/Views/Dashboard";
 
 import tpoExam from "@/Views/ExamModule/tpoExam";
+import LearnNewWords from "@/Views/MemriseModules/LearnNewWords";
 
 Vue.use(Router);
 
@@ -14,6 +15,13 @@ export default new Router({
             name: 'Dashboard',
             component: Dashboard
         },
+
+        {
+            path: '/new_words',
+            name: 'NewWords',
+            component: LearnNewWords
+        },
+
         {
             path: '/tpo',
             name: 'TPOExam',

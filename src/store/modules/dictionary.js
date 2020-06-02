@@ -13,6 +13,7 @@ const state = {
     wordFamily: [],
     wordThesaurus: [],
     wordOtherExamples: [],
+    wordExamples: [],
     wordEtymology: [],
     wordCollocations: [],
     isLoaded: false,
@@ -106,40 +107,32 @@ const actions = {
                         })
                     }
 
-                } if(row.length === 1) {
+                }
+                if (row.length === 1) {
                     commit('updateWord', payload)
                     let wordDefinition = knex.select("*").from('longman_definitions').where({'word_id': row[0]['id']})
                     wordDefinition.then(function (defs) {
-                        console.log(defs.length);
                         for (let i = 0; i < defs.length; i++) {
                             let defDict = {};
                             defDict['def'] = defs[i];
                             dispatch(LOAD_THESAURUS, defs[i]['id']);
                             dispatch(LOAD_ETYMOLOGY, defs[i]['id']);
                             dispatch(LOAD_WORD_FAMILY, defs[i]['id']);
-                            dispatch(LOAD_OTHER_EXAMPLES, defs[i]['id'])
+                            dispatch(LOAD_OTHER_EXAMPLES, defs[i]['id']);
                             let wordMeaning = knex.select("*").from('longman_meaning').where({'definition_fk_id': defs[i]['id']})
                             wordMeaning.then(function (mean) {
-                                let meansList = [];
+                                commit('updateWordDefinition', [mean, defs[i]])
                                 for (let j = 0; j < mean.length; j++) {
-                                    let meaningDict = {}
                                     let examples = knex.select("*").from('longman_examples').where({'definition_id': mean[j]['id']})
                                     examples.then(function (example) {
-                                        meaningDict['examples'] = example
-
+                                        commit('updateWordExamples', example);
                                     })
-                                    meaningDict['mean'] = mean[j]
-                                    meansList.push(meaningDict)
                                 }
-                                defDict['meanings'] = meansList;
                             })
-
-                            commit('updateWordDefinition', defDict)
                         }
                     })
                 }
-            }
-        )
+            })
     }
 };
 
@@ -162,7 +155,7 @@ const mutations = {
 
     },
     updateWordDefinition(state, payload) {
-        state.wordDefinition.push(payload);
+        state.wordDefinition.push({'meanings': payload[0], 'def': payload[1]});
     },
     updateWordThesaurus(state, payload) {
         state.wordThesaurus.push(payload);
@@ -178,6 +171,9 @@ const mutations = {
     },
     updateWord(state, payload) {
         state.word = payload
+    },
+    updateWordExamples(state, payload) {
+        state.wordExamples.push(payload);
     }
 };
 

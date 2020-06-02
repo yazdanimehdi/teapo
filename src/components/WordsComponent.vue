@@ -47,8 +47,9 @@
             </v-row>
             <v-row>
                 <v-col cols="12" sm="5" md="5" lg="5" xl="5">
-                    <v-card @click="$router.push('/study_words')"
-                            style="background-image: linear-gradient(#A0B271, #B6F51F); height: 300px; border-radius: 15px">
+                    <v-card @click="studyDialog = true"
+                            :style="{'background-image': (learningStateCount === 0 && reviewingStateCount === 0 && difficultStateCount === 0) ? 'linear-gradient(gray, black)' :'linear-gradient(#A0B271, #B6F51F)' }"
+                            style="height: 300px; border-radius: 15px">
                         <v-img src="../assets/study.png" class="black--text" contain
                                height="300px">
                             <v-card-subtitle>
@@ -61,15 +62,42 @@
                                 <v-container>
                                     <v-row>
                                         <v-col cols="6" sm="6" md="6" lg="6" xl="6">
-                                            <div style="font-weight: bolder; font-size: 50px; text-align: center">26
+                                            <div style="font-weight: bolder; font-size: 50px; text-align: center; color: rgb(103, 170, 135)">
+                                                {{learningStateCount}}
                                             </div>
                                         </v-col>
                                         <v-col cols="6" sm="6" md="6" lg="6" xl="6">
                                             <div style="font-weight: bold; font-size: 20px; text-align: center">Words
                                             </div>
-                                            <div style="font-size: 20px; text-align: center">for review</div>
+                                            <div style="font-size: 20px; text-align: center">To Learn</div>
                                         </v-col>
                                     </v-row>
+                                    <v-row>
+                                        <v-col cols="6" sm="6" md="6" lg="6" xl="6">
+                                            <div style="font-weight: bolder; font-size: 50px; text-align: center; color: blue">
+                                                {{reviewingStateCount}}
+                                            </div>
+                                        </v-col>
+                                        <v-col cols="6" sm="6" md="6" lg="6" xl="6">
+                                            <div style="font-weight: bold; font-size: 20px; text-align: center">Words
+                                            </div>
+                                            <div style="font-size: 20px; text-align: center">To Review</div>
+                                        </v-col>
+                                    </v-row>
+                                    <v-row>
+                                        <v-col cols="6" sm="6" md="6" lg="6" xl="6">
+                                            <div style="font-weight: bolder; font-size: 50px; text-align: center; color: yellow">
+                                                {{difficultStateCount}}
+                                            </div>
+                                        </v-col>
+                                        <v-col cols="6" sm="6" md="6" lg="6" xl="6">
+                                            <div style="font-weight: bold; font-size: 20px; text-align: center">
+                                                Difficult
+                                            </div>
+                                            <div style="font-size: 20px; text-align: center">Words</div>
+                                        </v-col>
+                                    </v-row>
+
                                 </v-container>
                             </v-card-text>
                             <v-card-actions>
@@ -97,6 +125,8 @@
                                             v-model="word"
                                             label="Word"
                                             required
+                                            color="#1C0153"
+                                            style="font-size: 18px; font-weight: bold"
                                     ></v-text-field>
                                 </v-row>
                                 <v-row>
@@ -104,13 +134,15 @@
                                             v-model="definition"
                                             label="Definition"
                                             required
+                                            color="#1C0153"
+                                            style="font-size: 18px; font-weight: bold"
                                     ></v-text-field>
                                 </v-row>
                             </v-container>
                         </v-card-text>
                         <v-card-actions>
                             <v-spacer></v-spacer>
-                            <v-btn icon>
+                            <v-btn icon @click="addWord">
                                 <v-icon x-large>
                                     {{icons.mdiPlusCircle}}
                                 </v-icon>
@@ -122,13 +154,14 @@
             </v-row>
             <v-container fluid>
                 <v-data-iterator
-                        :items="items"
+                        :items="studyWordsItems"
                         :items-per-page.sync="itemsPerPage"
                         :page="page"
                         :search="search"
                         :sort-by="sortBy.toLowerCase()"
                         :sort-desc="sortDesc"
                         hide-default-footer
+                        v-if="loaded"
                 >
                     <template v-slot:header>
                         <v-toolbar
@@ -146,16 +179,6 @@
                                     label="Search"
                             ></v-text-field>
                             <template v-if="$vuetify.breakpoint.mdAndUp">
-                                <v-spacer></v-spacer>
-                                <v-select
-                                        v-model="sortBy"
-                                        flat
-                                        solo-inverted
-                                        hide-details
-                                        :items="keys"
-                                        prepend-inner-icon="search"
-                                        label="Sort by"
-                                ></v-select>
                                 <v-spacer></v-spacer>
                                 <v-btn-toggle
                                         v-model="sortDesc"
@@ -185,14 +208,17 @@
                     <template v-slot:default="props">
                         <v-row style="background-color: #BFABE8; padding: 0; margin: 0">
                             <v-col
-                                    v-for="item in props.items"
+                                    v-for="(item, index) in props.items"
                                     :key="item.name"
                                     cols="12"
                                     sm="6"
                                     md="4"
                                     lg="3"
+                                    @click="openAllDialog(index)"
                             >
-                                <v-card>
+                                <v-card :color="words[index]['label'] === 'Learning' ? 'green'
+                                 : words[index]['label'] === 'Reviewing' ? 'blue' :
+                                  words[index]['label'] === 'Difficult'? 'yellow' : 'white'">
                                     <v-card-title class="subheading font-weight-bold">{{ item.name }}</v-card-title>
 
                                     <v-divider></v-divider>
@@ -253,6 +279,78 @@
             </v-row>
 
         </v-container>
+
+        <v-dialog
+                v-model="dialog"
+                max-width="600"
+        >
+            <v-card style="font-family: kalam">
+                <v-card-title style="font-weight: bold; font-size: 30px">
+                    {{dialogWord}}
+                </v-card-title>
+                <v-card-subtitle style="font-weight: bold; font-size: 22px; padding-top: 20px">
+                    {{dialogDefinition}}
+                </v-card-subtitle>
+                <v-card-text style="font-size: 22px; padding-top: 18px">
+                    <div v-for="(example, index) in dialogExamples" :key="index">
+                        <span style="color: red; font-weight: bold">{{index + 1}}</span> {{example['example']}}
+                    </div>
+                </v-card-text>
+            </v-card>
+        </v-dialog>
+
+        <div class="text-center">
+            <v-snackbar
+                    v-model="snackbar1"
+                    :timeout="2000"
+                    color="success"
+            >
+                The word added to your study collection
+                <v-btn
+                        color="#1C0153"
+                        text
+                        @click="snackbar1 = false"
+                >
+                    Close
+                </v-btn>
+            </v-snackbar>
+        </div>
+
+        <div class="text-center">
+            <v-snackbar
+                    v-model="snackbar2"
+                    :timeout="2000"
+                    color="warning"
+            >
+                The word exists in your study collection
+                <v-btn
+                        color="#1C0153"
+                        text
+                        @click="snackbar2 = false"
+                >
+                    Close
+                </v-btn>
+            </v-snackbar>
+        </div>
+        <div class="text-center">
+            <v-snackbar
+                    v-model="snackbar3"
+                    :timeout="2000"
+                    color="error"
+            >
+                Please Enter Word and Definition
+                <v-btn
+                        color="#1C0153"
+                        text
+                        @click="snackbar2 = false"
+                >
+                    Close
+                </v-btn>
+            </v-snackbar>
+        </div>
+        <v-dialog v-model="studyDialog" fullscreen hide-overlay transition="dialog-bottom-transition">
+            <StartStudyOverlay @close="studyDialog = false" :height="height"/>
+        </v-dialog>
     </div>
 </template>
 
@@ -269,6 +367,9 @@
     } from '@mdi/js'
     import {LOAD_DICTIONARY} from "@/store/actions/dictionary";
     import DictionaryComponent from "@/components/DictionaryComponent";
+    import {mapGetters, mapState} from 'vuex'
+    import {ADD_NEW_WORD, GET_STUDY_WORDS} from "@/store/actions/studyWords";
+    import StartStudyOverlay from "@/components/StartStudyOverlay";
 
     export default {
         name: "WordsComponent",
@@ -276,10 +377,18 @@
             width: {
                 required: true,
                 type: Number
+            },
+            height: {
+                required: true,
+                type: Number
             }
         },
         components: {
+            StartStudyOverlay,
             DictionaryComponent
+        },
+        created() {
+            this.$store.dispatch(GET_STUDY_WORDS);
         },
         data() {
             return {
@@ -293,6 +402,14 @@
                     mdiBookSearch,
                     mdiCardSearch
                 },
+                studyDialog: false,
+                snackbar3: false,
+                snackbar1: false,
+                snackbar2: false,
+                dialog: false,
+                dialogWord: '',
+                dialogExamples: [],
+                dialogDefinition: '',
                 word: '',
                 minimized: true,
                 wordSearch: '',
@@ -306,134 +423,76 @@
                 sortBy: 'name',
                 keys: [
                     'Name',
-                    'Calories',
-                    'Fat',
-                    'Carbs',
-                    'Protein',
-                    'Sodium',
-                    'Calcium',
-                    'Iron',
-                ],
-                items: [
-                    {
-                        name: 'Frozen Yogurt',
-                        calories: 159,
-                        fat: 6.0,
-                        carbs: 24,
-                        protein: 4.0,
-                        sodium: 87,
-                        calcium: '14%',
-                        iron: '1%',
-                    },
-                    {
-                        name: 'Ice cream sandwich',
-                        calories: 237,
-                        fat: 9.0,
-                        carbs: 37,
-                        protein: 4.3,
-                        sodium: 129,
-                        calcium: '8%',
-                        iron: '1%',
-                    },
-                    {
-                        name: 'Eclair',
-                        calories: 262,
-                        fat: 16.0,
-                        carbs: 23,
-                        protein: 6.0,
-                        sodium: 337,
-                        calcium: '6%',
-                        iron: '7%',
-                    },
-                    {
-                        name: 'Cupcake',
-                        calories: 305,
-                        fat: 3.7,
-                        carbs: 67,
-                        protein: 4.3,
-                        sodium: 413,
-                        calcium: '3%',
-                        iron: '8%',
-                    },
-                    {
-                        name: 'Gingerbread',
-                        calories: 356,
-                        fat: 16.0,
-                        carbs: 49,
-                        protein: 3.9,
-                        sodium: 327,
-                        calcium: '7%',
-                        iron: '16%',
-                    },
-                    {
-                        name: 'Jelly bean',
-                        calories: 375,
-                        fat: 0.0,
-                        carbs: 94,
-                        protein: 0.0,
-                        sodium: 50,
-                        calcium: '0%',
-                        iron: '0%',
-                    },
-                    {
-                        name: 'Lollipop',
-                        calories: 392,
-                        fat: 0.2,
-                        carbs: 98,
-                        protein: 0,
-                        sodium: 38,
-                        calcium: '0%',
-                        iron: '2%',
-                    },
-                    {
-                        name: 'Honeycomb',
-                        calories: 408,
-                        fat: 3.2,
-                        carbs: 87,
-                        protein: 6.5,
-                        sodium: 562,
-                        calcium: '0%',
-                        iron: '45%',
-                    },
-                    {
-                        name: 'Donut',
-                        calories: 452,
-                        fat: 25.0,
-                        carbs: 51,
-                        protein: 4.9,
-                        sodium: 326,
-                        calcium: '2%',
-                        iron: '22%',
-                    },
-                    {
-                        name: 'KitKat',
-                        calories: 518,
-                        fat: 26.0,
-                        carbs: 65,
-                        protein: 7,
-                        sodium: 54,
-                        calcium: '12%',
-                        iron: '6%',
-                    },
                 ],
             }
         },
         computed: {
+            cardColor(index) {
+                switch (this.words[index]['label']) {
+                    case 'Learning':
+                        return 'green';
+                    case 'Reviewing':
+                        return 'blue';
+                    case 'Difficult':
+                        return 'yellow';
+                    case 'Master':
+                        return 'white'
+                }
+                return 'black'
+            },
             numberOfPages() {
-                return Math.ceil(this.items.length / this.itemsPerPage)
+                return Math.ceil(this.studyWordsItems.length / this.itemsPerPage)
             },
             filteredKeys() {
                 return this.keys.filter(key => key !== `Name`)
             },
+            ...mapGetters(['studyWordsItems', 'learningStateCount', 'reviewingStateCount', 'difficultStateCount']),
+            ...mapState({
+                loaded: state => state.studyWords.loaded,
+                words: state => state.studyWords.words,
+                examples: state => state.studyWords.examples
+            })
         },
         methods: {
+            addWord() {
+                let self = this;
+                if (typeof (String.prototype.trim) === "undefined") {
+                    String.prototype.trim = function () {
+                        return String(this).replace(/^\s+|\s+$/g, '');
+                    };
+                }
+                if (this.word.trim() !== '' && this.definition.trim() !== '') {
+                    this.$store.dispatch(ADD_NEW_WORD, {
+                        'word': this.word,
+                        'definition': this.definition,
+                        'examples': []
+                    }).then(
+                        function (id) {
+                            if (id !== false) {
+                                self.snackbar1 = true;
+                            } else {
+                                self.snackbar2 = true;
+                            }
+                        }
+                    )
+
+                } else {
+                    self.snackbar3 = true
+                }
+            },
+            openAllDialog(index) {
+                this.dialog = true;
+                this.dialogWord = this.words[index]['word']
+                this.dialogDefinition = this.words[index]['definition']
+                this.dialogExamples = this.examples[index]
+            },
             nextPage() {
                 if (this.page + 1 <= this.numberOfPages) this.page += 1
             },
             formerPage() {
                 if (this.page - 1 >= 1) this.page -= 1
             },
-            searchDictionaryEnter(ev){
+            searchDictionaryEnter(ev) {
                 if (ev.charCode === 13) {
                     this.minimized = false;
                     this.$store.dispatch(LOAD_DICTIONARY, this.wordSearch)

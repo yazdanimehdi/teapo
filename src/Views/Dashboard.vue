@@ -165,18 +165,18 @@
         <DashboardComponent :width="mini? width*0.91 : width*0.76" v-if="linkSelected.dashboard"
                             :style="{'margin-left': mini? `${width*0.08 + 10}px`:`${width*0.23 + 10}px`, 'margin-right': '50px', 'margin-top': `${height*0.08}px`}"/>
         <WordsComponent :width="mini? width*0.91 : width*0.76" v-if="linkSelected.words"
-                        :style="{'margin-left': mini? `${width*0.08 + 10}px`:`${width*0.23 + 10}px`, 'margin-right': '50px', 'margin-top': `${height*0.08}px`}"/>
+                        :style="{'margin-left': mini? `${width*0.08 + 10}px`:`${width*0.23 + 10}px`, 'margin-right': '50px', 'margin-top': `${height*0.08}px`}"
+                        :height="height"/>
         <MockTestComponent :width="mini? width*0.91 : width*0.76" v-if="linkSelected.mockTest"
-                        :style="{'margin-left': mini? `${width*0.08 + 10}px`:`${width*0.23 + 10}px`, 'margin-right': '50px', 'margin-top': `${height*0.08}px`}"/>
-        <TPOComponent :width="mini? width*0.91 : width*0.76" v-if="linkSelected.TPO"
                            :style="{'margin-left': mini? `${width*0.08 + 10}px`:`${width*0.23 + 10}px`, 'margin-right': '50px', 'margin-top': `${height*0.08}px`}"/>
-        <Analytics :width="mini? width*0.91 : width*0.76" v-if="linkSelected.analytics"
+        <TPOComponent :width="mini? width*0.91 : width*0.76" v-if="linkSelected.TPO"
                       :style="{'margin-left': mini? `${width*0.08 + 10}px`:`${width*0.23 + 10}px`, 'margin-right': '50px', 'margin-top': `${height*0.08}px`}"/>
+        <Analytics :width="mini? width*0.91 : width*0.76" v-if="linkSelected.analytics"
+                   :style="{'margin-left': mini? `${width*0.08 + 10}px`:`${width*0.23 + 10}px`, 'margin-right': '50px', 'margin-top': `${height*0.08}px`}"/>
     </v-app>
 </template>
 
 <script>
-    import {LOAD_DICTIONARY} from "@/store/actions/dictionary";
     import {
         mdiViewDashboard,
         mdiBookOpenPageVariant,
@@ -239,9 +239,6 @@
         },
         destroyed() {
             window.removeEventListener('resize', this.handleResize);
-        },
-        mounted(){
-            this.$store.dispatch(LOAD_DICTIONARY, 'beauty');
         },
         methods: {
             dashboardSelected() {
