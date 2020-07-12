@@ -1,3 +1,9 @@
 export const ADD_NEW_WORD = 'addNewWord';
 export const GET_STUDY_WORDS = 'getStudyWords';
 export const START_STUDY_LEARNING = 'startStudyLearning';
+export const GO_TO_NEXT_LEARNING_WORD = 'goToNextLearningWord';
+export const START_SPEED_REVIEW = 'startSpeedReview';
+export const GET_RANDOM_WORDS = 'getRandomWords'
+export const GO_TO_NEXT_SPEED_REVIEW = 'goToNextSpeedReview';
+export const START_REVIEW = 'startReview';
+export const GO_TO_NEXT_REVIEW = 'goToNextReview';

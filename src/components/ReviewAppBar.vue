@@ -1,12 +1,12 @@
 <template>
-    <v-app-bar flat height="70" dark color="rgb(93, 160, 125)" absolute style="font-family: kalam">
+    <v-app-bar flat height="70" dark color="rgb(185, 215, 227)" absolute style="font-family: kalam">
         <v-container fluid>
             <v-row style="width: 100%" align="center" justify="center">
                 <v-col cols="1" sm="1" md="1" lg="1" xl="1"
                        style="border-right: rgba(0, 0, 0, 0.1)  solid thin; padding-bottom: 10px;">
                     <div style="text-align: center">
                         <div style="height: 48px">
-                            <v-icon large style="margin-top: 6px" color="rgb(57,77,53)">{{icons.mdiTeach}}</v-icon>
+                            <v-icon large style="margin-top: 6px" color="rgb(57,77,53)">{{icons.mdiViewCarousel}}</v-icon>
                         </div>
 
                     </div>
@@ -22,15 +22,15 @@
                     <v-container fluid style="padding: 0">
                         <v-row justify="space-between" style="padding: 12px">
                             <v-col cols="10" sm="10" md="10" lg="10" xl="10" style="padding: 0">
-                                <div style="text-align: left; font-size: 20px; font-weight: bold">Learn New Words:
+                                <div style="text-align: left; font-size: 20px; font-weight: bold">Reviewing Words:
                                     {{number}}
                                 </div>
                             </v-col>
-<!--                            <v-col cols="2" sm="2" md="2" lg="2" xl="2" style="padding: 0">-->
-<!--                                <div style="background-color: rgba(0, 0, 0, 0.2); border-radius: 20px; height: 20px; width: 30px; text-align: center">-->
-<!--                                    0-->
-<!--                                </div>-->
-<!--                            </v-col>-->
+                            <!--                            <v-col cols="2" sm="2" md="2" lg="2" xl="2" style="padding: 0">-->
+                            <!--                                <div style="background-color: rgba(0, 0, 0, 0.2); border-radius: 20px; height: 20px; width: 30px; text-align: center">-->
+                            <!--                                    0-->
+                            <!--                                </div>-->
+                            <!--                            </v-col>-->
                         </v-row>
                         <v-row justify="end" align="end">
                             <v-col style="padding: 0; padding-bottom: 3px">
@@ -52,16 +52,16 @@
 </template>
 
 <script>
-    import {mdiTeach, mdiPause, mdiClose} from '@mdi/js'
+    import {mdiViewCarousel, mdiPause, mdiClose} from '@mdi/js'
 
     export default {
-        name: "LearnNewWordsAppBar",
+        name: "ReviewAppBar",
         props: {
-            number: {
+            percent: {
                 required: true,
                 type: Number,
             },
-            percent: {
+            number: {
                 required: true,
                 type: Number,
             }
@@ -69,7 +69,7 @@
         data() {
             return {
                 icons: {
-                    mdiTeach,
+                    mdiViewCarousel,
                     mdiPause,
                     mdiClose
                 }

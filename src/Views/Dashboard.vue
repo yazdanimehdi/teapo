@@ -101,6 +101,21 @@
                     </v-list-item-content>
                 </v-list-item>
 
+                <v-list-item link @click="CorrectSelected">
+                    <v-list-item-icon :style="{'margin-right': '10px'}">
+                        <v-icon :color="linkSelected.correct ? '#A40000' : '#1C0153'" large>
+                            {{ icons.mdiCheckCircle }}
+                        </v-icon>
+                    </v-list-item-icon>
+
+                    <v-list-item-content>
+                        <v-list-item-title class="drawer_links"
+                                           :style="{'color': `${linkSelected.correct ? '#A40000' : '#1C0153'}`}"
+                        >Grading
+                        </v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+
                 <v-list-item link @click="analyticsSelected">
                     <v-list-item-icon :style="{'margin-right': '10px'}">
                         <v-icon :color="linkSelected.analytics ? '#A40000' : '#1C0153'" large>
@@ -146,24 +161,55 @@
                     </v-list-item-content>
                 </v-list-item>
 
-                <v-list-item link @click="ordersSelected">
+                <v-list-item link @click="classSelected">
                     <v-list-item-icon :style="{'margin-right': '10px'}">
-                        <v-icon :color="linkSelected.orders ? '#A40000' : '#1C0153'" large>
-                            {{ icons.mdiCart }}
+                        <v-icon :color="linkSelected.classes ? '#A40000' : '#1C0153'" large>
+                            {{ icons.mdiSchool }}
                         </v-icon>
                     </v-list-item-icon>
 
                     <v-list-item-content>
                         <v-list-item-title class="drawer_links"
-                                           :style="{'color': `${linkSelected.orders ? '#A40000' : '#1C0153'}`}"
-                        >Orders
+                                           :style="{'color': `${linkSelected.classes ? '#A40000' : '#1C0153'}`}"
+                        >My Classes
                         </v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
+
+                <v-list-item link @click="onlineCoursesSelected">
+                    <v-list-item-icon :style="{'margin-right': '10px'}">
+                        <v-icon :color="linkSelected.onlineCourses ? '#A40000' : '#1C0153'" large>
+                            {{ icons.mdiTelevision }}
+                        </v-icon>
+                    </v-list-item-icon>
+
+                    <v-list-item-content>
+                        <v-list-item-title class="drawer_links"
+                                           :style="{'color': `${linkSelected.onlineCourses ? '#A40000' : '#1C0153'}`}"
+                        >Courses
+                        </v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+
+<!--                <v-list-item link @click="ordersSelected">-->
+<!--                    <v-list-item-icon :style="{'margin-right': '10px'}">-->
+<!--                        <v-icon :color="linkSelected.orders ? '#A40000' : '#1C0153'" large>-->
+<!--                            {{ icons.mdiCart }}-->
+<!--                        </v-icon>-->
+<!--                    </v-list-item-icon>-->
+
+<!--                    <v-list-item-content>-->
+<!--                        <v-list-item-title class="drawer_links"-->
+<!--                                           :style="{'color': `${linkSelected.orders ? '#A40000' : '#1C0153'}`}"-->
+<!--                        >Orders-->
+<!--                        </v-list-item-title>-->
+<!--                    </v-list-item-content>-->
+<!--                </v-list-item>-->
             </v-list>
         </v-navigation-drawer>
         <DashboardComponent :width="mini? width*0.91 : width*0.76" v-if="linkSelected.dashboard"
-                            :style="{'margin-left': mini? `${width*0.08 + 10}px`:`${width*0.23 + 10}px`, 'margin-right': '50px', 'margin-top': `${height*0.08}px`}"/>
+                            :style="{'margin-left': mini? `${width*0.08 + 10}px`:`${width*0.23 + 10}px`, 'margin-right': '50px', 'margin-top': `${height*0.08}px`}"
+                            :height="height"/>
         <WordsComponent :width="mini? width*0.91 : width*0.76" v-if="linkSelected.words"
                         :style="{'margin-left': mini? `${width*0.08 + 10}px`:`${width*0.23 + 10}px`, 'margin-right': '50px', 'margin-top': `${height*0.08}px`}"
                         :height="height"/>
@@ -173,6 +219,8 @@
                       :style="{'margin-left': mini? `${width*0.08 + 10}px`:`${width*0.23 + 10}px`, 'margin-right': '50px', 'margin-top': `${height*0.08}px`}"/>
         <Analytics :width="mini? width*0.91 : width*0.76" v-if="linkSelected.analytics"
                    :style="{'margin-left': mini? `${width*0.08 + 10}px`:`${width*0.23 + 10}px`, 'margin-right': '50px', 'margin-top': `${height*0.08}px`}"/>
+        <Courses :width="mini? width*0.91 : width*0.76" v-if="linkSelected.onlineCourses"
+                 :style="{'margin-left': mini? `${width*0.08 + 10}px`:`${width*0.23 + 10}px`, 'margin-right': '50px', 'margin-top': `${height*0.08}px`}"/>
     </v-app>
 </template>
 
@@ -186,7 +234,10 @@
         mdiCart,
         mdiChevronDown,
         mdiLogout,
-        mdiAccountEdit
+        mdiAccountEdit,
+        mdiCheckCircle,
+        mdiTelevision,
+        mdiSchool
 
     } from '@mdi/js'
 
@@ -195,10 +246,12 @@
     import MockTestComponent from "@/components/MockTestComponent";
     import TPOComponent from "@/components/TPOComponent";
     import Analytics from "@/components/Analytics";
+    import Courses from "@/components/Courses";
 
     export default {
         name: "Dashboard",
         components: {
+            Courses,
             Analytics,
             TPOComponent,
             MockTestComponent,
@@ -217,7 +270,10 @@
                     mdiCart,
                     mdiChevronDown,
                     mdiLogout,
-                    mdiAccountEdit
+                    mdiAccountEdit,
+                    mdiCheckCircle,
+                    mdiTelevision,
+                    mdiSchool
                 },
                 titleHeight: 56,
                 navWidth: 180,
@@ -230,6 +286,9 @@
                     mockTest: false,
                     orders: false,
                     analytics: false,
+                    correct: false,
+                    classes: false,
+                    onlineCourses: false,
                 }
             }
         },
@@ -247,15 +306,20 @@
                 this.linkSelected.mockTest = false;
                 this.linkSelected.orders = false;
                 this.linkSelected.analytics = false;
+                this.linkSelected.correct = false;
+                this.linkSelected.onlineCourses = false;
+                this.linkSelected.classes = false;
                 this.linkSelected.dashboard = true;
             },
             TPOSelected() {
-                this.mini = true
                 this.linkSelected.dashboard = false;
                 this.linkSelected.words = false;
                 this.linkSelected.mockTest = false;
                 this.linkSelected.orders = false;
                 this.linkSelected.analytics = false;
+                this.linkSelected.correct = false;
+                this.linkSelected.onlineCourses = false;
+                this.linkSelected.classes = false;
                 this.linkSelected.TPO = true;
             },
             wordsSelected() {
@@ -264,6 +328,9 @@
                 this.linkSelected.mockTest = false;
                 this.linkSelected.orders = false;
                 this.linkSelected.analytics = false;
+                this.linkSelected.correct = false;
+                this.linkSelected.onlineCourses = false;
+                this.linkSelected.classes = false;
                 this.linkSelected.words = true;
             },
             mockSelected() {
@@ -272,15 +339,20 @@
                 this.linkSelected.words = false;
                 this.linkSelected.orders = false;
                 this.linkSelected.analytics = false;
+                this.linkSelected.correct = false;
+                this.linkSelected.onlineCourses = false;
+                this.linkSelected.classes = false;
                 this.linkSelected.mockTest = true;
             },
-            ordersSelected() {
+            classSelected() {
                 this.linkSelected.dashboard = false;
                 this.linkSelected.TPO = false;
                 this.linkSelected.words = false;
                 this.linkSelected.mockTest = false;
                 this.linkSelected.analytics = false;
-                this.linkSelected.orders = true;
+                this.linkSelected.correct = false;
+                this.linkSelected.onlineCourses = false;
+                this.linkSelected.classes = true;
             },
             analyticsSelected() {
                 this.linkSelected.dashboard = false;
@@ -288,7 +360,32 @@
                 this.linkSelected.words = false;
                 this.linkSelected.mockTest = false;
                 this.linkSelected.orders = false;
+                this.linkSelected.correct = false;
+                this.linkSelected.onlineCourses = false;
+                this.linkSelected.classes = false;
                 this.linkSelected.analytics = true
+            },
+            CorrectSelected() {
+                this.linkSelected.dashboard = false;
+                this.linkSelected.TPO = false;
+                this.linkSelected.words = false;
+                this.linkSelected.mockTest = false;
+                this.linkSelected.orders = false;
+                this.linkSelected.analytics = false;
+                this.linkSelected.onlineCourses = false;
+                this.linkSelected.classes = false;
+                this.linkSelected.correct = true;
+            },
+            onlineCoursesSelected(){
+                this.linkSelected.dashboard = false;
+                this.linkSelected.TPO = false;
+                this.linkSelected.words = false;
+                this.linkSelected.mockTest = false;
+                this.linkSelected.orders = false;
+                this.linkSelected.analytics = false;
+                this.linkSelected.correct = false;
+                this.linkSelected.classes = false;
+                this.linkSelected.onlineCourses = true;
             },
             handleResize() {
                 this.width = window.innerWidth;

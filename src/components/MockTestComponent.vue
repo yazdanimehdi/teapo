@@ -126,7 +126,7 @@
                                         listening: 27
                                     </div>
                                 </v-col>
-                                <!--speaking & writinh -->
+                                <!--speaking & writing -->
                                 <v-col cols="10" md="2" sm="2" lg="2" xl="2">
                                     <!--speaking-->
                                     <div class="my-subtitle">

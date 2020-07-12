@@ -5,6 +5,8 @@ import Dashboard from "@/Views/Dashboard";
 
 import tpoExam from "@/Views/ExamModule/tpoExam";
 import LearnNewWords from "@/Views/MemriseModules/LearnNewWords";
+import SpeedReview from "@/Views/MemriseModules/SpeedReview";
+import Review from "@/Views/MemriseModules/Review";
 
 Vue.use(Router);
 
@@ -17,10 +19,24 @@ export default new Router({
         },
 
         {
-            path: '/new_words',
+            path: '/learn_words',
             name: 'NewWords',
             component: LearnNewWords
         },
+
+        {
+            path: '/speed_review',
+            name: 'SpeedReview',
+            component: SpeedReview
+        },
+
+        {
+            path: '/review',
+            name: 'Review',
+            component: Review
+        },
+
+
 
         {
             path: '/tpo',
