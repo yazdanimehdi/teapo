@@ -81,7 +81,7 @@
 </template>
 
 <script>
-    import SpeedReviewAppBar from "@/components/SpeedReviewAppBar";
+    import SpeedReviewAppBar from "@/components/MemriseComponents/SpeedReviewAppBar";
     import {mdiAlien, mdiChevronRight, mdiHeartBroken} from "@mdi/js";
     import {mapState} from "vuex";
     import {GO_TO_NEXT_SPEED_REVIEW} from '@/store/actions/studyWords'

@@ -24,7 +24,7 @@
                 <v-container fluid>
                     <v-row>
                         <v-col v-for="i in 53" cols="12" sm="6" md="6" lg="4" :key="i">
-                            <TPOCard :tpo-id="i" :mode="practice"/>
+                            <TPOCard :tpo-id="i" :mode="practice ? 'practiceMode' : 'testMode'"/>
                         </v-col>
                     </v-row>
                 </v-container>
@@ -35,7 +35,7 @@
 </template>
 
 <script>
-    import TPOCard from "@/components/TPOCard";
+    import TPOCard from "@/components/Subcomponents/TPOCard";
 
     export default {
         name: "TPOComponent",

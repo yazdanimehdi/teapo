@@ -50,7 +50,7 @@
                         <v-card @click="studyDialog = true"
                                 :style="{'background-image': (learningStateCount === 0 && reviewingStateCount === 0 && difficultStateCount === 0) ? 'linear-gradient(gray, black)' :'linear-gradient(#A0B271, #B6F51F)' }"
                                 style="height: 300px; border-radius: 15px">
-                            <v-img src="../assets/study.png" class="black--text" contain
+                            <v-img src="../../assets/study.png" class="black--text" contain
                                    height="300px">
                                 <v-card-subtitle>
                                     <div>
@@ -369,10 +369,10 @@
         mdiCardSearch
     } from '@mdi/js'
     import {LOAD_DICTIONARY} from "@/store/actions/dictionary";
-    import DictionaryComponent from "@/components/DictionaryComponent";
+    import DictionaryComponent from "@/components/Subcomponents/DictionaryComponent";
     import {mapGetters, mapState} from 'vuex'
     import {ADD_NEW_WORD, GET_STUDY_WORDS} from "@/store/actions/studyWords";
-    import StartStudyOverlay from "@/components/StartStudyOverlay";
+    import StartStudyOverlay from "@/components/MemriseComponents/StartStudyOverlay";
 
     export default {
         name: "WordsComponent",
@@ -464,19 +464,30 @@
                     };
                 }
                 if (this.word.trim() !== '' && this.definition.trim() !== '') {
-                    this.$store.dispatch(ADD_NEW_WORD, {
-                        'word': this.word,
-                        'definition': this.definition,
-                        'examples': []
-                    }).then(
-                        function (id) {
-                            if (id !== false) {
-                                self.snackbar1 = true;
-                            } else {
-                                self.snackbar2 = true;
-                            }
+                    let flag = false;
+                    for(let i = 0; i < this.words.length; i++){
+                        if(this.words[i]['word'] === this.word.trim() && this.words[i]['definition'] === this.definition.trim()){
+                            flag = true
                         }
-                    )
+                    }
+                    if(flag === false){
+                        this.$store.dispatch(ADD_NEW_WORD, {
+                            'word': this.word,
+                            'definition': this.definition,
+                            'examples': []
+                        }).then(
+                            function (id) {
+                                if (id !== false) {
+                                    self.snackbar1 = true;
+                                } else {
+                                    self.snackbar2 = true;
+                                }
+                            }
+                        )
+                    }
+                    else {
+                        self.snackbar2 = true
+                    }
 
                 } else {
                     self.snackbar3 = true

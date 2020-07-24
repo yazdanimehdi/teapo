@@ -10,7 +10,7 @@
                                 <v-container fluid>
                                     <v-row justify="start" align="start">
                                         <v-col style="padding: 0">
-                                            <v-btn dark rounded small style="margin-right: 10px">Home</v-btn>
+                                            <v-btn to="/" dark rounded small style="margin-right: 10px">Home</v-btn>
                                             <v-btn style="background-color: lime; margin-right: 10px" rounded
                                                    @click="dialogCorrect = true"
                                                    v-if="readingMode ==='practiceMode' || readingMode === 'reviewMode'"

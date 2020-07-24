@@ -129,22 +129,22 @@
                    <v-container fluid>
                        <v-row align="center" justify="center">
                            <v-col>
-                               <v-btn block>All</v-btn>
+                               <v-btn block @click="goToTPO">All</v-btn>
                            </v-col>
                        </v-row>
 
                        <v-row align="center" justify="center">
-                           <v-col>
-                               <v-btn block color="teal accent-1">Reading</v-btn>
+                           <v-col cols="6" sm="6" md="6" lg="6" xl="6">
+                               <v-btn @click="goToReading" block color="teal accent-1">Reading</v-btn>
                            </v-col>
-                           <v-col>
-                               <v-btn block color="indigo lighten-4">Listening</v-btn>
+                           <v-col cols="6" sm="6" md="6" lg="6" xl="6">
+                               <v-btn @click="goToListening" block color="indigo lighten-4">Listening</v-btn>
                            </v-col>
-                           <v-col>
-                               <v-btn block color="deep-orange lighten-3">Speaking</v-btn>
+                           <v-col cols="6" sm="6" md="6" lg="6" xl="6">
+                               <v-btn @click="goToSpeaking" block color="deep-orange lighten-3">Speaking</v-btn>
                            </v-col>
-                           <v-col>
-                               <v-btn block color="red accent-2">Writing</v-btn>
+                           <v-col cols="6" sm="6" md="6" lg="6" xl="6">
+                               <v-btn @click="goToWriting" block color="red accent-2">Writing</v-btn>
                            </v-col>
                        </v-row>
                    </v-container>
@@ -155,6 +155,8 @@
 </template>
 
 <script>
+    import {START_TPO} from "@/store/actions/mainTPO";
+
     export default {
         name: "TPOCard",
         props:{
@@ -164,7 +166,7 @@
             },
             mode:{
                 required: true,
-                type: Boolean
+                type: String
             }
         },
         beforeDestroy () {
@@ -214,6 +216,46 @@
           }
         },
         methods:{
+            goToTPO(){
+                this.$store.dispatch(START_TPO, {
+                    'examArray': ['Reading', 'Listening', 'Speaking', 'Writing'],
+                    'TPO': `tpo${this.tpoId}`,
+                    'mode': this.mode
+                })
+                this.$router.push('/tpo')
+            },
+            goToReading(){
+                this.$store.dispatch(START_TPO, {
+                    'examArray': ['Reading'],
+                    'TPO': `tpo${this.tpoId}`,
+                    'mode': this.mode
+                })
+                this.$router.push('/tpo')
+            },
+            goToListening(){
+                this.$store.dispatch(START_TPO, {
+                    'examArray': ['Listening'],
+                    'TPO': `tpo${this.tpoId}`,
+                    'mode': this.mode
+                })
+                this.$router.push('/tpo')
+            },
+            goToSpeaking(){
+                this.$store.dispatch(START_TPO, {
+                    'examArray': ['Speaking'],
+                    'TPO': `tpo${this.tpoId}`,
+                    'mode': this.mode
+                })
+                this.$router.push('/tpo')
+            },
+            goToWriting(){
+                this.$store.dispatch(START_TPO, {
+                    'examArray': ['Writing'],
+                    'TPO': `tpo${this.tpoId}`,
+                    'mode': this.mode
+                })
+                this.$router.push('/tpo')
+            },
             downloadTPO (){
                 this.queryAndIndeterminate();
             },

@@ -39,8 +39,6 @@
 
     import {COMPUTE_TIME} from "@/store/actions/time";
 
-    import {START_TPO} from "@/store/actions/mainTPO";
-
     export default {
         name: "tpoExam",
         components: {
@@ -79,12 +77,6 @@
             }),
         },
 
-        mounted() {
-            this.$store.dispatch(START_TPO, {
-                'examArray': ['Reading'],
-                'TPO': 'tpo1'
-            })
-        },
         created() {
             let self = this;
             setInterval(function () {

@@ -240,13 +240,14 @@
         mdiSchool
 
     } from '@mdi/js'
-
-    import DashboardComponent from "@/components/DashboardComponent";
-    import WordsComponent from "@/components/WordsComponent";
-    import MockTestComponent from "@/components/MockTestComponent";
-    import TPOComponent from "@/components/TPOComponent";
-    import Analytics from "@/components/Analytics";
-    import Courses from "@/components/Courses";
+    import {mapState} from 'vuex'
+    import {CHANGE_TAB} from "@/store/actions/dashboard";
+    import DashboardComponent from "@/components/Main/DashboardComponent";
+    import WordsComponent from "@/components/Main/WordsComponent";
+    import MockTestComponent from "@/components/Subcomponents/MockTestComponent";
+    import TPOComponent from "@/components/Main/TPOComponent";
+    import Analytics from "@/components/Main/Analytics";
+    import Courses from "@/components/Main/Courses";
 
     export default {
         name: "Dashboard",
@@ -299,8 +300,26 @@
         destroyed() {
             window.removeEventListener('resize', this.handleResize);
         },
+        computed: {
+            ...mapState({
+                tabNumber: state => state.dashboard.tabNumber
+            })
+        },
+        mounted(){
+          switch (this.tabNumber) {
+            case 0: this.dashboardSelected(); break;
+            case 1: this.TPOSelected(); break;
+            case 2: this.CorrectSelected(); break;
+            case 3: this.analyticsSelected(); break;
+            case 4: this.wordsSelected(); break;
+            case 5: this.mockSelected(); break;
+            case 6: this.classSelected(); break;
+            case 7: this.onlineCoursesSelected(); break;
+          }
+        },
         methods: {
             dashboardSelected() {
+                this.$store.dispatch(CHANGE_TAB, 0);
                 this.linkSelected.TPO = false;
                 this.linkSelected.words = false;
                 this.linkSelected.mockTest = false;
@@ -312,6 +331,7 @@
                 this.linkSelected.dashboard = true;
             },
             TPOSelected() {
+                this.$store.dispatch(CHANGE_TAB, 1);
                 this.linkSelected.dashboard = false;
                 this.linkSelected.words = false;
                 this.linkSelected.mockTest = false;
@@ -323,6 +343,7 @@
                 this.linkSelected.TPO = true;
             },
             wordsSelected() {
+                this.$store.dispatch(CHANGE_TAB, 4);
                 this.linkSelected.dashboard = false;
                 this.linkSelected.TPO = false;
                 this.linkSelected.mockTest = false;
@@ -334,6 +355,7 @@
                 this.linkSelected.words = true;
             },
             mockSelected() {
+                this.$store.dispatch(CHANGE_TAB, 5);
                 this.linkSelected.dashboard = false;
                 this.linkSelected.TPO = false;
                 this.linkSelected.words = false;
@@ -345,6 +367,7 @@
                 this.linkSelected.mockTest = true;
             },
             classSelected() {
+                this.$store.dispatch(CHANGE_TAB, 6);
                 this.linkSelected.dashboard = false;
                 this.linkSelected.TPO = false;
                 this.linkSelected.words = false;
@@ -355,6 +378,7 @@
                 this.linkSelected.classes = true;
             },
             analyticsSelected() {
+                this.$store.dispatch(CHANGE_TAB, 3);
                 this.linkSelected.dashboard = false;
                 this.linkSelected.TPO = false;
                 this.linkSelected.words = false;
@@ -366,6 +390,7 @@
                 this.linkSelected.analytics = true
             },
             CorrectSelected() {
+                this.$store.dispatch(CHANGE_TAB, 2);
                 this.linkSelected.dashboard = false;
                 this.linkSelected.TPO = false;
                 this.linkSelected.words = false;
@@ -377,6 +402,7 @@
                 this.linkSelected.correct = true;
             },
             onlineCoursesSelected(){
+                this.$store.dispatch(CHANGE_TAB, 7);
                 this.linkSelected.dashboard = false;
                 this.linkSelected.TPO = false;
                 this.linkSelected.words = false;

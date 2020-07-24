@@ -129,7 +129,7 @@
                     </v-row>
                     <v-row>
                         <v-col style="padding-top: 0">
-                            <v-btn color="#2F116D" style="color: white; font-family: kalam">Signup</v-btn>
+                            <v-btn color="#2F116D" @click="register" style="color: white; font-family: kalam">Signup</v-btn>
                         </v-col>
 
                     </v-row>
@@ -200,10 +200,8 @@
         },
         computed: {},
         methods: {
-            validate() {
-                if (this.$refs.form.validate()) {
-                    this.snackbar = true
-                }
+            register(){
+
             }
         }
     }

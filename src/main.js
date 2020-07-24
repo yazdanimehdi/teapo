@@ -4,8 +4,17 @@ import store from './store'
 import router from './router'
 import vuetify from './plugins/vuetify';
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
+import axios from "axios";
 
 Vue.config.productionTip = false
+const token = localStorage.getItem('user-token');
+
+axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
+axios.defaults.xsrfCookieName = "csrftoken"
+
+if (token) {
+  axios.defaults.headers.common['Authorization'] = `Token ${token}`
+}
 
 new Vue({
   store,

@@ -6,7 +6,7 @@
                     <v-card class="mx-auto"
                             style="background-image: linear-gradient(#DF55B1, #CEA0BF); height: 300px; border-radius: 15px"
                     >
-                        <v-img src="../assets/new_releases.png" class="white--text" contain
+                        <v-img src="../../assets/new_releases.png" class="white--text" contain
                                height="300px">
                             <v-card-subtitle>
                                 <div>
@@ -22,7 +22,7 @@
                 </v-col>
                 <v-col cols="12" sm="4" md="4" lg="4" xl="4">
                     <v-card style="background-image: linear-gradient(#5362C5, #676D9A); height: 300px; border-radius: 15px">
-                        <v-img src="../assets/inbox.png" class="white--text" contain
+                        <v-img src="../../assets/inbox.png" class="white--text" contain
                                height="300px">
                             <v-card-subtitle>
                                 <div>
@@ -38,7 +38,7 @@
             <v-row>
                 <v-col cols="12" sm="3" md="3" lg="3" xl="3">
                     <v-card style="background-image: linear-gradient(#2EC9B9, #8FB9B3); height: 240px; border-radius: 15px">
-                        <v-img src="../assets/sand.png" class="black--text" contain
+                        <v-img src="../../assets/sand.png" class="black--text" contain
                                height="240px">
                             <v-card-subtitle>
                                 <div>
@@ -62,7 +62,7 @@
                 </v-col>
                 <v-col cols="12" sm="6" md="6" lg="6" xl="6">
                     <v-card style="background-image: linear-gradient(#E29578, #CCB9B2); height: 240px; border-radius: 15px">
-                        <v-img src="../assets/fast_forward.png" class="black--text" contain
+                        <v-img src="../../assets/fast_forward.png" class="black--text" contain
                                height="240px">
                             <v-card-subtitle>
                                 <div>
@@ -106,7 +106,7 @@
                 </v-col>
                 <v-col cols="12" sm="3" md="3" lg="3" xl="3">
                     <v-card style="background-image: linear-gradient(#FF5D5D, #D29E9E);height: 240px;  border-radius: 15px">
-                        <v-img src="../assets/history.png" class="white--text" contain
+                        <v-img src="../../assets/history.png" class="white--text" contain
                                height="240px">
                             <v-card-subtitle>
                                 <div>
@@ -124,7 +124,7 @@
             <v-row>
                 <v-col cols="12" sm="7" md="7" lg="7" xl="7">
                     <v-card style="background-image: linear-gradient(#C9D8C3, #10DC2B); height: 200px; border-radius: 15px">
-                        <v-img src="../assets/course.png" class="white--text" contain
+                        <v-img src="../../assets/course.png" class="white--text" contain
                                height="200px">
                             <v-card-subtitle>
                                 <div>
@@ -139,7 +139,7 @@
                 </v-col>
                 <v-col cols="12" sm="5" md="5" lg="5" xl="5">
                     <v-card style="background-image: linear-gradient(#A0B271, #B6F51F); height: 200px; border-radius: 15px" @click="studyDialog = true">
-                        <v-img src="../assets/study.png" class="black--text" contain
+                        <v-img src="../../assets/study.png" class="black--text" contain
                                height="200px">
                             <v-card-subtitle style="padding: 10px 10px 5px 10px">
                                 <div>
@@ -222,7 +222,7 @@
         mdiArrowRightBold
     } from '@mdi/js';
     import {mapGetters} from 'vuex';
-    import StartStudyOverlay from "@/components/StartStudyOverlay";
+    import StartStudyOverlay from "@/components/MemriseComponents/StartStudyOverlay";
     import {GET_STUDY_WORDS} from "@/store/actions/studyWords";
 
     export default {

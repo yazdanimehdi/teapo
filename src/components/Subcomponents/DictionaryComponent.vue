@@ -129,24 +129,36 @@
                 wordOtherExamples: state => state.dictionary.wordOtherExamples,
                 wordEtymology: state => state.dictionary.wordEtymology,
                 wordCollocations: state => state.dictionary.wordCollocations,
+                wordList: state => state.studyWords.words
             })
         },
         methods: {
             addToStudy(word, meaning, examples) {
                 let self = this;
-                this.$store.dispatch(ADD_NEW_WORD, {
-                    'word': word,
-                    'definition': meaning,
-                    'examples': examples
-                }).then(
-                    function (id) {
-                        if (id !== false) {
-                            self.snackbar1 = true;
-                        } else {
-                            self.snackbar2 = true;
-                        }
+                let flag = false;
+                for(let i = 0; i < this.wordList.length; i++){
+                    if(this.wordList[i]['word'] === word && this.wordList[i]['definition'] === meaning){
+                        flag = true
                     }
-                )
+                }
+                if(flag === false){
+                    this.$store.dispatch(ADD_NEW_WORD, {
+                        'word': word,
+                        'definition': meaning,
+                        'examples': examples
+                    }).then(
+                        function (id) {
+                            if (id !== false) {
+                                self.snackbar1 = true;
+                            } else {
+                                self.snackbar2 = true;
+                            }
+                        }
+                    )
+                }
+                else {
+                    self.snackbar2 = true;
+                }
             },
             goToWord(word) {
                 this.$store.dispatch(LOAD_DICTIONARY, word);

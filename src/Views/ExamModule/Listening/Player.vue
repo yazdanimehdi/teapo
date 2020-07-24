@@ -7,7 +7,7 @@
                     <v-container fluid>
                         <v-row justify="start" align="start">
                             <v-col style="padding: 0">
-                                <v-btn dark rounded small style="margin-right: 10px;">Home</v-btn>
+                                <v-btn to="/" dark rounded small style="margin-right: 10px;">Home</v-btn>
                                 <v-btn rounded @click="selected === '' ? dialog=false : dialog=true"
                                        :disabled="selected ===''" x-small
                                        v-if="listeningMode === 'practiceMode' || listeningMode === 'reviewMode'">

@@ -7,7 +7,7 @@
                     <v-container fluid>
                         <v-row justify="start" align="start">
                             <v-col style="padding: 0">
-                                <v-btn dark rounded small style="margin-right: 10px;">Home</v-btn>
+                                <v-btn to="/" dark rounded small style="margin-right: 10px;">Home</v-btn>
                             </v-col>
                             <v-col cols="4" md="4" lg="4" sm="4" v-if="volume.enabled" style="padding: 0">
                                 <label>

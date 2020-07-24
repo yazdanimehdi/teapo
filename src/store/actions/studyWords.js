@@ -7,3 +7,6 @@ export const GET_RANDOM_WORDS = 'getRandomWords'
 export const GO_TO_NEXT_SPEED_REVIEW = 'goToNextSpeedReview';
 export const START_REVIEW = 'startReview';
 export const GO_TO_NEXT_REVIEW = 'goToNextReview';
+export const START_DIFFICULT_WORDS = 'StartDifficultWords';
+export const GO_TO_NEXT_DIFFICULT_WORD = 'goToNextDifficultWord';
+export const ADD_TO_DIFFICULT = 'addToDifficult';

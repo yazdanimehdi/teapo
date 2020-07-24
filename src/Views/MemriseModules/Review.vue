@@ -97,8 +97,8 @@
 </template>
 
 <script>
-    import ReviewAppBar from "@/components/ReviewAppBar";
-    import {mdiAlien, mdiChevronRight, mdiHeartBroken} from "@mdi/js";
+    import ReviewAppBar from "@/components/MemriseComponents/ReviewAppBar";
+    import {mdiChevronRight, mdiHeartBroken} from "@mdi/js";
     import {mapState} from "vuex";
     import {GO_TO_NEXT_REVIEW} from "@/store/actions/studyWords";
     export default {
@@ -108,7 +108,6 @@
             return {
                 index: 0,
                 icons: {
-                    mdiAlien,
                     mdiChevronRight,
                     mdiHeartBroken
 

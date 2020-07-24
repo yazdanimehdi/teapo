@@ -66,7 +66,7 @@
 
                     <v-col cols="3" md="3" sm="3" lg="3" xl="3">
                         <div>
-                            <v-btn icon height="120" width="120" :disabled="difficultStateCount === 0">
+                            <v-btn icon @click="goToDifficultWords" height="120" width="120" :disabled="difficultStateCount === 0">
                                 <v-badge color="red"
                                          :content="`${difficultStateCount}`"
                                          v-if="difficultStateCount !== 0"
@@ -89,7 +89,7 @@
 
 <script>
     import {mdiClose, mdiBomb, mdiTeach, mdiViewCarousel, mdiAlien} from '@mdi/js'
-    import {START_REVIEW, START_SPEED_REVIEW, START_STUDY_LEARNING} from "@/store/actions/studyWords";
+    import {START_REVIEW, START_SPEED_REVIEW, START_STUDY_LEARNING, START_DIFFICULT_WORDS} from "@/store/actions/studyWords";
     import {mapGetters} from 'vuex'
 
     export default {
@@ -127,6 +127,10 @@
                 this.$store.dispatch(START_SPEED_REVIEW);
                 this.$router.push('/speed_review')
             },
+            goToDifficultWords(){
+                this.$store.dispatch(START_DIFFICULT_WORDS);
+                this.$router.push('/difficult_words')
+            }
         }
     }
 </script>

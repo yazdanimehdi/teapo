@@ -1,16 +1,28 @@
 <template>
     <v-app>
-        <learn-new-words-app-bar :number="learningSession.length" :percent="(doneState/denominator)*100" style="position: fixed"/>
-        <v-container style="margin-top: 80px; width: 700px; font-family: kalam; overflow-y:scroll; height: 100%">
-            <v-row justify="center" align="center" v-if="learningSession.length !== 0">
+        <DifficultWordsAppBar :number="difficultWordsSession.length" :percent="(doneState/denominator)*100" :pause="pause" @play="pause = false" @pause="pause = true" style="position: fixed"/>
+        <v-container style="margin-top: 80px; width: 700px; font-family: kalam; overflow-y:scroll; height: 100%" v-if="pause">
+            <v-row justify="center" align="center">
+                <v-col sm="6" md="6" lg="6" xl="6" style="text-align: center">
+                    <v-btn icon height="200" width="200" @click="pause = false"><v-icon size="200">{{icons.mdiPlay}}</v-icon></v-btn>
+                </v-col>
+            </v-row>
+            <v-row justify="center" align="center">
+                <v-col sm="6" md="6" lg="6" xl="6" style="text-align: center">
+                    <v-btn height="40" width="200" style="color: white" color="rgb(117, 117, 117)" to="/"><v-icon size="35">{{icons.mdiStop}}</v-icon> save and exit</v-btn>
+                </v-col>
+            </v-row>
+        </v-container>
+        <v-container style="margin-top: 80px; width: 700px; font-family: kalam; overflow-y:scroll; height: 100%" v-else>
+            <v-row justify="center" align="center" v-if="difficultWordsSession.length !== 0">
                 <v-col>
                     <v-card flat light height="500px">
                         <v-card-text>
-                            <v-container v-if="learningSession[index]['state'] === 0">
+                            <v-container v-if="difficultWordsSession[index]['state'] === -1">
                                 <v-row>
                                     <v-col sm="8" md="8" lg="8" xl="8" style="border-bottom: gray thin solid">
                                         <div style="font-weight: bold; font-size: 70px; margin-top: 30px">
-                                            {{learningSession[index]['word']}}
+                                            {{difficultWordsSession[index]['word']}}
                                         </div>
                                     </v-col>
 
@@ -18,21 +30,12 @@
                                         <v-container fluid>
                                             <v-row>
                                                 <v-col style="padding: 0">
-                                                    <v-progress-linear :value="(learningSession[index]['state']/6)*100"
+                                                    <v-progress-linear :value="(difficultWordsSession[index]['state']/6)*100"
                                                                        height="15"
                                                                        striped
                                                                        rounded
                                                                        color="#5A4389"
                                                     ></v-progress-linear>
-                                                </v-col>
-                                            </v-row>
-                                            <v-row>
-                                                <v-col>
-                                                    <v-btn icon @click="addToDifficult">
-                                                        <v-icon :size="30" color="rgb(246, 193, 67)">
-                                                            {{icons.mdiAlien}}
-                                                        </v-icon>
-                                                    </v-btn>
                                                 </v-col>
                                             </v-row>
                                         </v-container>
@@ -70,27 +73,93 @@
                                 <v-row>
                                     <v-col>
                                         <div style="font-size: 36px; line-height: 40px">
-                                            {{learningSession[index]['definition']}}
+                                            {{difficultWordsSession[index]['definition']}}
                                         </div>
                                     </v-col>
                                 </v-row>
                                 <v-row>
                                     <v-col>
                                         <div style="font-size: 28px; margin-bottom: 10px; line-height: 30px"
-                                             v-for="(example, i) in exampleList[index]" :key="i"><span
-                                                style="color: red">{{i + 1}}</span> {{example['example']}}
+                                             v-for="(example, index) in exampleList[index]" :key="index"><span
+                                                style="color: red">{{index + 1}}</span> {{example['example']}}
                                         </div>
                                     </v-col>
                                 </v-row>
 
                             </v-container>
 
+                            <v-container v-if="difficultWordsSession[index]['state'] === 0">
+                                <v-row>
+                                    <v-col sm="8" md="8" lg="8" xl="8" style="border-bottom: gray thin solid">
+                                        <div style="font-weight: bold; font-size: 22px; margin-top: 30px">
+                                            {{difficultWordsSession[index]['definition']}}
+                                        </div>
+                                    </v-col>
+
+                                    <v-col sm="2" md="2" lg="2" xl="2" style="padding-bottom: 0">
+                                        <v-container fluid>
+                                            <v-row>
+                                                <v-col style="padding: 0">
+                                                    <v-progress-linear :value="(difficultWordsSession[index]['state']/6)*100"
+                                                                       height="15"
+                                                                       striped
+                                                                       rounded
+                                                                       color="#5A4389"
+                                                    ></v-progress-linear>
+                                                </v-col>
+                                            </v-row>
+                                        </v-container>
+                                    </v-col>
+                                    <v-col sm="2" md="2" lg="2" xl="2" style="padding-bottom: 0">
+                                        <v-hover
+                                                v-slot:default="{ hover }"
+                                        >
+                                            <v-btn
+                                                    :color="hover? 'rgb(246, 193, 67)' : 'rgb(197, 193, 193)'"
+                                                    height="120" width="90" :elevation="hover? 8: 2"
+                                                    @click="goToNextStateFive"
+                                            >
+                                                <v-container>
+                                                    <v-row>
+                                                        <v-col>
+                                                            <v-icon x-large>
+                                                                {{icons.mdiChevronRight}}
+                                                            </v-icon>
+                                                        </v-col>
+
+                                                    </v-row>
+                                                    <v-row>
+                                                        <v-col style="font-weight: bold">
+                                                            Next
+                                                        </v-col>
+
+                                                    </v-row>
+                                                </v-container>
+
+                                            </v-btn>
+                                        </v-hover>
+                                    </v-col>
+                                </v-row>
+                                <v-row style="width: 500px" align="center" justify="center">
+                                    <v-col>
+                                        <v-text-field filled flat v-model="textAnswer" outlined rounded
+                                                      :placeholder="difficultWordsSession[index]['word']"
+                                                      :success="selected ? answerCorrect : false"
+                                                      :error="selected ? !answerCorrect : false"
+                                                      style="font-size: 22px; font-weight: bold">
+
+                                        </v-text-field>
+                                    </v-col>
+                                </v-row>
+
+                            </v-container>
+
                             <v-container
-                                    v-if="learningSession[index]['state'] === 1 || learningSession[index]['state'] === 3">
+                                    v-if="difficultWordsSession[index]['state'] === 1 || difficultWordsSession[index]['state'] === 3">
                                 <v-row>
                                     <v-col sm="8" md="8" lg="8" xl="8" style="border-bottom: gray thin solid">
                                         <div style="font-weight: bold; font-size: 70px; margin-top: 30px">
-                                            {{learningSession[index]['word']}}
+                                            {{difficultWordsSession[index]['word']}}
                                         </div>
                                     </v-col>
 
@@ -98,21 +167,12 @@
                                         <v-container fluid>
                                             <v-row>
                                                 <v-col style="padding: 0">
-                                                    <v-progress-linear :value="(learningSession[index]['state']/6)*100"
+                                                    <v-progress-linear :value="(difficultWordsSession[index]['state']/6)*100"
                                                                        height="15"
                                                                        striped
                                                                        rounded
                                                                        color="#5A4389"
                                                     ></v-progress-linear>
-                                                </v-col>
-                                            </v-row>
-                                            <v-row>
-                                                <v-col>
-                                                    <v-btn icon @click="addToDifficult">
-                                                        <v-icon :size="30" color="rgb(246, 193, 67)">
-                                                            {{icons.mdiAlien}}
-                                                        </v-icon>
-                                                    </v-btn>
                                                 </v-col>
                                             </v-row>
                                         </v-container>
@@ -133,11 +193,11 @@
                             </v-container>
 
                             <v-container
-                                    v-if="learningSession[index]['state'] === 2 || learningSession[index]['state'] === 4">
+                                    v-if="difficultWordsSession[index]['state'] === 2 || difficultWordsSession[index]['state'] === 4">
                                 <v-row>
                                     <v-col sm="8" md="8" lg="8" xl="8" style="border-bottom: gray thin solid">
                                         <div style="font-weight: bold; font-size: 22px; margin-top: 30px; line-height: 30px">
-                                            {{learningSession[index]['definition']}}
+                                            {{difficultWordsSession[index]['definition']}}
                                         </div>
                                     </v-col>
 
@@ -145,21 +205,12 @@
                                         <v-container fluid>
                                             <v-row>
                                                 <v-col style="padding: 0">
-                                                    <v-progress-linear :value="(learningSession[index]['state']/6)*100"
+                                                    <v-progress-linear :value="(difficultWordsSession[index]['state']/6)*100"
                                                                        height="15"
                                                                        striped
                                                                        rounded
                                                                        color="#5A4389"
                                                     ></v-progress-linear>
-                                                </v-col>
-                                            </v-row>
-                                            <v-row>
-                                                <v-col>
-                                                    <v-btn icon @click="addToDifficult">
-                                                        <v-icon :size="30" color="rgb(246, 193, 67)">
-                                                            {{icons.mdiAlien}}
-                                                        </v-icon>
-                                                    </v-btn>
                                                 </v-col>
                                             </v-row>
                                         </v-container>
@@ -180,11 +231,11 @@
                             </v-container>
 
 
-                            <v-container v-if="learningSession[index]['state'] === 5">
+                            <v-container v-if="difficultWordsSession[index]['state'] === 5">
                                 <v-row>
                                     <v-col sm="8" md="8" lg="8" xl="8" style="border-bottom: gray thin solid">
                                         <div style="font-weight: bold; font-size: 24px; margin-top: 30px; line-height: 30px">
-                                            {{learningSession[index]['definition']}}
+                                            {{difficultWordsSession[index]['definition']}}
                                         </div>
                                     </v-col>
 
@@ -192,21 +243,12 @@
                                         <v-container fluid>
                                             <v-row>
                                                 <v-col style="padding: 0">
-                                                    <v-progress-linear :value="(learningSession[index]['state']/6)*100"
+                                                    <v-progress-linear :value="(difficultWordsSession[index]['state']/6)*100"
                                                                        height="15"
                                                                        striped
                                                                        rounded
                                                                        color="#5A4389"
                                                     ></v-progress-linear>
-                                                </v-col>
-                                            </v-row>
-                                            <v-row>
-                                                <v-col>
-                                                    <v-btn icon @click="addToDifficult">
-                                                        <v-icon :size="30" color="rgb(246, 193, 67)">
-                                                            {{icons.mdiAlien}}
-                                                        </v-icon>
-                                                    </v-btn>
                                                 </v-col>
                                             </v-row>
                                         </v-container>
@@ -269,21 +311,23 @@
 </template>
 
 <script>
-    import LearnNewWordsAppBar from "@/components/MemriseComponents/LearnNewWordsAppBar";
+    import DifficultWordsAppBar from "@/components/MemriseComponents/DifficultWordsAppBar";
     import {mapState} from 'vuex'
-    import {mdiAlien, mdiChevronRight} from '@mdi/js'
-    import {ADD_TO_DIFFICULT, GO_TO_NEXT_LEARNING_WORD} from "@/store/actions/studyWords";
+    import {mdiChevronRight, mdiPlay, mdiStop} from '@mdi/js'
+    import {GO_TO_NEXT_DIFFICULT_WORD} from "@/store/actions/studyWords";
 
     export default {
-        name: "LearnNewWords",
-        components: {LearnNewWordsAppBar},
+        name: "DifficultWords",
+        components: {DifficultWordsAppBar},
         data() {
             return {
                 index: 0,
                 icons: {
-                    mdiAlien,
+                    mdiStop,
+                    mdiPlay,
                     mdiChevronRight
                 },
+                pause: false,
                 selected: false,
                 clickedIndex: 0,
                 answerCorrect: false,
@@ -296,8 +340,8 @@
         computed: {
             ...mapState({
                 words: state => state.studyWords.words,
-                learningSession: state => state.studyWords.learningSession,
-                exampleList: state => state.studyWords.learningExampleList,
+                difficultWordsSession: state => state.studyWords.difficultWordsSession,
+                exampleList: state => state.studyWords.difficultExampleList,
                 randomWords: state => state.studyWords.randomWords,
                 randomDefs: state => state.studyWords.randomDefs,
                 denominator: state => state.studyWords.denominator,
@@ -306,13 +350,13 @@
                 let answerChoices = []
                 let correctAnswer = 0
 
-                if (this.learningSession[this.index]['state'] === 1) {
+                if (this.difficultWordsSession[this.index]['state'] === 1) {
                     if (this.words.length >= 4) {
                         correctAnswer = this.getRandomInt(0, 4);
                         for (let i = 0; i < 4; i++) {
                             if (i === correctAnswer) {
                                 answerChoices.push({
-                                    'def': this.learningSession[this.index]['definition'],
+                                    'def': this.difficultWordsSession[this.index]['definition'],
                                     'answer': true
                                 })
                             } else {
@@ -321,7 +365,7 @@
                                 for (let j = 0; j < answerChoices.length; j++) {
                                     answerChoicesDef.push(answerChoices[j]['def'])
                                 }
-                                while (this.words[a]['word'] === this.learningSession[this.index]['word'] || answerChoicesDef.indexOf(this.words[a]['definition']) !== -1) {
+                                while (this.words[a]['word'] === this.difficultWordsSession[this.index]['word'] || answerChoicesDef.indexOf(this.words[a]['definition']) !== -1) {
                                     a = this.getRandomInt(0, this.words.length)
                                 }
                                 answerChoices.push({'def': this.words[a]['definition'], 'answer': false})
@@ -332,7 +376,7 @@
                         for (let i = 0; i < 4; i++) {
                             if (i === correctAnswer) {
                                 answerChoices.push({
-                                    'def': this.learningSession[this.index]['definition'],
+                                    'def': this.difficultWordsSession[this.index]['definition'],
                                     'answer': true
                                 })
                             } else {
@@ -344,13 +388,13 @@
                     return answerChoices
                 }
 
-                if (this.learningSession[this.index]['state'] === 2) {
+                if (this.difficultWordsSession[this.index]['state'] === 2) {
                     if (this.words.length >= 4) {
                         correctAnswer = this.getRandomInt(0, 4);
                         for (let i = 0; i < 4; i++) {
                             if (i === correctAnswer) {
                                 answerChoices.push({
-                                    'def': this.learningSession[this.index]['word'],
+                                    'def': this.difficultWordsSession[this.index]['word'],
                                     'answer': true
                                 })
                             } else {
@@ -360,7 +404,7 @@
                                     answerChoicesDef.push(answerChoices[j]['def'])
                                 }
 
-                                while (this.words[a]['word'] === this.learningSession[this.index]['word'] || answerChoicesDef.indexOf(this.words[a]['word']) !== -1) {
+                                while (this.words[a]['word'] === this.difficultWordsSession[this.index]['word'] || answerChoicesDef.indexOf(this.words[a]['word']) !== -1) {
                                     a = this.getRandomInt(0, this.words.length)
                                 }
 
@@ -372,7 +416,7 @@
                         for (let i = 0; i < 4; i++) {
                             if (i === correctAnswer) {
                                 answerChoices.push({
-                                    'def': this.learningSession[this.index]['word'],
+                                    'def': this.difficultWordsSession[this.index]['word'],
                                     'answer': true
                                 })
                             } else {
@@ -384,13 +428,13 @@
                     return answerChoices
                 }
 
-                if (this.learningSession[this.index]['state'] === 3) {
+                if (this.difficultWordsSession[this.index]['state'] === 3) {
                     if (this.words.length >= 8) {
                         correctAnswer = this.getRandomInt(0, 8);
                         for (let i = 0; i < 8; i++) {
                             if (i === correctAnswer) {
                                 answerChoices.push({
-                                    'def': this.learningSession[this.index]['definition'],
+                                    'def': this.difficultWordsSession[this.index]['definition'],
                                     'answer': true
                                 })
                             } else {
@@ -399,7 +443,7 @@
                                 for (let j = 0; j < answerChoices.length; j++) {
                                     answerChoicesDef.push(answerChoices[j]['def'])
                                 }
-                                while (this.words[a]['word'] === this.learningSession[this.index]['word'] || answerChoicesDef.indexOf(this.words[a]['definition']) !== -1) {
+                                while (this.words[a]['word'] === this.difficultWordsSession[this.index]['word'] || answerChoicesDef.indexOf(this.words[a]['definition']) !== -1) {
                                     a = this.getRandomInt(0, this.words.length)
                                 }
                                 answerChoices.push({'def': this.words[a]['definition'], 'answer': false})
@@ -410,7 +454,7 @@
                         for (let i = 0; i < 8; i++) {
                             if (i === correctAnswer) {
                                 answerChoices.push({
-                                    'def': this.learningSession[this.index]['definition'],
+                                    'def': this.difficultWordsSession[this.index]['definition'],
                                     'answer': true
                                 })
                             } else {
@@ -422,13 +466,13 @@
                     return answerChoices
                 }
 
-                if (this.learningSession[this.index]['state'] === 4) {
+                if (this.difficultWordsSession[this.index]['state'] === 4) {
                     if (this.words.length >= 4) {
                         correctAnswer = this.getRandomInt(0, 8);
                         for (let i = 0; i < 8; i++) {
                             if (i === correctAnswer) {
                                 answerChoices.push({
-                                    'def': this.learningSession[this.index]['word'],
+                                    'def': this.difficultWordsSession[this.index]['word'],
                                     'answer': true
                                 })
                             } else {
@@ -437,7 +481,7 @@
                                 for (let j = 0; j < answerChoices.length; j++) {
                                     answerChoicesDef.push(answerChoices[j]['def'])
                                 }
-                                while (this.words[a]['word'] === this.learningSession[this.index]['word'] || answerChoicesDef.indexOf(this.words[a]['word']) !== -1) {
+                                while (this.words[a]['word'] === this.difficultWordsSession[this.index]['word'] || answerChoicesDef.indexOf(this.words[a]['word']) !== -1) {
                                     a = this.getRandomInt(0, this.words.length)
                                 }
                                 answerChoices.push({'def': this.words[a]['word'], 'answer': false})
@@ -448,7 +492,7 @@
                         for (let i = 0; i < 8; i++) {
                             if (i === correctAnswer) {
                                 answerChoices.push({
-                                    'def': this.learningSession[this.index]['word'],
+                                    'def': this.difficultWordsSession[this.index]['word'],
                                     'answer': true
                                 })
                             } else {
@@ -463,18 +507,6 @@
             }
         },
         methods: {
-            addToDifficult(){
-              this.$store.dispatch(ADD_TO_DIFFICULT, {'word': this.learningSession[this.index]})
-                if (this.learningSession.length !== 0) {
-                    if (this.index + 1 >= this.learningSession.length) {
-                        this.index = 0
-                    } else {
-                        this.index += 1
-                    }
-                } else {
-                    this.$router.push('/');
-                }
-            },
             goToNextStateFive() {
                 let self = this;
                 if (typeof (String.prototype.trim) === "undefined") {
@@ -482,7 +514,7 @@
                         return String(this).replace(/^\s+|\s+$/g, '');
                     };
                 }
-                if (this.textAnswer.trim().toLowerCase() === this.learningSession[this.index]['word'].trim().toLowerCase()) {
+                if (this.textAnswer.trim().toLowerCase() === this.difficultWordsSession[this.index]['word'].trim().toLowerCase()) {
                     this.selected = true;
                     this.answerCorrect = true;
                     setTimeout(function () {
@@ -503,17 +535,17 @@
                 return Math.floor(Math.random() * (max - min)) + min;
             }
             ,
-             goToNext(answer) {
+            goToNext(answer) {
                 this.textAnswer = '';
                 this.selected = false;
                 this.answerCorrect = false;
                 this.doneState += 1;
-                this.$store.dispatch(GO_TO_NEXT_LEARNING_WORD, {
-                    'word': this.learningSession[this.index],
+                this.$store.dispatch(GO_TO_NEXT_DIFFICULT_WORD, {
+                    'word': this.difficultWordsSession[this.index],
                     'correct': answer
                 })
-                if (this.learningSession.length !== 0) {
-                    if (this.index + 1 >= this.learningSession.length) {
+                if (this.difficultWordsSession.length !== 0) {
+                    if (this.index + 1 >= this.difficultWordsSession.length) {
                         this.index = 0
                     } else {
                         this.index += 1

@@ -73,6 +73,7 @@ const actions = {
 
     [START_TPO]: ({state, commit, dispatch}, payload) => {
         commit('updateExamArray', payload['examArray']);
+        commit('updateMode', payload['mode'])
         for (let i = 0; i < state.examArray.length; i++) {
             if (state.examArray[i] === 'Reading') {
                 dispatch(GET_DATA_READING, payload['TPO'])
@@ -165,6 +166,9 @@ const mutations = {
         if(state.seenArray.indexOf(payload) === -1){
             state.seenArray.push(payload);
         }
+    },
+    updateMode(state, payload) {
+        state.mode = payload
     }
 };
 

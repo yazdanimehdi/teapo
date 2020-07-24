@@ -19,7 +19,6 @@ const state = {
     speaking: [],
     taskNumber: -1,
     stateNumber: -1,
-    speakingMode: 'practiceMode',
     answers: {}
 };
 
@@ -240,7 +239,7 @@ const mutations = {
     },
     updateSpeakingStateNumber(state, payload) {
         state.stateNumber = payload
-    }
+    },
 }
 
 export default {

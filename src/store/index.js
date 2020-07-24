@@ -8,6 +8,7 @@ import writing from "@/store/modules/writing";
 import mainTPO from "./modules/mainTPO";
 import dictionary from "@/store/modules/dictionary";
 import studyWords from "@/store/modules/studyWords";
+import dashboard from "@/store/modules/dashboard";
 
 
 Vue.use(Vuex);
@@ -23,7 +24,8 @@ export default new Vuex.Store({
         speaking: speaking,
         writing: writing,
         dictionary: dictionary,
-        studyWords: studyWords
+        studyWords: studyWords,
+        dashboard: dashboard
 
 
     },

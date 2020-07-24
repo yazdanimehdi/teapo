@@ -5,7 +5,7 @@ import {
     SAVE_ANSWER_READING,
     TOGGLE_REVIEW,
     GO_TO_READING_QUESTION,
-    UPDATE_STATE_READING
+    UPDATE_STATE_READING,
 } from '../actions/reading'
 
 import {NEXT_SECTION, PREVIOUS_SECTION, UPDATE_COMPONENT} from "../actions/mainTPO";
@@ -14,7 +14,6 @@ import {TIME_STOP, UPDATE_REMAINED_READING_TIME} from "@/store/actions/time";
 
 const state = {
     readingAnswers: {},
-    mode: 'reviewMode',
     reading_passage_component: 'ReadingPassage',
     reading_insertion_component: 'ReadingInsertion',
     reading_normal_question_component: 'ReadingNormalQuestion',
@@ -113,35 +112,35 @@ const actions = {
                 },
                 useNullAsDefault: true
             });
-            let result = knex.select("*").from('tpo_reading').where({related: payload});
-            result.then(function (rows) {
-                let i;
-                for (i = 0; i < rows.length; i++) {
-                    let reading_obj = Object.assign({}, rows[i]);
-                    let questions = knex.select("*").from('tpo_readingquestions').where({'reading_id': rows[i]['id']});
-                    let questions_all = [];
-                    questions.then(function (questioninst) {
-                        commit('updateQuestionAll', questioninst.length);
-                        let j;
-                        questioninst.sort(function (a, b) {
-                            return a.number - b.number
-                        });
-                        for (j = 0; j < questioninst.length; j++) {
-                            let question_obj = {};
-                            question_obj = Object.assign({}, questioninst[j]);
-                            let qs = knex.select("*").from("tpo_readinganswers").where({'question_id': questioninst[j]['id']});
-                            qs.then(function (instance) {
-                                question_obj['answers'] = instance;
-                                questions_all.push(question_obj)
+            let tpo = knex.select("*").from('tpo_testreading').where({test_id: payload});
+            tpo.then(function (readings) {
+                for (let m = 0; m < readings.length; m++) {
+                    let result = knex.select("*").from('tpo_reading').where({id: readings[m]['reading_id']});
+                    result.then(function (row) {
+                        let reading_obj = Object.assign({}, row);
+                        let questions = knex.select("*").from('tpo_readingquestions').where({'reading_id': row['id']});
+                        let questions_all = [];
+                        questions.then(function (questioninst) {
+                            commit('updateQuestionAll', questioninst.length);
+                            let j;
+                            questioninst.sort(function (a, b) {
+                                return a.number - b.number
                             });
-
-                            reading_obj['questions'] = questions_all;
-                        }
+                            for (j = 0; j < questioninst.length; j++) {
+                                let question_obj = {};
+                                question_obj = Object.assign({}, questioninst[j]);
+                                let qs = knex.select("*").from("tpo_readinganswers").where({'question_id': questioninst[j]['id']});
+                                qs.then(function (instance) {
+                                    question_obj['answers'] = instance;
+                                    questions_all.push(question_obj)
+                                });
+                                reading_obj['questions'] = questions_all;
+                            }
+                        });
+                        commit('updateReadingData', reading_obj);
                     });
-                    commit('updateReadingData', reading_obj);
                 }
-            });
-
+            })
         },
 
         [UPDATE_STATE_READING]: ({state, dispatch}) => {
@@ -199,8 +198,7 @@ const actions = {
                     commit('updateTaskNumber', state.taskNumber - 1);
                     commit('updateQuestionNumber', state.reading[state.taskNumber].questions.length - 1);
                     dispatch(UPDATE_STATE_READING);
-                }
-                else {
+                } else {
                     dispatch(UPDATE_REMAINED_READING_TIME);
                     dispatch(PREVIOUS_SECTION)
                 }

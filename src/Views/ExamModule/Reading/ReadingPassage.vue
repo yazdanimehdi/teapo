@@ -8,7 +8,7 @@
                         <v-container fluid>
                             <v-row justify="start" align="start">
                                 <v-col style="padding: 0">
-                                    <v-btn dark rounded small style="margin-right: 10px">Home</v-btn>
+                                    <v-btn to="/" dark rounded small style="margin-right: 10px">Home</v-btn>
                                     <v-btn rounded @click="openDictionary"
                                             x-small
                                            v-if="readingMode ==='practiceMode' || readingMode === 'reviewMode'">
@@ -205,7 +205,7 @@
         GO_TO_PREVIOUS_READING
     } from "@/store/actions/reading";
     import {LOAD_DICTIONARY} from "@/store/actions/dictionary";
-    import DictionaryComponent from "@/components/DictionaryComponent";
+    import DictionaryComponent from "@/components/Subcomponents/DictionaryComponent";
 
     export default {
         name: "ReadingPassage",
