@@ -2,7 +2,7 @@ import {USER_REQUEST, USER_ERROR, USER_SUCCESS} from "../actions/user";
 import {AUTH_LOGOUT} from "../actions/auth";
 import axios from 'axios'
 
-const state = {username: null, userId: 0, firstName: null, lastName: null, email: null, phone: null};
+const state = {userId: 0, firstName: null, lastName: null, email: null, phone: null};
 
 const getters = {
     getProfile: state => state.profile,
@@ -13,9 +13,9 @@ const actions = {
     [USER_REQUEST]: ({commit, dispatch}) => {
         commit(USER_REQUEST);
          return new Promise((resolve, reject) => {
-            axios.get('http://127.0.0.1:8000/api/v1/profile').then((resp) => {
+            axios.get('http://127.0.0.1:8000/api/v1/profile/').then((resp) => {
                 commit(USER_SUCCESS, resp.data);
-                localStorage.setItem('user-id', resp['id']);
+                localStorage.setItem('user-id', resp.data['id']);
                 let knex = require('knex')({
                     client: 'sqlite3',
                     connection: {
@@ -23,15 +23,14 @@ const actions = {
                     },
                     useNullAsDefault: true
                 });
-                knex('institutions_users').select('*').where({'id': resp['id']}).then(function (rows) {
+                knex('institutions_users').select('*').where({'id': resp.data['id']}).then(function (rows) {
                     if (rows.length===0) {
                         knex('institutions_users').insert({
-                            id: resp['id'],
-                            username: resp['username'],
-                            first_name: resp['first_name'],
-                            last_name: resp['last_name'],
-                            phone: resp['phone'],
-                            email: resp['email']
+                            id: resp.data['id'],
+                            first_name: resp.data['first_name'],
+                            last_name: resp.data['last_name'],
+                            phone: resp.data['phone'],
+                            email: resp.data['email']
                         })
                     }
                 })

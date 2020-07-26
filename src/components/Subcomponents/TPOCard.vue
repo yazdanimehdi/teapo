@@ -4,7 +4,7 @@
                 style="border-radius: 30px"
                 :color="cardBackgroundColor">
             <v-card-title class="tpo-title">
-                TPO 38
+                {{tpoTitle}}
             </v-card-title>
             <v-card-text style="color: white; padding: 0" >
                 <div>
@@ -36,7 +36,7 @@
                                                 height="15"
                                                 striped
                                                 rounded
-                                                color="#5A4389"
+                                                color="green"
                                         ><strong v-if="!downloadQuery">{{ Math.ceil(downloadValue) }}%</strong></v-progress-linear>
                                     </v-col>
                                 </v-row>
@@ -156,6 +156,8 @@
 
 <script>
     import {START_TPO} from "@/store/actions/mainTPO";
+    import {DOWNLOAD_TPO} from "@/store/actions/download";
+    import {mapGetters} from 'vuex'
 
     export default {
         name: "TPOCard",
@@ -164,9 +166,17 @@
                 required: true,
                 type: Number,
             },
+            tpoTitle:{
+              required: true,
+              type: String,
+            },
             mode:{
                 required: true,
                 type: String
+            },
+            standard: {
+                required: true,
+                type: Boolean
             }
         },
         beforeDestroy () {
@@ -174,8 +184,8 @@
         },
         data(){
             return{
-                downloaded: true,
                 downloadValue: 0,
+                downloaded: false,
                 downloadQuery: false,
                 downloadShow: false,
                 interval: 0,
@@ -187,10 +197,13 @@
                 speakingCompleted: true,
                 writingScore: 21,
                 writingCompleted: true,
-                standard: true,
             }
         },
+        created(){
+            this.downloaded = this.localTPOListId.indexOf(this.tpoId) !== -1;
+        },
         computed:{
+          ...mapGetters(['percentCompleted', 'localTPOListId']),
           cardBackgroundColor(){
               if(this.downloaded){
                   if(this.readingCompleted && this.listeningCompleted && this.speakingCompleted && this.writingCompleted){
@@ -214,6 +227,20 @@
                   }
               }
           }
+        },
+        watch:{
+            localTPOListId(newVal){
+                this.downloaded = newVal.indexOf(this.tpoId) !== -1;
+            },
+            percentCompleted(newVal){
+                if(newVal > 0){
+                    this.downloadQuery = false
+                }
+                this.downloadValue = newVal
+                if(newVal === 100){
+                    this.downloadShow = false
+                }
+            }
         },
         methods:{
             goToTPO(){
@@ -257,23 +284,9 @@
                 this.$router.push('/tpo')
             },
             downloadTPO (){
-                this.queryAndIndeterminate();
-            },
-            queryAndIndeterminate () {
+                this.$store.dispatch(DOWNLOAD_TPO, this.tpoId)
                 this.downloadQuery = true
                 this.downloadShow = true
-                this.downloadValue = 0
-                setTimeout(() => {
-                    this.downloadQuery = false
-                    this.interval = setInterval(() => {
-                        if (this.downloadValue === 100) {
-                            clearInterval(this.interval)
-                            this.DownloadShow = false
-                            return setTimeout(this.queryAndIndeterminate, 2000)
-                        }
-                        this.downloadValue += 25
-                    }, 1000)
-                }, 2500)
             },
         },
     }

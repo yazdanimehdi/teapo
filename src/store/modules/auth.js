@@ -23,7 +23,7 @@ const actions = {
     [AUTH_REQUEST]: ({commit, dispatch}, user) => {
         return new Promise((resolve, reject) => { // The Promise used for router redirect in login
             commit(AUTH_REQUEST);
-            axios({url: 'http://127.0.0.1:8000/api/v1/login', data: user, method: 'POST'})
+            axios({url: 'http://127.0.0.1:8000/api/v1/login/', data: user, method: 'POST'})
                 .then(resp => {
                     if (resp.data === false) {
                         commit(AUTH_FALSE);

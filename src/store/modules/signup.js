@@ -14,9 +14,9 @@ const state = {
 const actions = {
     [SIGNUP_REQUEST]: ({commit, dispatch}, payload) => {
          return new Promise((resolve, reject) => {
-             axios.post('http://127.0.0.1:8000/api/v1/signup', payload).then((resp) => {
+             axios.post('http://127.0.0.1:8000/api/v1/signup/', payload).then((resp) => {
                  commit(SIGNUP_SUCCESS);
-                 const token = resp.data;
+                 const token = resp.data['token'];
                  axios.defaults.headers.common['Authorization'] = `Token ${token}`;
                  localStorage.setItem('user-token', token);
                  commit(AUTH_SUCCESS, token);

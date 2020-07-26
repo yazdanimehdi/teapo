@@ -9,6 +9,11 @@ import mainTPO from "./modules/mainTPO";
 import dictionary from "@/store/modules/dictionary";
 import studyWords from "@/store/modules/studyWords";
 import dashboard from "@/store/modules/dashboard";
+import TPOPage from "@/store/modules/TPOPage";
+import auth from "@/store/modules/auth";
+import signup from "@/store/modules/signup";
+import user from "@/store/modules/user";
+import download from "@/store/modules/download";
 
 
 Vue.use(Vuex);
@@ -25,9 +30,12 @@ export default new Vuex.Store({
         writing: writing,
         dictionary: dictionary,
         studyWords: studyWords,
-        dashboard: dashboard
-
-
+        dashboard: dashboard,
+        TPOPage: TPOPage,
+        auth: auth,
+        signup: signup,
+        user: user,
+        download: download,
     },
     strict: debug
 });

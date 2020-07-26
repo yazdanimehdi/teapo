@@ -44,7 +44,7 @@
                         <v-list-item-title class="menu_class">Edit Account</v-list-item-title>
                     </v-list-item>
 
-                    <v-list-item link>
+                    <v-list-item link @click="logout">
                         <v-list-item-icon :style="{'margin-right': '10px'}">
                             <v-icon small>
                                 {{ icons.mdiLogout }}
@@ -248,6 +248,7 @@
     import TPOComponent from "@/components/Main/TPOComponent";
     import Analytics from "@/components/Main/Analytics";
     import Courses from "@/components/Main/Courses";
+    import {AUTH_LOGOUT} from "@/store/actions/auth";
 
     export default {
         name: "Dashboard",
@@ -424,6 +425,9 @@
                         this.mini = true;
                     }
                 }
+            },
+            logout(){
+                this.$store.dispatch(AUTH_LOGOUT);
             }
         }
     }

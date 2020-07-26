@@ -10,7 +10,7 @@
                    @click="login.activated = true">Login
             </v-btn>
             <template v-if="login.activated">
-                <v-form id="login">
+                <v-form id="login" v-model="loginValid">
                     <v-container fluid>
                         <v-row>
                             <v-text-field
@@ -18,6 +18,7 @@
                                     label="Email"
                                     style="font-family: kalam;"
                                     type="email"
+                                    :rules="emailRules"
                                     filled
                                     solo-inverted
                             ></v-text-field>
@@ -34,7 +35,7 @@
                         </v-row>
                         <v-row>
                             <v-col>
-                                <v-btn color="#2F116D" style="color: white; font-family: kalam">Login</v-btn>
+                                <v-btn color="#2F116D" style="color: white; font-family: kalam" :disabled="!loginValid" @click="loginRequest">Login</v-btn>
                             </v-col>
                             <v-col>
                                 <v-btn text style="font-family: kalam; font-size: 12px; color: #2F116D">Forget
@@ -47,7 +48,7 @@
             </template>
 
             <template v-else>
-                <v-form id="register">
+                <v-form id="register" v-model="valid">
                     <v-row style="padding: 0">
                         <v-col style="padding-top: 0; padding-bottom: 0">
                             <v-text-field
@@ -129,7 +130,10 @@
                     </v-row>
                     <v-row>
                         <v-col style="padding-top: 0">
-                            <v-btn color="#2F116D" @click="register" style="color: white; font-family: kalam">Signup</v-btn>
+                            <v-btn color="#2F116D" @click="register"  :disabled="!valid" style="color: white; font-family: kalam">Signup</v-btn>
+                        </v-col>
+                        <v-col style="padding-top: 0; color: red">
+                            {{msg}}
                         </v-col>
 
                     </v-row>
@@ -149,17 +153,22 @@
 </template>
 
 <script>
+    import {SIGNUP_REQUEST} from "@/store/actions/signup";
+    import {AUTH_REQUEST} from "@/store/actions/auth";
+
     export default {
         name: "RegisterLogin",
         data: function () {
             return {
+                msg: '',
                 login: {
                     activated: false,
                     email: '',
                     password: '',
                 },
                 checkbox: false,
-                valid: true,
+                valid: false,
+                loginValid: false,
                 user: {
                     email: '',
                     password: '',
@@ -200,7 +209,36 @@
         },
         computed: {},
         methods: {
+            loginRequest(){
+              const {login} = this;
+              this.$store.dispatch(AUTH_REQUEST, {
+                  'email': login.email,
+                  'password': login.password,
+              }).then((resp) => {
+                  if (resp.data !== false) {
+                      this.$router.push('/');
+                  }
+              })
+            },
             register(){
+                const {user} = this;
+                let self = this;
+                this.$store.dispatch(SIGNUP_REQUEST, {
+                    'first_name': user.firstName,
+                    'last_name': user.lastName,
+                    'phone': user.phone,
+                    'email': user.email,
+                    'password': user.password,
+                    'role': 1,
+                }).then((resp) => {
+                        if (resp.data === 'Email Exists') {
+                            self.valid = false;
+                            self.msg = 'Email Exists'
+                        } else {
+                            self.$router.push('/')
+                        }
+                    }
+                )
 
             }
         }

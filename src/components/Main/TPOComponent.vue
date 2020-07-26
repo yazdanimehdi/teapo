@@ -23,8 +23,8 @@
             <v-row>
                 <v-container fluid>
                     <v-row>
-                        <v-col v-for="i in 53" cols="12" sm="6" md="6" lg="4" :key="i">
-                            <TPOCard :tpo-id="i" :mode="practice ? 'practiceMode' : 'testMode'"/>
+                        <v-col v-for="(tpo, i) in tpoList" cols="12" sm="6" md="6" lg="4" :key="i">
+                            <TPOCard :tpo-title="tpo.title" :tpo-id="tpo.id" :standard="tpo.mode === 'T'"  :mode="practice ? 'practiceMode' : 'testMode'"/>
                         </v-col>
                     </v-row>
                 </v-container>
@@ -36,6 +36,8 @@
 
 <script>
     import TPOCard from "@/components/Subcomponents/TPOCard";
+    import {GET_LOCAL_TPO_LIST, GET_ONLINE_TPO_LIST} from "@/store/actions/TPOPage";
+    import {mapGetters} from 'vuex'
 
     export default {
         name: "TPOComponent",
@@ -47,6 +49,26 @@
         },
         components: {
             TPOCard
+        },
+        computed:{
+          ...mapGetters(['connected', 'onlineTPOList', 'localTPOList']),
+            tpoList(){
+              if(this.connected === true){
+                  return this.onlineTPOList
+              }
+              else {
+                  return this.localTPOList
+              }
+            }
+        },
+        created(){
+          if(this.connected === true){
+              this.$store.dispatch(GET_ONLINE_TPO_LIST)
+              this.$store.dispatch(GET_LOCAL_TPO_LIST)
+          }
+          else{
+              this.$store.dispatch(GET_LOCAL_TPO_LIST)
+          }
         },
         data() {
             return {
