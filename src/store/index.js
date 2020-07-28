@@ -14,6 +14,7 @@ import auth from "@/store/modules/auth";
 import signup from "@/store/modules/signup";
 import user from "@/store/modules/user";
 import download from "@/store/modules/download";
+import analytics from "@/store/modules/analytics";
 
 
 Vue.use(Vuex);
@@ -36,6 +37,7 @@ export default new Vuex.Store({
         signup: signup,
         user: user,
         download: download,
+        analytics: analytics
     },
     strict: debug
 });

@@ -43,6 +43,7 @@ const actions = {
                         class_assigned_id: data['class_assigned_id'],
                         institute_id: data['institute_id']
                     }).then(() => {
+                    dispatch(GET_LOCAL_TPO_LIST)
                 });
                 for (let i = 0; i < data['reading'].length; i++) {
                     knex('tpo_reading').select('id').where({'id': data['reading'][i]['id']}).then((row) => {
@@ -181,7 +182,7 @@ const actions = {
                     })
                 }
 
-                for(let i=0; i < data['speaking_times'].length; i++){
+                for (let i = 0; i < data['speaking_times'].length; i++) {
                     knex('tpo_speakingtimes').insert({
                         number: data['speaking_times'][i]['number'],
                         preparation_time: data['speaking_times'][i]['preparation_time'],
@@ -191,7 +192,7 @@ const actions = {
                     })
                 }
 
-                for(let i=0; i < data['listening_times'].length; i++){
+                for (let i = 0; i < data['listening_times'].length; i++) {
                     knex('tpo_listeningtimes').insert({
                         number: data['listening_times'][i]['number'],
                         time: data['listening_times'][i]['time'],
@@ -199,7 +200,7 @@ const actions = {
                     })
                 }
 
-                for(let i=0; i < data['writing_times'].length; i++){
+                for (let i = 0; i < data['writing_times'].length; i++) {
                     knex('tpo_writingtimes').insert({
                         number: data['writing_times'][i]['number'],
                         time: data['writing_times'][i]['time'],
@@ -208,7 +209,6 @@ const actions = {
                     })
                 }
             }).then(() => {
-                dispatch(GET_LOCAL_TPO_LIST)
                 resolve()
             }).catch((err) => {
                 reject(err)
@@ -217,10 +217,10 @@ const actions = {
     }
 };
 const mutations = {
-    updateFileSize(state, payload){
-      state.totalSize = payload;
+    updateFileSize(state, payload) {
+        state.totalSize = payload;
     },
-    updatePercentCompleted(state, payload){
+    updatePercentCompleted(state, payload) {
         state.percentCompleted = payload;
     }
 }
