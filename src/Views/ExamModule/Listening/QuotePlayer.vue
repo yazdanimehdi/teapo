@@ -41,7 +41,7 @@
             </v-row>
             <v-row justify="center" align="center">
                 <audio id="listening" autoplay v-on:ended="quoteEnded" v-on:timeupdate="progressListening" :controls="(listeningMode === 'reviewMode' || listeningMode === 'practiceMode')">
-                    <source :src="'data:audio/mp3;base64,' + quoteAudioFile">
+                    <source :src="quoteAudioFile">
                 </audio>
             </v-row>
             <v-row justify="center" align="center">

@@ -38,11 +38,12 @@
         </v-container>
         <v-container>
             <v-row align="center" justify="center">
-                <img :src="'data:image/jpeg;base64,' + writingImageSource" width="500px">
+                <img :src="writingImageSource" width="500px"/>
             </v-row>
             <v-row align="center" justify="center">
+
                 <audio id="listening" autoplay :controls="(writingMode === 'reviewMode' || writingMode === 'practiceMode')" v-on:ended="listeningEnded" v-on:timeupdate="progressListening">
-                    <source :src="'data:audio/mp3;base64,' + writingListeningSource">
+                    <source :src="writingListeningSource">
                 </audio>
             </v-row>
             <v-row justify="center" align="center">

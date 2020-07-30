@@ -114,11 +114,15 @@ const actions = {
             });
             let tpo = knex.select("*").from('tpo_testreading').where({test_id: payload});
             tpo.then(function (readings) {
-                for (let m = 0; m < readings.length; m++) {
-                    let result = knex.select("*").from('tpo_reading').where({id: readings[m]['reading_id']});
+                let readingList = [...readings];
+                readingList.sort(function (a, b){
+                    return a.part - b.part
+                })
+                for (let m = 0; m < readingList.length; m++) {
+                    let result = knex.select("*").from('tpo_reading').where({id: readingList[m]['reading_id']});
                     result.then(function (row) {
-                        let reading_obj = Object.assign({}, row);
-                        let questions = knex.select("*").from('tpo_readingquestions').where({'reading_id': row['id']});
+                        let reading_obj = Object.assign({}, row[0]);
+                        let questions = knex.select("*").from('tpo_readingquestions').where({'reading_id': row[0]['id']});
                         let questions_all = [];
                         questions.then(function (questioninst) {
                             commit('updateQuestionAll', questioninst.length);
@@ -208,7 +212,7 @@ const actions = {
             }
         },
 
-        [SAVE_ANSWER_READING]: ({commit}, payload) => {
+        [SAVE_ANSWER_READING]: ({commit, rootState}, payload) => {
             commit('updateReadingAnswers', payload);
             let knex = require('knex')({
                 client: 'sqlite3',
@@ -217,7 +221,27 @@ const actions = {
                 },
                 useNullAsDefault: true
             });
-            knex('tpo_userreadinganswers').insert({'answer': payload[1], 'question_id': payload[0], 'user_test_id': 1})
+            knex.select('*').from('tpousers_userreadinganswers').where({
+                'question_id': payload[0],
+                'user_test_id': rootState.mainTPO.userTestId
+            }).then((rows) => {
+                if (rows.length > 0) {
+                    knex('tpousers_userreadinganswers').where({
+                        user_test_id: rootState.mainTPO.userTestId,
+                        question_id: payload[0]
+                    }).update({
+                        answer: payload[1]
+                    }).then(() => {
+                    })
+                } else {
+                    knex('tpousers_userreadinganswers').insert({
+                        'answer': payload[1],
+                        'question_id': payload[0],
+                        'user_test_id': rootState.mainTPO.userTestId
+                    }).then(() => {
+                    })
+                }
+            })
 
         },
 

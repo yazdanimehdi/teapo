@@ -54,7 +54,7 @@
           ...mapGetters(['connected', 'onlineTPOList', 'localTPOList']),
             tpoList(){
               if(this.connected === true){
-                  return this.onlineTPOList
+                  return [...this.localTPOList, ...this.onlineTPOList]
               }
               else {
                   return this.localTPOList

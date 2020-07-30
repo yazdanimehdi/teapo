@@ -7,3 +7,4 @@ export const SET_NEW_TIME = 'setNewTime';
 export const UPDATE_REMAINING_TIME_READING = 'updateRemainingTimeReading';
 export const UPDATE_REMAINING_TIME_LISTENING = 'updateRemainingTimeListening';
 export const UPDATE_REMAINING_TIME_WRITING = 'updateRemainingTimeWriting';
+export const SET_WRITING_READING_TIME = 'setWritingReadingTime';

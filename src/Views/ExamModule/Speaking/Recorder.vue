@@ -17,7 +17,7 @@
                         <v-row justify="end" align="start" style="padding: 0">
 
                             <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0"
-                                   v-if="speakingMode === 'reviewMode' || speakingMode === 'practiceMode'">
+                                   v-if="speakingMode === 'practiceMode'">
                                 <v-img src="../../../assets/back.png" contain max-height="60px" min-height="40px"
                                        @click="goToBack"></v-img>
                             </v-col>
@@ -41,7 +41,7 @@
                 <div class="question"><span style="padding-left: 1em; text-align: left;">{{speakingQuestion}}</span>
                 </div>
                 <audio id="question_audio" :autoplay="speakingAnswer===''|| recordState !== 0" v-on:ended="startRecordingProcess">
-                    <source :src="'data:audio/mp3;base64,' + speakingQuestionAudioFile">
+                    <source :src="speakingQuestionAudioFile">
                 </audio>
             </v-row>
             <v-row>
@@ -50,8 +50,8 @@
                     <br>
                     <img src="../../../assets/micd.png" style="height: 80px;" v-if="this.speakings.prepare_time > 0">
                     <img src="../../../assets/mic.png" style="height: 80px" v-else>
-                    <div>Preparation Time: &nbsp; &nbsp; {{speakingQuestionPrepareTime}} Seconds</div>
-                    <div>Response Time: &nbsp; &nbsp; {{speakingTime}} Seconds</div>
+                    <div>Preparation Time: &nbsp; &nbsp; {{speakingTimes[this.speakingTaskNumber]['preparation_time']}} Seconds</div>
+                    <div>Response Time: &nbsp; &nbsp; {{speakingTimes[this.speakingTaskNumber]['answering_time']}} Seconds</div>
                     <br>
                 </div>
             </v-row>
@@ -98,7 +98,7 @@
     export default {
         name: "Recorder",
         computed: {
-            ...mapGetters(['speakingQuestion', 'speakingQuestionAudioFile', 'speakingQuestionPrepareTime', 'speakingTime', 'speakingAnswer', 'speakingId']),
+            ...mapGetters(['speakingQuestion', 'speakingQuestionAudioFile', 'speakingTaskNumber', 'speakingTimes', 'speakingAnswer', 'speakingId']),
             ...mapState({
                 speakingMode: state => state.speaking.speakingMode,
             })
@@ -148,10 +148,10 @@
             startRecordingProcess() {
                 let self = this;
                 self.speakings.enable = true;
-                self.speakings.prepare_time = this.speakingQuestionPrepareTime;
-                self.speakings.response_time = this.speakingTime;
-                self.speakings.prepare = this.speakingQuestionPrepareTime * 1000;
-                self.speakings.speak = this.speakingTime * 1000;
+                self.speakings.prepare_time = this.speakingTimes[this.speakingTaskNumber]['preparation_time'];
+                self.speakings.response_time = this.speakingTimes[this.speakingTaskNumber]['answering_time'];
+                self.speakings.prepare = this.speakingTimes[this.speakingTaskNumber]['preparation_time'] * 1000;
+                self.speakings.speak = this.speakingTimes[this.speakingTaskNumber]['answering_time'] * 1000;
                 let interval = setInterval(function () {
                     if (self.speakings.prepare_time > 0) {
                         self.speakings.prepare_time--;

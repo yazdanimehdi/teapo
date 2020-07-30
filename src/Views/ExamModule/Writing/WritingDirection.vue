@@ -94,5 +94,9 @@
 </script>
 
 <style scoped>
+.toolbar{
+  height:110px;
+  background: linear-gradient(to right, #4148a2,#822a42) ;
 
+}
 </style>

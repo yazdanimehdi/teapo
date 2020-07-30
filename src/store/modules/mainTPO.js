@@ -7,7 +7,8 @@ import {
     SET_NEW_TIME,
     UPDATE_REMAINING_TIME_READING,
     UPDATE_REMAINING_TIME_LISTENING,
-    UPDATE_REMAINING_TIME_WRITING
+    UPDATE_REMAINING_TIME_WRITING,
+    SET_WRITING_READING_TIME
 } from "../actions/mainTPO";
 import {GET_DATA_READING, UPDATE_STATE_READING} from "@/store/actions/reading";
 import {GET_DATA_LISTENING, UPDATE_STATE_LISTENING} from "@/store/actions/listening";
@@ -21,15 +22,22 @@ const state = {
     examArray: [],
     seenArray: [],
     examSectionNumber: 0,
-    readingTime: 3600,
-    listeningTimes: [600, 600],
-    writingTimes: [1200, 1800],
+    readingTime: 0,
+    listeningTimes: [],
+    writingTimes: [],
+    speakingTimes: [],
+    userTestId: 0,
 };
 
 const getters = {
-    backAvailable: state => state.examSectionNumber !== 0
+    backAvailable: state => state.examSectionNumber !== 0,
+    speakingTimes: state => state.speakingTimes,
+    writingTimes: state => state.writingTimes
 };
 const actions = {
+    [SET_WRITING_READING_TIME]: ({state, dispatch}, payload) => {
+        dispatch(UPDATE_TIME, state.writingTimes[payload]['reading_time'])
+    },
     [UPDATE_COMPONENT]: ({commit}, payload) => {
         commit('updateComponent', payload)
     },
@@ -72,26 +80,80 @@ const actions = {
     },
 
     [START_TPO]: ({state, commit, dispatch}, payload) => {
-        commit('updateExamArray', payload['examArray']);
-        commit('updateMode', payload['mode'])
-        for (let i = 0; i < state.examArray.length; i++) {
-            if (state.examArray[i] === 'Reading') {
-                dispatch(GET_DATA_READING, payload['TPO'])
-                dispatch(SET_NEW_TIME, 0)
+        let knex = require('knex')({
+            client: 'sqlite3',
+            connection: {
+                filename: './db.sqlite3'
+            },
+            useNullAsDefault: true
+        });
+        let userId = localStorage.getItem('user-id')
+        knex('tpousers_testuser').insert({
+            test_id: payload['TPO'],
+            user_id: userId,
+            date_time: Date.now(),
+            is_done: false,
+            is_paid: true,
+        }).then((id) => {
+            commit('updateUserTestId', id[0]['id'])
+            commit('updateExamArray', payload['examArray']);
+            commit('updateMode', payload['mode'])
+            for (let i = 0; i < state.examArray.length; i++) {
+                if (state.examArray[i] === 'Reading') {
+                    knex.select('*').from('tpo_test').where({id: payload['TPO']}).then((row) => {
+                        commit('updateReadingTime', row[0]['reading_time'])
+                        dispatch(SET_NEW_TIME, 0)
+                        dispatch(GET_DATA_READING, payload['TPO'])
+
+                    })
+                }
+                if (state.examArray[i] === 'Listening') {
+                    let listeningTimes = []
+                    knex.select('*').from('tpo_listeningtimes').where({test_id: payload['TPO']}).then((rows) => {
+                        for(let i = 0; i < rows.length; i++){
+                            listeningTimes.push(rows[i])
+                        }
+                        listeningTimes = listeningTimes.sort(function (a, b) {
+                            return a['number'] - b['number']
+                        });
+                        listeningTimes = listeningTimes.map((inst) => inst['time'])
+                        commit('updateListeningTime', listeningTimes);
+                        dispatch(SET_NEW_TIME, 0)
+                        dispatch(GET_DATA_LISTENING, payload['TPO'])
+
+                    })
+
+                }
+                if (state.examArray[i] === 'Speaking') {
+                    let speakingTimes = [];
+                    knex.select('*').from('tpo_speakingtimes').where({test_id: payload['TPO']}).then((rows) => {
+                        for(let i = 0; i < rows.length; i++){
+                            speakingTimes.push(rows[i])
+                        }
+                        speakingTimes = speakingTimes.sort(function (a, b) {
+                            return a['number'] - b['number']
+                        });
+                        commit('updateSpeakingTime', speakingTimes);
+                        dispatch(GET_DATA_SPEAKING, payload['TPO'])
+                    })
+                }
+                if (state.examArray[i] === 'Writing') {
+                    let writingTimes = [];
+                    knex.select('*').from('tpo_writingtimes').where({test_id: payload['TPO']}).then((rows) => {
+                        for(let i = 0; i < rows.length; i++){
+                            writingTimes.push(rows[i])
+                        }
+                        writingTimes = writingTimes.sort(function (a, b) {
+                            return a['number'] - b['number']
+                        });
+                        commit('updateWritingTime', writingTimes);
+                        dispatch(SET_NEW_TIME, 0)
+                        dispatch(GET_DATA_WRITING, payload['TPO'])
+                    })
+                }
             }
-            if (state.examArray[i] === 'Listening') {
-                dispatch(GET_DATA_LISTENING, payload['TPO'])
-                dispatch(SET_NEW_TIME, 0)
-            }
-            if (state.examArray[i] === 'Speaking') {
-                dispatch(GET_DATA_SPEAKING, payload['TPO'])
-            }
-            if (state.examArray[i] === 'Writing') {
-                dispatch(GET_DATA_WRITING, payload['TPO'])
-                dispatch(SET_NEW_TIME, 0)
-            }
-        }
-        dispatch(UPDATE_INITIAL_STATE);
+            dispatch(UPDATE_INITIAL_STATE);
+        })
 
     },
     [NEXT_SECTION]: ({state, commit, dispatch}) => {
@@ -125,7 +187,7 @@ const actions = {
             dispatch(UPDATE_TIME, state.listeningTimes[payload])
         }
         if (state.examArray[state.examSectionNumber] === 'Writing') {
-            dispatch(UPDATE_TIME, state.writingTimes[payload])
+            dispatch(UPDATE_TIME, state.writingTimes[payload]['time'])
         }
     },
     [UPDATE_REMAINING_TIME_READING]: ({commit}, payload) => {
@@ -140,6 +202,9 @@ const actions = {
 };
 
 const mutations = {
+    updateUserTestId(state, payload) {
+      this.userTestId = payload;
+    },
     updateComponent(state, payload) {
         state.currentComponent = payload;
     },
@@ -153,13 +218,22 @@ const mutations = {
         state.readingTime = payload
     },
     updateListeningTime(state, payload) {
-        if (payload['sectionNumber'] !== -1){
+        if ('sectionNumber' in payload){
             state.listeningTimes[payload['sectionNumber']] = payload['time']
         }
+        else {
+            state.listeningTimes = payload
+        }
+    },
+    updateSpeakingTime(state, payload) {
+        state.speakingTimes = payload;
     },
     updateWritingTime(state, payload) {
-        if (payload['sectionNumber'] !== -1){
-            state.writingTimes[payload['sectionNumber']] = payload['time']
+        if ('sectionNumber' in payload){
+            state.writingTimes[payload['sectionNumber']]['time'] = payload['time']
+        }
+        else {
+            state.writingTimes = payload
         }
     },
     updateSeenArray(state, payload) {

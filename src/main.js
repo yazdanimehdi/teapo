@@ -17,18 +17,6 @@ if (token) {
   axios.defaults.headers.common['Authorization'] = `Token ${token}`
 }
 
-router.beforeEach((to, from, next) => {
-  // redirect to login page if not logged in and trying to access a restricted page
-  const publicPages = ['/login'];
-  const authRequired = !publicPages.includes(to.path);
-
-  if (authRequired && !token) {
-    return next('/login');
-  }
-  next();
-})
-
-
 new Vue({
   store,
   router,

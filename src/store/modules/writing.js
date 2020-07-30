@@ -5,13 +5,19 @@ import {
 
 } from '../actions/writing'
 
-import {NEXT_SECTION, PREVIOUS_SECTION, UPDATE_COMPONENT} from "../actions/mainTPO";
+import {
+    NEXT_SECTION,
+    PREVIOUS_SECTION,
+    UPDATE_COMPONENT,
+    SET_WRITING_READING_TIME,
+    SET_NEW_TIME
+} from "../actions/mainTPO";
 import {TIME_STOP, UPDATE_REMAINED_WRITING_TIME} from "@/store/actions/time";
 
 const state = {
     taskNumber: 0,
     stateNumber: -1,
-    writing: {},
+    writing: [],
     writingMode: "practiceMode",
     answers: {},
 };
@@ -20,20 +26,8 @@ const getters = {
     writingQuestionNumber: state => state.taskNumber + 1,
     writingQuestion: state => state.writing[state.taskNumber]["writing_question"],
     writingReading: state => state.writing[state.taskNumber]["writing_reading"],
-    writingImageSource: state => {
-        if (state.writing[state.taskNumber]['writing_image'][0] === 'b' && state.writing[state.taskNumber]['writing_image'][1] === '\'') {
-            return state.writing[state.taskNumber]['writing_image'].slice(2, -1)
-        } else {
-            return state.writing[state.taskNumber]['writing_image']
-        }
-    },
-    writingListeningSource: state => {
-        if (state.writing[state.taskNumber]['writing_listening'][0] === 'b' && state.writing[state.taskNumber]['writing_listening'][1] === '\'') {
-            return state.writing[state.taskNumber]['writing_listening'].slice(2, -1)
-        } else {
-            return state.writing[state.taskNumber]['writing_listening']
-        }
-    },
+    writingImageSource: state => state.writing[state.taskNumber]['writing_image'],
+    writingListeningSource: state => state.writing[state.taskNumber]['writing_listening'],
     writingId: state => state.writing[state.taskNumber].id,
 };
 const actions = {
@@ -45,10 +39,20 @@ const actions = {
             },
             useNullAsDefault: true
         });
-        let result = knex.select("*").from('tpo_writing').where({related: payload});
-        result.then(function (rows) {
-            commit('updateWritingData', rows)
-        });
+        let tpo = knex.select("*").from('tpo_testwriting').where({test_id: payload});
+        tpo.then(function (writings) {
+            let writingList = [...writings]
+            writingList = writingList.sort(function (a, b){
+                return a.part - b.part
+            })
+            for (let m = 0; m < writingList.length; m++) {
+                console.log(writings[m]['writing_id'])
+                let result = knex.select("*").from('tpo_writing').where({id: writingList[m]['writing_id']});
+                result.then(function (rows) {
+                    commit('updateWritingData', rows[0])
+                });
+            }
+        })
     },
     [UPDATE_STATE_WRITING]: ({state, dispatch}) => {
         if (state.writing[state.taskNumber].type === 'Integrated') {
@@ -57,6 +61,7 @@ const actions = {
                 dispatch(UPDATE_COMPONENT, 'IntegratedWritingDirection')
             }
             if (state.stateNumber === 0) {
+                dispatch(SET_WRITING_READING_TIME, state.taskNumber)
                 dispatch(TIME_STOP, false)
                 dispatch(UPDATE_COMPONENT, 'WritingReading')
             }
@@ -65,6 +70,7 @@ const actions = {
                 dispatch(UPDATE_COMPONENT, 'WritingPlayer')
             }
             if (state.stateNumber === 2) {
+                dispatch(SET_NEW_TIME, state.taskNumber)
                 dispatch(TIME_STOP, false)
                 dispatch(UPDATE_COMPONENT, 'WritingIntegrated')
             }
@@ -132,14 +138,42 @@ const actions = {
         dispatch(UPDATE_STATE_WRITING);
 
     },
-    [SAVE_ANSWER_WRITING]: ({commit}, payload) => {
+    [SAVE_ANSWER_WRITING]: ({commit, rootState}, payload) => {
         commit('updateWritingAnswers', payload)
+        let knex = require('knex')({
+            client: 'sqlite3',
+            connection: {
+                filename: './db.sqlite3'
+            },
+            useNullAsDefault: true
+        });
+        knex.select('*').from('tpousers_userwritinganswers').where({
+            'question_id': payload[0],
+            'user_test_id': rootState.mainTPO.userTestId
+        }).then((rows) => {
+            if (rows.length > 0) {
+                knex('tpousers_userwritinganswers').where({
+                    user_test_id: rootState.mainTPO.userTestId,
+                    question_id: payload[0]
+                }).update({
+                    answer: payload[1]
+                }).then(() => {
+                })
+            } else {
+                knex('tpousers_userwritinganswers').insert({
+                    'answer': payload[1],
+                    'question_id': payload[0],
+                    'user_test_id': rootState.mainTPO.userTestId
+                }).then(() => {
+                })
+            }
+        })
     }
 
 };
 const mutations = {
     updateWritingData(state, payload) {
-        state.writing = payload
+        state.writing.push(payload);
     },
     updateStateNumber(state, payload) {
         state.stateNumber = payload

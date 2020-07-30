@@ -26,13 +26,15 @@
 
                             </v-col>
                             <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0"
-                                   v-if="writingMode ==='practiceMode' || writingMode === 'reviewMode'">
+                                   v-if="writingMode ==='practiceMode'">
                                 <v-img src="../../../assets/back.png" @click="goToBack" contain
                                        max-height="60px" min-height="40px"></v-img>
                             </v-col>
                             <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
+                              <v-img src="../../../assets/nextd.png" contain
+                                     max-height="60px" min-height="40px" v-if="writingMode === 'reviewMode'"></v-img>
                                 <v-img src="../../../assets/next.png" @click="dialog = true" contain
-                                       max-height="60px" min-height="40px"></v-img>
+                                       max-height="60px" min-height="40px" v-else></v-img>
                             </v-col>
                         </v-row>
                     </v-container>

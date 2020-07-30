@@ -38,11 +38,11 @@
     </v-container>
     <v-container>
       <v-row align="center" justify="center">
-        <img :src="'data:image/jpeg;base64,' + speakingImageSource">
+        <img :src="speakingImageSource">
       </v-row>
       <v-row align="center" justify="center">
         <audio id="listening" autoplay :controls="(speakingMode === 'reviewMode' || speakingMode === 'practiceMode')" v-on:ended="listeningEnded" v-on:timeupdate="progressListening">
-          <source :src="'data:audio/mp3;base64,' + speakingListeningSource">
+          <source :src="speakingListeningSource">
         </audio>
       </v-row>
       <v-row justify="center" align="center">

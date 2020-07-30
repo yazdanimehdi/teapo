@@ -51,7 +51,7 @@
       </v-row>
       <v-row>
         <audio id="guide" autoplay v-on:ended="goToNext">
-          <source :src="'data:audio/mp3;base64,' + speakingGuidAudiFile">
+          <source :src="speakingGuidAudiFile">
         </audio>
       </v-row>
     </v-container>

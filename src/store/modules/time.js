@@ -76,6 +76,7 @@ const mutations = {
     updateTime(state, payload) {
         state.totalTime = payload;
         state.totalUnchangedTime = payload;
+        console.log(state.totalTime)
     }
 
 };

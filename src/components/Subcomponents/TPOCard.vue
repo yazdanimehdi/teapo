@@ -1,8 +1,9 @@
 <template>
   <v-hover v-slot:default="{ hover }">
-    <v-card width="100%" height="200px" flat
+    <v-card width="100%" height="180px" flat
             style="border-radius: 30px"
             :color="cardBackgroundColor">
+
       <v-card-title class="tpo-title">
         {{ tpoTitle }}
       </v-card-title>
@@ -162,6 +163,7 @@
 import {START_TPO} from "@/store/actions/mainTPO";
 import {DOWNLOAD_TPO} from "@/store/actions/download";
 import {mapGetters} from 'vuex'
+// import {GO_TO_TPO_PAGE} from "@/store/actions/TPOPage";
 
 export default {
   name: "TPOCard",
@@ -189,17 +191,16 @@ export default {
   data() {
     return {
       downloadValue: 0,
-      downloaded: false,
       downloadQuery: false,
       downloadShow: false,
       interval: 0,
     }
   },
-  created() {
-    this.downloaded = this.localTPOListId.indexOf(this.tpoId) !== -1;
-  },
   computed: {
     ...mapGetters(['percentCompleted', 'localTPOListId', 'localTPOList']),
+    downloaded(){
+      return this.localTPOListId.indexOf(this.tpoId) !== -1;
+    },
     TPOInst() {
       return this.$store.getters.getTPOById(this.tpoId)
     },
@@ -224,9 +225,6 @@ export default {
     }
   },
   watch: {
-    localTPOListId(newVal) {
-      this.downloaded = newVal.indexOf(this.tpoId) !== -1;
-    },
     percentCompleted(newVal) {
       if (newVal > 0) {
         this.downloadQuery = false
@@ -239,9 +237,11 @@ export default {
   },
   methods: {
     goToTPO() {
+      // this.$store.dispatch(GO_TO_TPO_PAGE, [this.tpoId, this.mode]);
+      // this.$router.push('/tpo_page')
       this.$store.dispatch(START_TPO, {
         'examArray': ['Reading', 'Listening', 'Speaking', 'Writing'],
-        'TPO': `tpo${this.tpoId}`,
+        'TPO': this.tpoId,
         'mode': this.mode
       })
       this.$router.push('/tpo')
@@ -249,7 +249,7 @@ export default {
     goToReading() {
       this.$store.dispatch(START_TPO, {
         'examArray': ['Reading'],
-        'TPO': `tpo${this.tpoId}`,
+        'TPO': this.tpoId,
         'mode': this.mode
       })
       this.$router.push('/tpo')
@@ -257,7 +257,7 @@ export default {
     goToListening() {
       this.$store.dispatch(START_TPO, {
         'examArray': ['Listening'],
-        'TPO': `tpo${this.tpoId}`,
+        'TPO': this.tpoId,
         'mode': this.mode
       })
       this.$router.push('/tpo')
@@ -265,7 +265,7 @@ export default {
     goToSpeaking() {
       this.$store.dispatch(START_TPO, {
         'examArray': ['Speaking'],
-        'TPO': `tpo${this.tpoId}`,
+        'TPO': this.tpoId,
         'mode': this.mode
       })
       this.$router.push('/tpo')
@@ -273,7 +273,7 @@ export default {
     goToWriting() {
       this.$store.dispatch(START_TPO, {
         'examArray': ['Writing'],
-        'TPO': `tpo${this.tpoId}`,
+        'TPO': this.tpoId,
         'mode': this.mode
       })
       this.$router.push('/tpo')

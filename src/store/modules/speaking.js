@@ -24,47 +24,14 @@ const state = {
 
 const getters = {
     speakingLength: state => state.speaking.length,
-    speakingGuidAudiFile: state => {
-        if (state.speaking[state.taskNumber]['speaking_question_guide_audio_file'][0] === 'b' && state.speaking[state.taskNumber]['speaking_question_guide_audio_file'][1] === '\'') {
-            return state.speaking[state.taskNumber]['speaking_question_guide_audio_file'].slice(2, -1)
-        } else {
-            return state.speaking[state.taskNumber]['speaking_question_guide_audio_file']
-        }
-    },
-    speakingImageSource: state => {
-        if (state.speaking[state.taskNumber]['speaking_image'][0] === 'b' && state.speaking[state.taskNumber]['speaking_image'][1] === '\'') {
-            return state.speaking[state.taskNumber]['speaking_image'].slice(2, -1)
-        } else {
-            return state.speaking[state.taskNumber]['speaking_image']
-        }
-    },
-    speakingListeningSource: state => {
-        if (state.speaking[state.taskNumber]['speaking_audio_file'][0] === 'b' && state.speaking[state.taskNumber]['speaking_audio_file'][1] === '\'') {
-            return state.speaking[state.taskNumber]['speaking_audio_file'].slice(2, -1)
-        } else {
-            return state.speaking[state.taskNumber]['speaking_audio_file']
-        }
-    },
-    speakingBeforeReadAudio: state => {
-        if (state.speaking[state.taskNumber]['speaking_question_before_read_audio'][0] === 'b' && state.speaking[state.taskNumber]['speaking_question_before_read_audio'][1] === '\'') {
-            return state.speaking[state.taskNumber]['speaking_question_before_read_audio'].slice(2, -1)
-        } else {
-            return state.speaking[state.taskNumber]['speaking_question_before_read_audio']
-        }
-    },
+    speakingGuidAudiFile: state => state.speaking[state.taskNumber]['speaking_question_guide_audio_file'],
+    speakingImageSource: state => state.speaking[state.taskNumber]['speaking_image'],
+    speakingListeningSource: state => state.speaking[state.taskNumber]['speaking_audio_file'],
+    speakingBeforeReadAudio: state => state.speaking[state.taskNumber]['speaking_question_before_read_audio'],
     speakingReadingTitle: state => state.speaking[state.taskNumber]['speaking_reading_title'],
     speakingReading: state => state.speaking[state.taskNumber]['speaking_reading'],
-    speakingReadingTime: state => state.speaking[state.taskNumber]['speaking_reading_time'],
     speakingQuestion: state => state.speaking[state.taskNumber]['speaking_question'],
-    speakingQuestionAudioFile: state => {
-        if (state.speaking[state.taskNumber]['speaking_question_audio_file'][0] === 'b' && state.speaking[state.taskNumber]['speaking_question_audio_file'][1] === '\'') {
-            return state.speaking[state.taskNumber]['speaking_question_audio_file'].slice(2, -1)
-        } else {
-            return state.speaking[state.taskNumber]['speaking_question_audio_file']
-        }
-    },
-    speakingQuestionPrepareTime: state => state.speaking[state.taskNumber]['speaking_prepare_time'],
-    speakingTime: state => state.speaking[state.taskNumber]['speaking_time'],
+    speakingQuestionAudioFile: state => state.speaking[state.taskNumber]['speaking_question_audio_file'],
     speakingAnswer: state => {
         if (state.speaking[state.taskNumber].id in state.answers) {
             return state.answers[state.speaking[state.taskNumber].id]
@@ -72,7 +39,8 @@ const getters = {
             return ''
         }
     },
-    speakingId: state => state.speaking[state.taskNumber].id
+    speakingId: state => state.speaking[state.taskNumber].id,
+    speakingTaskNumber: state => state.taskNumber,
 
 };
 
@@ -85,10 +53,19 @@ const actions = {
             },
             useNullAsDefault: true
         });
-        let result = knex.select("*").from('tpo_speaking').where({related: payload});
-        result.then(function (rows) {
-            commit('updateSpeakingData', rows)
-        });
+        let tpo = knex.select("*").from('tpo_testspeaking').where({test_id: payload});
+        tpo.then(function (speakings) {
+            let speakingList = [...speakings];
+            speakingList = speakingList.sort(function (a, b){
+                return a.part - b.part
+            })
+            for (let m = 0; m < speakingList.length; m++) {
+                let result = knex.select("*").from('tpo_speaking').where({id: speakingList[m]['speaking_id']});
+                result.then(function (rows) {
+                    commit('updateSpeakingData', rows[0])
+                });
+            }
+        })
     },
     [UPDATE_STATE_SPEAKING]: ({state, dispatch}) => {
         if (state.taskNumber === -1) {
@@ -211,7 +188,7 @@ const actions = {
         dispatch(UPDATE_STATE_SPEAKING)
     },
 
-    [SAVE_ANSWER_SPEAKING]: ({commit}, payload) => {
+    [SAVE_ANSWER_SPEAKING]: ({commit, rootState}, payload) => {
         commit('saveSpeakingAnswers', payload)
         let knex = require('knex')({
             client: 'sqlite3',
@@ -220,8 +197,27 @@ const actions = {
             },
             useNullAsDefault: true
         });
-        knex('tpo_userspeakinganswers').insert({'answer': payload[1], 'question_id': payload[0], 'user_test_id': 1})
-
+        knex.select('*').from('tpousers_userspeakinganswers').where({
+            'question_id': payload[0],
+            'user_test_id': rootState.mainTPO.userTestId
+        }).then((rows) => {
+            if (rows.length > 0) {
+                knex('tpousers_userspeakinganswers').where({
+                    user_test_id: rootState.mainTPO.userTestId,
+                    question_id: payload[0]
+                }).update({
+                    answer: payload[1]
+                }).then(() => {
+                })
+            } else {
+                knex('tpousers_userspeakinganswers').insert({
+                    'answer': payload[1],
+                    'question_id': payload[0],
+                    'user_test_id': rootState.mainTPO.userTestId
+                }).then(() => {
+                })
+            }
+        })
     }
 
 };
@@ -231,7 +227,7 @@ const mutations = {
       state.answers[payload[0]] = payload[1]
     },
     updateSpeakingData(state, payload) {
-        state.speaking = payload
+        state.speaking.push(payload);
     },
 
     updateSpeakingTaskNumber(state, payload) {

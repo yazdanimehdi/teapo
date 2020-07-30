@@ -39,7 +39,7 @@
                             </v-col>
 
                             <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0"
-                                   v-if="listeningMode === 'practiceMode' || listeningMode === 'reviewMode'">
+                                   v-if="listeningMode === 'practiceMode'">
                                 <v-img src="../../../assets/back.png" contain max-height="60px" @click="goToBack"
                                        min-height="40px"></v-img>
 
@@ -47,14 +47,14 @@
 
                             <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
                                 <v-img src="../../../assets/okd.png" contain max-height="60px"
-                                       min-height="40px" v-if="ok.enabled === false"></v-img>
+                                       min-height="40px" v-if="ok.enabled === false || listeningMode === 'reviewMode'"></v-img>
                                 <v-img src="../../../assets/ok.png" contain max-height="60px"
                                        min-height="40px" v-else @click="goToNext"></v-img>
                             </v-col>
 
                             <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
                                 <v-img src="../../../assets/nextd.png" contain max-height="60px"
-                                       min-height="40px" v-if="ok.enabled === true || ok.audio_ended === false"></v-img>
+                                       min-height="40px" v-if="ok.enabled === true || ok.audio_ended === false || listeningMode === 'reviewMode'"></v-img>
                                 <v-img src="../../../assets/next.png" contain max-height="60px"
                                        min-height="40px" v-else @click="toggleOk"></v-img>
                             </v-col>
@@ -87,7 +87,7 @@
         <v-container fluid>
             <v-row>
                 <audio id="listening_question" autoplay v-on:ended="audioEnded">
-                    <source :src="'data:audio/mp3;base64,' + listeningQuestionAudioFile"
+                    <source :src="listeningQuestionAudioFile"
                             type="audio/mpeg">
                 </audio>
             </v-row>
@@ -100,7 +100,7 @@
                 <v-container>
                     <v-row v-for="ans in listeningQuestionAnswers" :key="ans.id" v-show="answers.enabled">
                         <label class="container_checkbox" v-if="listeningQuestionMulti === true">{{ans.answer}}
-                            <input type="checkbox" v-bind:value="ans.code" name="answer" v-model="answer">
+                            <input type="checkbox" :value="ans.code" name="answer" v-model="answer">
                             <span class="checkmark_checkbox"></span>
                         </label>
                         <label class="container_radio" v-else>{{ans.answer}}

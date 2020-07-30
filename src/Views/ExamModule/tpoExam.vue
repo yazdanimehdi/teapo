@@ -36,6 +36,7 @@
     import WritingIntegrated from "./Writing/WritingIntegrated";
     import WritingPlayer from "./Writing/WritingPlayer";
     import WritingReading from "./Writing/WritingReading";
+    import TimeEndedWriting from "@/Views/ExamModule/Writing/TimeEndedWriting";
 
     import {COMPUTE_TIME} from "@/store/actions/time";
 
@@ -64,7 +65,8 @@
             WritingIntegrated,
             WritingPlayer,
             WritingReading,
-            WritingDirection
+            WritingDirection,
+            TimeEndedWriting
         },
         data() {
             return {

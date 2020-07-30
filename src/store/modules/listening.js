@@ -47,20 +47,8 @@ const getters = {
         }
         return qNumber + state.questionNumber + 1
     },
-    listeningImageSource: state => {
-        if (state.listening[state.sectionNumber][state.taskNumber]['listening_image'][0] === 'b' && state.listening[state.sectionNumber][state.taskNumber]['listening_image'][1] === '\'') {
-            return state.listening[state.sectionNumber][state.taskNumber]['listening_image'].slice(2, -1)
-        } else {
-            return state.listening[state.sectionNumber][state.taskNumber]['listening_image']
-        }
-    },
-    listeningSource: state => {
-        if (state.listening[state.sectionNumber][state.taskNumber].listening[0] === 'b' && state.listening[state.sectionNumber][state.taskNumber].listening[1] === '\'') {
-            return state.listening[state.sectionNumber][state.taskNumber].listening.slice(2, -1)
-        } else {
-            return state.listening[state.sectionNumber][state.taskNumber].listening
-        }
-    },
+    listeningImageSource: state => state.listening[state.sectionNumber][state.taskNumber]['listening_image'],
+    listeningSource: state => state.listening[state.sectionNumber][state.taskNumber].listening,
     conversationCount: state => {
         let typeNumber = 0;
         for (let i = 0; i < state.listening[0].length; i++) {
@@ -90,27 +78,13 @@ const getters = {
         return qLength
     },
     listeningQuestion: state => state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber].question,
-    listeningQuestionAudioFile: state => {
-        if (state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber]['listening_question_audio_file'][0] === 'b'
-            && state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber]['listening_question_audio_file'][1] === '\'') {
-            return state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber]['listening_question_audio_file'].slice(2, -1)
-        } else {
-            return state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber]['listening_question_audio_file']
-        }
-    },
+    listeningQuestionAudioFile: state => state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber]['listening_question_audio_file'],
     listeningQuestionAnswers: state => state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber].answers,
     listeningQuestionMulti: state => state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber]['right_answer'].length > 1,
     listeningQuestionAnswerCount: state => state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber]['right_answer'].trim().split(/\s+/).length,
     listeningQuestionId: state => state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber].id,
     listeningQuestionAnswer: state => state.listeningAnswers[state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber].id],
-    quoteAudioFile: state => {
-        if (state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber]['quote_audio_file'][0] === 'b'
-            && state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber]['quote_audio_file'][1] === '\'') {
-            return state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber]['quote_audio_file'].slice(2, -1)
-        } else {
-            return state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber]['quote_audio_file']
-        }
-    },
+    quoteAudioFile: state => state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber]['quote_audio_file'],
     ListeningQuestionCorrectAnswer: state => {
         let correctAnswer = '';
         if (state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber]['right_answer'].trim().split(/\s+/).indexOf('1') !== -1) {
@@ -145,30 +119,35 @@ const actions = {
             },
             useNullAsDefault: true
         });
-        let result = knex.select("*").from('tpo_listening').where({related: payload});
-        result.then(function (rows) {
-            let i;
-            for (i = 0; i < rows.length; i++) {
-                let listening_obj = Object.assign({}, rows[i]);
-                let questions = knex.select("*").from('tpo_listeningquestions').where({'listening_id': rows[i]['id']});
-                let questions_all = [];
-                questions.then(function (questioninst) {
-                    let j;
-                    for (j = 0; j < questioninst.length; j++) {
-                        let question_obj = Object.assign({}, questioninst[j]);
-                        let qs = knex.select("*").from("tpo_listeninganswers").where({'question_id': questioninst[j]['id']});
-                        qs.then(function (instance) {
+        let tpo = knex.select("*").from('tpo_testlistening').where({test_id: payload});
+        tpo.then(function (listening) {
+            for (let m = 0; m < listening.length; m++) {
+                let result = knex.select("*").from('tpo_listening').where({id: listening[m]['listening_id']});
+                result.then(function (rows) {
+                    let i;
+                    for (i = 0; i < rows.length; i++) {
+                        let listening_obj = Object.assign({}, rows[i]);
+                        let questions = knex.select("*").from('tpo_listeningquestions').where({'listening_id': rows[i]['id']});
+                        let questions_all = [];
+                        questions.then(function (questioninst) {
+                            let j;
+                            for (j = 0; j < questioninst.length; j++) {
+                                let question_obj = Object.assign({}, questioninst[j]);
+                                let qs = knex.select("*").from("tpo_listeninganswers").where({'question_id': questioninst[j]['id']});
+                                qs.then(function (instance) {
 
-                            question_obj['answers'] = instance;
-                            questions_all.push(question_obj)
+                                    question_obj['answers'] = instance;
+                                    questions_all.push(question_obj)
 
+                                });
+                            }
+                            listening_obj['questions'] = questions_all;
                         });
+                        commit('updateListeningData', [listening_obj, listening[m]['part'], listening[m]['phase']])
                     }
-                    listening_obj['questions'] = questions_all;
                 });
-                commit('updateListeningData', listening_obj)
             }
-        });
+            })
     },
     [UPDATE_STATE_LISTENING]: ({state, commit, dispatch}) => {
         if (state.questionNumber === -1) {
@@ -247,7 +226,7 @@ const actions = {
         dispatch(UPDATE_STATE_LISTENING);
     },
 
-    [SAVE_ANSWER_LISTENING]: ({commit}, payload) => {
+    [SAVE_ANSWER_LISTENING]: ({commit, rootState}, payload) => {
         commit('updateListeningAnswers', payload);
         let knex = require('knex')({
             client: 'sqlite3',
@@ -256,8 +235,27 @@ const actions = {
             },
             useNullAsDefault: true
         });
-        knex('tpo_userlisteninganswers').insert({'answer': payload[1], 'question_id': payload[0], 'user_test_id': 1})
-
+        knex.select('*').from('tpousers_userlisteninganswers').where({
+            'question_id': payload[0],
+            'user_test_id': rootState.mainTPO.userTestId
+        }).then((rows) => {
+            if (rows.length > 0) {
+                knex('tpousers_userlisteninganswers').where({
+                    user_test_id: rootState.mainTPO.userTestId,
+                    question_id: payload[0]
+                }).update({
+                    answer: payload[1]
+                }).then(() => {
+                })
+            } else {
+                knex('tpousers_userlisteninganswers').insert({
+                    'answer': payload[1],
+                    'question_id': payload[0],
+                    'user_test_id': rootState.mainTPO.userTestId
+                }).then(() => {
+                })
+            }
+        })
     },
 
     [QUOTE_PLAYED]: ({commit, dispatch}) => {
@@ -268,13 +266,15 @@ const actions = {
 
 const mutations = {
     updateListeningData(state, payload) {
-        if (state.listening[0].length < 3) {
-            state.listening[0].push(payload);
+        if (payload[1] === 1) {
+            payload[0]['phase'] = payload[2]
+            state.listening[0].push(payload[0]);
             state.listening[0] = state.listening[0].sort(function (a, b) {
                 return a['phase'] - b['phase']
             });
-        } else {
-            state.listening[1].push(payload);
+        } else if(payload[1] === 2){
+            payload[0]['phase'] = payload[2]
+            state.listening[1].push(payload[0]);
             state.listening[1] = state.listening[1].sort(function (a, b) {
                 return a['phase'] - b['phase']
             });

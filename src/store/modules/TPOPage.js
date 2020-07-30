@@ -1,12 +1,25 @@
-import {GET_ONLINE_TPO_LIST, GET_LOCAL_TPO_LIST} from "@/store/actions/TPOPage";
+import {GET_ONLINE_TPO_LIST, GET_LOCAL_TPO_LIST, GO_TO_TPO_PAGE} from "@/store/actions/TPOPage";
 import axios from 'axios'
 
 const state = {
     onlineTPOList: [],
     localTPOList: [],
+    tpoId: 0,
+    mode: 'practice',
 };
 const getters = {
-    onlineTPOList: state => state.onlineTPOList,
+    onlineTPOList: (state) => {
+        let myList = []
+        let localIds = state.localTPOList.map((val) => {
+            return val.id
+        })
+        for(let i = 0; i < state.onlineTPOList.length; i++){
+            if(localIds.indexOf(state.onlineTPOList[i]['id']) === -1){
+                myList.push(state.onlineTPOList[i])
+            }
+        }
+        return myList;
+    },
     localTPOListId: state => state.localTPOList.map((val) => {
         return val.id
     }),
@@ -16,6 +29,9 @@ const getters = {
     }
 };
 const actions = {
+    [GO_TO_TPO_PAGE]: ({commit}, payload) => {
+        commit('updateGoToTPO', payload);
+    },
     [GET_ONLINE_TPO_LIST]: ({commit}) => {
         return new Promise((resolve, reject) => {
             axios.get('http://127.0.0.1:8000/api/v1/tpo_list/').then((resp) => {
@@ -52,63 +68,49 @@ const actions = {
                     test_id: row[i]['id'],
                     is_done: true
                 }).then((userTests) => {
-                    let readingScoreSum = 0;
-                    let readingCount = 0;
-                    let listeningScoreSum = 0;
-                    let listeningCount = 0;
-                    let speakingScoreSum = 0;
-                    let speakingCount = 0;
-                    let writingScoreSum = 0;
-                    let writingCount = 0;
                     for (let j = 0; j < userTests.length; j++) {
-                        knex.select("*").from('tpousers_testuserreading').where({
-                            test_user_id: userTests[j]['id'],
-                        }).then((reading) => {
-                            readingCount += reading.length;
-                            if (reading.length !== 0) {
-                                readingCompleted = true
-                                readingScoreSum += reading['score']
-                            }
-                        })
-                        knex.select("*").from('tpousers_testuserlistening').where({
-                            test_user_id: userTests[j]['id'],
-                        }).then((listening) => {
-                            listeningCount += listening.length;
-                            if (listening.length !== 0) {
-                                listeningCompleted = true
-                                listeningScoreSum += listening['score']
-                            }
-                        })
-                        knex.select("*").from('tpousers_testuserspeaking').where({
-                            test_user_id: userTests[j]['id'],
-                        }).then((speaking) => {
-                            speakingCount += speaking.length;
-                            if (speaking.length !== 0) {
-                                speakingCompleted = true
-                                speakingScoreSum += speaking['score']
-                            }
-                        })
-                        knex.select("*").from('tpousers_testuserwriting').where({
-                            test_user_id: userTests[j]['id'],
-                        }).then((writing) => {
-                            writingCount += writing.length
-                            if (writing.length !== 0) {
-                                writingCompleted = true
-                                writingScoreSum += writing['score']
-                            }
-                        })
-                    }
-                    if (readingCompleted === true) {
-                        readingScore = readingScoreSum / readingCount
-                    }
-                    if (listeningCompleted === true) {
-                        listeningScore = listeningScoreSum / listeningCount
-                    }
-                    if (speakingCompleted === true) {
-                        speakingScore = speakingScoreSum / speakingCount
-                    }
-                    if (writingCompleted === true) {
-                        writingScore = writingScoreSum / writingCount
+                        if (userTests[j]['is_done'] === true) {
+                            knex.select("*").from('tpousers_testuserreading').where({
+                                test_user_id: userTests[j]['id'],
+                            }).then((reading) => {
+                                if (reading.length !== 0) {
+                                    readingCompleted = true
+                                }
+                            })
+                            knex.select("*").from('tpousers_testuserlistening').where({
+                                test_user_id: userTests[j]['id'],
+                            }).then((listening) => {
+                                if (listening.length !== 0) {
+                                    listeningCompleted = true
+                                }
+                            })
+                            knex.select("*").from('tpousers_testuserspeaking').where({
+                                test_user_id: userTests[j]['id'],
+                            }).then((speaking) => {
+                                if (speaking.length !== 0) {
+                                    speakingCompleted = true
+                                }
+                            })
+                            knex.select("*").from('tpousers_testuserwriting').where({
+                                test_user_id: userTests[j]['id'],
+                            }).then((writing) => {
+                                if (writing.length !== 0) {
+                                    writingCompleted = true
+                                }
+                            })
+                        }
+                        if (userTests[j]['reading_score'] > readingScore) {
+                            readingScore = userTests[j]['reading_score']
+                        }
+                        if (userTests[j]['listening_score'] > listeningScore) {
+                            listeningScore = userTests[j]['listening_score']
+                        }
+                        if (userTests[j]['speaking_score'] > speakingScore) {
+                            speakingScore = userTests[j]['speaking_score']
+                        }
+                        if (userTests[j]['writing_score'] > writingScore) {
+                            writingScore = userTests[j]['writing_score']
+                        }
                     }
 
                 })
@@ -130,6 +132,10 @@ const actions = {
     }
 };
 const mutations = {
+    updateGoToTPO(state, payload) {
+        state.tpoId = payload[0]
+        state.mode = payload[1]
+    },
     resetLocalTPOList(state) {
         state.localTPOList = []
     },

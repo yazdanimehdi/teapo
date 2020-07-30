@@ -39,14 +39,14 @@
     <div style="margin: 10%;">
       <v-container>
         <v-row style="text-align: left; font-family: Verdana; font-size: 20px; " v-if="!audio_ended">
-          Reading time {{speakingReadingTime}} seconds
+          Reading time {{this.speakingTimes[this.speakingTaskNumber]['reading_time']}} seconds
         </v-row>
 
         <v-row style="text-align: left; font-family: Verdana; font-size: 20px; " v-else>
           Reading time {{reading_time}} seconds
         </v-row>
         <audio id="before_read" autoplay v-on:ended="audioEnded">
-          <source :src="'data:audio/mp3;base64,' + speakingBeforeReadAudio">
+          <source :src="speakingBeforeReadAudio">
         </audio>
         <v-row class="main" v-show="audio_ended" style="padding-top: 20px">
           <h4 style="text-align: center">{{speakingReadingTitle}}</h4>
@@ -86,7 +86,7 @@
       }
     },
     computed:{
-      ...mapGetters(['speakingBeforeReadAudio', 'speakingReadingTitle', 'speakingReading', 'speakingReadingTime']),
+      ...mapGetters(['speakingBeforeReadAudio', 'speakingReadingTitle', 'speakingReading', 'speakingTaskNumber', 'speakingTimes']),
       ...mapState({
         speakingMode: state => state.speaking.speakingMode
       })
@@ -96,8 +96,8 @@
         this.$store.dispatch(GO_TO_PREVIOUS_SPEAKING)
       },
       audioEnded(){
-        this.reading_time = this.speakingReadingTime;
-        this.reading_total_time = this.speakingReadingTime;
+        this.reading_time = this.speakingTimes[this.speakingTaskNumber]['reading_time'];
+        this.reading_total_time = this.speakingTimes[this.speakingTaskNumber]['reading_time'];
         this.audio_ended = true;
         let self = this;
         let interval = setInterval(function () {
