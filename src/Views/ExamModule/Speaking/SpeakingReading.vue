@@ -7,7 +7,10 @@
           <v-container fluid>
             <v-row justify="start" align="start">
               <v-col style="padding: 0">
-                <v-btn to="/" dark rounded small style="margin-right: 10px;">Home</v-btn>
+                <v-btn to="/review" dark rounded small style="margin-right: 10px"
+                       v-if="speakingMode === 'reviewMode'">Back
+                </v-btn>
+                <v-btn @click="endDialog = true" dark rounded small style="margin-right: 10px" v-else>End</v-btn>
               </v-col>
             </v-row>
           </v-container>
@@ -17,7 +20,12 @@
             <v-row justify="end" align="start" style="padding: 0">
 
               <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0"
-                     v-if="speakingMode === 'reviewMode' || speakingMode === 'practiceMode'">
+                     v-if="speakingMode === 'reviewMode'">
+                <v-img src="../../../assets/next.png" contain max-height="60px" min-height="40px"
+                       @click="goToNext"></v-img>
+              </v-col>
+              <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0"
+                     v-if="speakingMode === 'practiceMode'">
                 <v-img src="../../../assets/back.png" contain max-height="60px" min-height="40px"
                        @click="goToBack"></v-img>
               </v-col>
@@ -38,8 +46,8 @@
     </v-container>
     <div style="margin: 10%;">
       <v-container>
-        <v-row style="text-align: left; font-family: Verdana; font-size: 20px; " v-if="!audio_ended">
-          Reading time {{this.speakingTimes[this.speakingTaskNumber]['reading_time']}} seconds
+        <v-row style="text-align: left; font-family: Verdana; font-size: 20px; " v-if="!audio_ended && speakingMode==='reviewMode'">
+          Reading time {{speakingMode==='reviewMode' ? '-' : this.speakingTimes[this.speakingTaskNumber]['reading_time']}} seconds
         </v-row>
 
         <v-row style="text-align: left; font-family: Verdana; font-size: 20px; " v-else>
@@ -56,16 +64,32 @@
         </v-row>
       </v-container>
     </div>
+    <v-dialog max-width="500" v-model="endDialog">
+      <v-card>
+        <v-card-title>
+          Do You Want To End This Session?
+        </v-card-title>
+        <v-card-subtitle>
+          If you end this session you can not continue it later!
+        </v-card-subtitle>
+        <v-card-actions>
+          <v-btn @click="endTPO" color="red" style="color: white">End</v-btn>
+          <v-btn @click="endDialog = false" color="green" style="color: white">Continue</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-app>
 </template>
 
 <script>
   import { mapGetters, mapState } from 'vuex'
   import {GO_TO_NEXT_SPEAKING, GO_TO_PREVIOUS_SPEAKING} from "@/store/actions/speaking";
+  import {END_TPO} from "@/store/actions/mainTPO";
   export default {
     name: "SpeakingReading",
     data() {
       return {
+        endDialog: false,
         reading_time: 0,
         reading_total_time:0,
         volume_slide: 100,
@@ -88,33 +112,41 @@
     computed:{
       ...mapGetters(['speakingBeforeReadAudio', 'speakingReadingTitle', 'speakingReading', 'speakingTaskNumber', 'speakingTimes']),
       ...mapState({
-        speakingMode: state => state.speaking.speakingMode
+        speakingMode: state => state.mainTPO.mode
       })
     },
     methods: {
+      endTPO() {
+        this.$store.dispatch(END_TPO);
+      },
       goToBack(){
         this.$store.dispatch(GO_TO_PREVIOUS_SPEAKING)
       },
       audioEnded(){
-        this.reading_time = this.speakingTimes[this.speakingTaskNumber]['reading_time'];
-        this.reading_total_time = this.speakingTimes[this.speakingTaskNumber]['reading_time'];
         this.audio_ended = true;
-        let self = this;
-        let interval = setInterval(function () {
-          if (self.reading_time > 0) {
+        if(this.speakingMode !== 'reviewMode') {
+          this.reading_time = this.speakingTimes[this.speakingTaskNumber]['reading_time'];
+          this.reading_total_time = this.speakingTimes[this.speakingTaskNumber]['reading_time'];
 
-            self.reading_time--;
-          }
-        }, 1000);
-        setTimeout(function () {
-          clearInterval(interval);
-          self.$store.dispatch(GO_TO_NEXT_SPEAKING);
-        }, self.reading_total_time * 1000)
+          let self = this;
+          let interval = setInterval(function () {
+            if (self.reading_time > 0) {
 
+              self.reading_time--;
+            }
+          }, 1000);
+          setTimeout(function () {
+            clearInterval(interval);
+            self.$store.dispatch(GO_TO_NEXT_SPEAKING);
+          }, self.reading_total_time * 1000)
+        }
       },
 
       show_vol() {
         this.volume.enabled = !this.volume.enabled;
+      },
+      goToNext(){
+        this.$store.dispatch(GO_TO_NEXT_SPEAKING);
       },
       toggleTimeShow() {
         this.time.enable = !this.time.enable;

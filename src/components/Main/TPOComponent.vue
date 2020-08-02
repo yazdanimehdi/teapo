@@ -63,7 +63,9 @@
         },
         created(){
           if(this.connected === true){
-              this.$store.dispatch(GET_ONLINE_TPO_LIST)
+              this.$store.dispatch(GET_ONLINE_TPO_LIST).catch(() => {
+                console.log('not connected')
+              })
               this.$store.dispatch(GET_LOCAL_TPO_LIST)
           }
           else{

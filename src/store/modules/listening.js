@@ -5,6 +5,7 @@ import {
     SAVE_ANSWER_LISTENING,
     GO_TO_LISTENING_QUESTION,
     QUOTE_PLAYED, UPDATE_STATE_LISTENING,
+    SET_LISTENING_ANSWERS
 } from '../actions/listening'
 
 import {
@@ -20,7 +21,7 @@ const state = {
     listening_player_component: 'Player',
     listening_quote_player_component: 'QuotePlayer',
     listening_question_component: 'ListeningQuestions',
-    listening: [[], []],
+    listening: [[], [], [], [], []],
     listeningAnswers: {},
     sectionNumber: -1,
     taskNumber: 0,
@@ -30,6 +31,17 @@ const state = {
 }
 
 const getters = {
+    listeningQuestions: state => {
+      let questions = []
+      for(let i = 0; i < state.listening.length; i++){
+          for(let j = 0; j < state.listening[i].length; j++){
+              for(let k = 0; k < state.listening[i][j]['questions'].length; k++){
+                  questions.push([i, j, k, state.listening[i][j]['questions'][k]])
+              }
+          }
+      }
+      return questions
+    },
     taskType: state => state.listening[state.sectionNumber][state.taskNumber].type,
     taskTypeNumber: state => {
         let typeNumber = 0;
@@ -111,6 +123,12 @@ const getters = {
 }
 
 const actions = {
+    [SET_LISTENING_ANSWERS]: ({commit}, payload) => {
+        commit('resetAllListening')
+        for (let i = 0; i < payload.length; i++) {
+            commit('updateListeningAnswers', [payload[i]['question_id'], payload[i]['answer']])
+        }
+    },
     [GET_DATA_LISTENING]: ({commit}, payload) => {
         var knex = require('knex')({
             client: 'sqlite3',
@@ -121,20 +139,20 @@ const actions = {
         });
         let tpo = knex.select("*").from('tpo_testlistening').where({test_id: payload});
         tpo.then(function (listening) {
-            for (let m = 0; m < listening.length; m++) {
+            for(let m = 0; m < listening.length; m++){
                 let result = knex.select("*").from('tpo_listening').where({id: listening[m]['listening_id']});
-                result.then(function (rows) {
+                result.then( async function (rows) {
                     let i;
                     for (i = 0; i < rows.length; i++) {
                         let listening_obj = Object.assign({}, rows[i]);
                         let questions = knex.select("*").from('tpo_listeningquestions').where({'listening_id': rows[i]['id']});
                         let questions_all = [];
-                        questions.then(function (questioninst) {
+                        await questions.then(async function (questioninst) {
                             let j;
                             for (j = 0; j < questioninst.length; j++) {
                                 let question_obj = Object.assign({}, questioninst[j]);
                                 let qs = knex.select("*").from("tpo_listeninganswers").where({'question_id': questioninst[j]['id']});
-                                qs.then(function (instance) {
+                                await qs.then(function (instance) {
 
                                     question_obj['answers'] = instance;
                                     questions_all.push(question_obj)
@@ -147,7 +165,16 @@ const actions = {
                     }
                 });
             }
-            })
+            return listening
+        }).then((listening) => {
+            let partList = [];
+            for (let m = 0; m < listening.length; m++) {
+                if (partList.indexOf(listening[m]['part']) === -1) {
+                    partList.push(listening[m]['part'])
+                }
+            }
+            commit('updateListeningLength', partList.length)
+        })
     },
     [UPDATE_STATE_LISTENING]: ({state, commit, dispatch}) => {
         if (state.questionNumber === -1) {
@@ -227,6 +254,16 @@ const actions = {
     },
 
     [SAVE_ANSWER_LISTENING]: ({commit, rootState}, payload) => {
+        let answer = ''
+        if(payload[1].length > 1){
+            for(let i = 0; i < payload[1].length; i++){
+                answer += ' ' + payload[1][i]
+            }
+            answer = answer.trim()
+        }
+        else {
+            answer = payload[1]
+        }
         commit('updateListeningAnswers', payload);
         let knex = require('knex')({
             client: 'sqlite3',
@@ -244,12 +281,12 @@ const actions = {
                     user_test_id: rootState.mainTPO.userTestId,
                     question_id: payload[0]
                 }).update({
-                    answer: payload[1]
+                    answer: answer
                 }).then(() => {
                 })
             } else {
                 knex('tpousers_userlisteninganswers').insert({
-                    'answer': payload[1],
+                    'answer': answer,
                     'question_id': payload[0],
                     'user_test_id': rootState.mainTPO.userTestId
                 }).then(() => {
@@ -265,17 +302,42 @@ const actions = {
 }
 
 const mutations = {
+    resetAllListening(state) {
+        state.listening = [[], [], [], [], []];
+        state.listeningAnswers = {};
+    },
+    updateListeningLength(state, payload){
+        state.listening = state.listening.splice(payload - 1, 5 - payload)
+        },
     updateListeningData(state, payload) {
-        if (payload[1] === 1) {
-            payload[0]['phase'] = payload[2]
+        if (payload[2] === 1) {
+            payload[0]['phase'] = payload[1]
             state.listening[0].push(payload[0]);
             state.listening[0] = state.listening[0].sort(function (a, b) {
                 return a['phase'] - b['phase']
             });
-        } else if(payload[1] === 2){
-            payload[0]['phase'] = payload[2]
+        } else if (payload[2] === 2) {
+            payload[0]['phase'] = payload[1]
             state.listening[1].push(payload[0]);
             state.listening[1] = state.listening[1].sort(function (a, b) {
+                return a['phase'] - b['phase']
+            });
+        } else if (payload[2] === 3) {
+            payload[0]['phase'] = payload[1]
+            state.listening[2].push(payload[0]);
+            state.listening[2] = state.listening[1].sort(function (a, b) {
+                return a['phase'] - b['phase']
+            });
+        } else if (payload[2] === 4) {
+            payload[0]['phase'] = payload[1]
+            state.listening[3].push(payload[0]);
+            state.listening[3] = state.listening[1].sort(function (a, b) {
+                return a['phase'] - b['phase']
+            });
+        } else if (payload[2] === 5) {
+            payload[0]['phase'] = payload[1]
+            state.listening[4].push(payload[0]);
+            state.listening[4] = state.listening[1].sort(function (a, b) {
                 return a['phase'] - b['phase']
             });
         }

@@ -105,6 +105,7 @@ const getters = {
 };
 const actions = {
     [FETCH_ANALYTICS]: ({commit, rootGetters}) => {
+        commit('resetAllAnalytics');
         let userId = localStorage.getItem('user-id')
         var knex = require('knex')({
             client: 'sqlite3',
@@ -113,66 +114,67 @@ const actions = {
             },
             useNullAsDefault: true
         });
-        knex.select("*").from('tpousers_testuser').where({
-            user_id: userId,
-            is_done: true
-        }).then((userTests) => {
-            for (let j = 0; j < userTests.length; j++) {
-                knex.select("*").from('tpousers_testuserreading').where({
-                    test_user_id: userTests[j]['id'],
-                }).then((reading) => {
-                    if (reading.length !== 0) {
-                        commit('updateReadingChartData', [userTests[j]['date_time'], rootGetters.getTPOById(userTests[j]['test_id']), reading['score']])
+        return new Promise((resolve) => {
+            knex.select("*").from('tpousers_testuser').where({
+                user_id: userId,
+            }).then((userTests) => {
+                for (let j = 0; j < userTests.length; j++) {
+                    if (userTests[j]['reading_score'] !== null) {
+                        commit('updateReadingChartData', [userTests[j]['date_time'], rootGetters.getTPOById(userTests[j]['test_id']), userTests[j]['reading_score']])
                     }
-                })
-                knex.select("*").from('tpousers_testuserlistening').where({
-                    test_user_id: userTests[j]['id'],
-                }).then((listening) => {
-                    if (listening.length !== 0) {
-                        commit('updateListeningChartData', [userTests[j]['date_time'], rootGetters.getTPOById(userTests[j]['test_id']), listening['score']])
+                    if (userTests[j]['listening_score'] !== null) {
+                        commit('updateListeningChartData', [userTests[j]['date_time'], rootGetters.getTPOById(userTests[j]['test_id']), userTests[j]['listening_score']])
                     }
-                })
-                knex.select("*").from('tpousers_testuserspeaking').where({
-                    test_user_id: userTests[j]['id'],
-                }).then((speaking) => {
-                    if (speaking.length !== 0) {
-                        commit('updateSpeakingChartData', [userTests[j]['date_time'], rootGetters.getTPOById(userTests[j]['test_id']), speaking['score']])
+                    if (userTests[j]['speaking_score'] !== null) {
+                        commit('updateSpeakingChartData', [userTests[j]['date_time'], rootGetters.getTPOById(userTests[j]['test_id']), userTests[j]['speaking_score']])
                     }
-                })
-                knex.select("*").from('tpousers_testuserwriting').where({
-                    test_user_id: userTests[j]['id'],
-                }).then((writing) => {
-                    if (writing.length !== 0) {
-                        commit('updateWritingChartData', [userTests[j]['date_time'], rootGetters.getTPOById(userTests[j]['test_id']), writing['score']])
+                    if (userTests[j]['writing_score'] !== null) {
+                        commit('updateWritingChartData', [userTests[j]['date_time'], rootGetters.getTPOById(userTests[j]['test_id']), userTests[j]['writing_score']])
                     }
-                })
-            }
+                }
+                resolve(userTests)
+
+            })
         })
     }
 };
 const mutations = {
     updateReadingChartData(state, payload) {
         state.categoriesReading.push(payload[1]['code'])
-        state.readingChartDates.push(new Date(payload[0]).getDate())
+        state.readingChartDates.push(`${new Date(payload[0]).getFullYear()} / ${new Date(payload[0]).getMonth()} / ${new Date(payload[0]).getDate()}`)
         state.readingChartData.push(payload[2])
     },
     updateListeningChartData(state, payload) {
         state.categoriesListening.push(payload[1]['code'])
-        state.listeningChartDates.push(new Date(payload[0]).getDate())
+        state.listeningChartDates.push(`${new Date(payload[0]).getFullYear()} / ${new Date(payload[0]).getMonth()} / ${new Date(payload[0]).getDate()}`)
         state.listeningChartData.push(payload[2])
 
     },
     updateSpeakingChartData(state, payload) {
         state.categoriesSpeaking.push(payload[1]['code'])
-        state.speakingChartDates.push(new Date(payload[0]).getDate())
+        state.speakingChartDates.push(`${new Date(payload[0]).getFullYear()} / ${new Date(payload[0]).getMonth()} / ${new Date(payload[0]).getDate()}`)
         state.speakingChartData.push(payload[2])
 
     },
     updateWritingChartData(state, payload) {
         state.categoriesWriting.push(payload[1]['code'])
-        state.writingChartDates.push(new Date(payload[0]).getDate())
+        state.writingChartDates.push(`${new Date(payload[0]).getFullYear()} / ${new Date(payload[0]).getMonth()} / ${new Date(payload[0]).getDate()}`)
         state.writingChartData.push(payload[2])
 
+    },
+    resetAllAnalytics(state) {
+        state.categoriesReading = [];
+        state.readingChartData = [];
+        state.readingChartDates = [];
+        state.categoriesListening = [];
+        state.listeningChartData = [];
+        state.listeningChartDates = [];
+        state.categoriesSpeaking = [];
+        state.speakingChartData = [];
+        state.speakingChartDates = [];
+        state.categoriesWriting = [];
+        state.writingChartData = [];
+        state.writingChartDates = [];
     }
 };
 

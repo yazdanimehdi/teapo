@@ -7,7 +7,10 @@
           <v-container fluid>
             <v-row justify="start" align="start">
               <v-col style="padding: 0">
-                <v-btn to="/" dark rounded small style="margin-right: 10px;">Home</v-btn>
+                <v-btn to="/review" dark rounded small style="margin-right: 10px"
+                       v-if="speakingMode === 'reviewMode'">Back
+                </v-btn>
+                <v-btn @click="endDialog = true" dark rounded small style="margin-right: 10px" v-else>End</v-btn>
               </v-col>
             </v-row>
           </v-container>
@@ -17,7 +20,7 @@
             <v-row justify="end" align="start" style="padding: 0">
 
               <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0"
-                     v-if="speakingMode === 'reviewMode' || speakingMode === 'practiceMode'">
+                     v-if="speakingMode === 'practiceMode'">
                 <v-img src="../../../assets/back.png" contain max-height="60px" min-height="40px"
                        @click="goToBack"></v-img>
               </v-col>
@@ -51,17 +54,33 @@
         </div>
       </v-row>
     </v-container>
+    <v-dialog max-width="500" v-model="endDialog">
+      <v-card>
+        <v-card-title>
+          Do You Want To End This Session?
+        </v-card-title>
+        <v-card-subtitle>
+          If you end this session you can not continue it later!
+        </v-card-subtitle>
+        <v-card-actions>
+          <v-btn @click="endTPO" color="red" style="color: white">End</v-btn>
+          <v-btn @click="endDialog = false" color="green" style="color: white">Continue</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-app>
 </template>
 
 <script>
   import { mapGetters, mapState } from 'vuex'
   import {GO_TO_NEXT_SPEAKING, GO_TO_PREVIOUS_SPEAKING} from "@/store/actions/speaking";
+  import {END_TPO} from "@/store/actions/mainTPO";
 
   export default {
     name: 'SpeakingPlayer',
     data: function () {
       return {
+        endDialog: false,
         volume_slide : 100,
         audio:{
           percentage: 0
@@ -81,10 +100,13 @@
     computed:{
       ...mapGetters(['speakingImageSource', 'speakingListeningSource']),
       ...mapState({
-        speakingMode: state => state.speaking.speakingMode
+        speakingMode: state => state.mainTPO.mode
       })
     },
     methods: {
+      endTPO() {
+        this.$store.dispatch(END_TPO);
+      },
       goToBack(){
         this.$store.dispatch(GO_TO_PREVIOUS_SPEAKING)
       },

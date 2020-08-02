@@ -1,4 +1,4 @@
-import {USER_REQUEST, USER_ERROR, USER_SUCCESS} from "../actions/user";
+import {USER_REQUEST, USER_ERROR, USER_SUCCESS, GET_USER_DATA} from "../actions/user";
 import {AUTH_LOGOUT} from "../actions/auth";
 import axios from 'axios'
 
@@ -10,6 +10,22 @@ const getters = {
 };
 
 const actions = {
+    [GET_USER_DATA]: ({commit}) => {
+        let knex = require('knex')({
+            client: 'sqlite3',
+            connection: {
+                filename: './db.sqlite3'
+            },
+            useNullAsDefault: true
+        });
+        let userId = localStorage.getItem('user-id');
+        knex('institutions_users').select('*').where({'id': userId}).then(function (rows) {
+            console.log(rows);
+            commit(USER_SUCCESS, rows[0])
+        })
+
+    },
+
     [USER_REQUEST]: ({commit, dispatch}) => {
         commit(USER_REQUEST);
          return new Promise((resolve, reject) => {
@@ -31,7 +47,7 @@ const actions = {
                             last_name: resp.data['last_name'],
                             phone: resp.data['phone'],
                             email: resp.data['email']
-                        })
+                        }).then(() => {})
                     }
                 })
 
@@ -52,10 +68,9 @@ const mutations = {
     },
     [USER_SUCCESS]: (state, resp) => {
         state.status = "success";
-        state.username = resp['username']
         state.userId = resp['id']
         state.firstName = resp['first_name']
-        state.lastName = resp['lastName']
+        state.lastName = resp['last_name']
         state.phone = resp['phone']
         state.email = resp['email']
     },
@@ -63,7 +78,6 @@ const mutations = {
         state.status = "error";
     },
     [AUTH_LOGOUT]: state => {
-        state.username = null;
         state.userId = null;
         state.firstName = null;
         state.lastName = null;

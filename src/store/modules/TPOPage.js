@@ -53,81 +53,84 @@ const actions = {
             useNullAsDefault: true
         });
         let result = knex.select("*").from('tpo_test').where({mode: 'T'}).orWhere({mode: 'P'});
-        result.then((row) => {
-            for (let i = 0; i < row.length; i++) {
-                let readingCompleted = false;
-                let listeningCompleted = false;
-                let speakingCompleted = false;
-                let writingCompleted = false;
-                let readingScore = 0;
-                let listeningScore = 0;
-                let speakingScore = 0;
-                let writingScore = 0;
-                knex.select("*").from('tpousers_testuser').where({
-                    user_id: userId,
-                    test_id: row[i]['id'],
-                    is_done: true
-                }).then((userTests) => {
-                    for (let j = 0; j < userTests.length; j++) {
-                        if (userTests[j]['is_done'] === true) {
-                            knex.select("*").from('tpousers_testuserreading').where({
-                                test_user_id: userTests[j]['id'],
-                            }).then((reading) => {
-                                if (reading.length !== 0) {
-                                    readingCompleted = true
-                                }
-                            })
-                            knex.select("*").from('tpousers_testuserlistening').where({
-                                test_user_id: userTests[j]['id'],
-                            }).then((listening) => {
-                                if (listening.length !== 0) {
-                                    listeningCompleted = true
-                                }
-                            })
-                            knex.select("*").from('tpousers_testuserspeaking').where({
-                                test_user_id: userTests[j]['id'],
-                            }).then((speaking) => {
-                                if (speaking.length !== 0) {
-                                    speakingCompleted = true
-                                }
-                            })
-                            knex.select("*").from('tpousers_testuserwriting').where({
-                                test_user_id: userTests[j]['id'],
-                            }).then((writing) => {
-                                if (writing.length !== 0) {
-                                    writingCompleted = true
-                                }
-                            })
+        return new Promise((resolve) => {
+            result.then((row) => {
+                for (let i = 0; i < row.length; i++) {
+                    let readingCompleted = false;
+                    let listeningCompleted = false;
+                    let speakingCompleted = false;
+                    let writingCompleted = false;
+                    let readingScore = 0;
+                    let listeningScore = 0;
+                    let speakingScore = 0;
+                    let writingScore = 0;
+                    knex.select("*").from('tpousers_testuser').where({
+                        user_id: userId,
+                        test_id: row[i]['id'],
+                        is_done: true
+                    }).then((userTests) => {
+                        for (let j = 0; j < userTests.length; j++) {
+                            if (userTests[j]['is_done'] === true) {
+                                knex.select("*").from('tpousers_testuserreading').where({
+                                    test_user_id: userTests[j]['id'],
+                                }).then((reading) => {
+                                    if (reading.length !== 0) {
+                                        readingCompleted = true
+                                    }
+                                })
+                                knex.select("*").from('tpousers_testuserlistening').where({
+                                    test_user_id: userTests[j]['id'],
+                                }).then((listening) => {
+                                    if (listening.length !== 0) {
+                                        listeningCompleted = true
+                                    }
+                                })
+                                knex.select("*").from('tpousers_testuserspeaking').where({
+                                    test_user_id: userTests[j]['id'],
+                                }).then((speaking) => {
+                                    if (speaking.length !== 0) {
+                                        speakingCompleted = true
+                                    }
+                                })
+                                knex.select("*").from('tpousers_testuserwriting').where({
+                                    test_user_id: userTests[j]['id'],
+                                }).then((writing) => {
+                                    if (writing.length !== 0) {
+                                        writingCompleted = true
+                                    }
+                                })
+                            }
+                            if (userTests[j]['reading_score'] > readingScore) {
+                                readingScore = userTests[j]['reading_score']
+                            }
+                            if (userTests[j]['listening_score'] > listeningScore) {
+                                listeningScore = userTests[j]['listening_score']
+                            }
+                            if (userTests[j]['speaking_score'] > speakingScore) {
+                                speakingScore = userTests[j]['speaking_score']
+                            }
+                            if (userTests[j]['writing_score'] > writingScore) {
+                                writingScore = userTests[j]['writing_score']
+                            }
                         }
-                        if (userTests[j]['reading_score'] > readingScore) {
-                            readingScore = userTests[j]['reading_score']
-                        }
-                        if (userTests[j]['listening_score'] > listeningScore) {
-                            listeningScore = userTests[j]['listening_score']
-                        }
-                        if (userTests[j]['speaking_score'] > speakingScore) {
-                            speakingScore = userTests[j]['speaking_score']
-                        }
-                        if (userTests[j]['writing_score'] > writingScore) {
-                            writingScore = userTests[j]['writing_score']
-                        }
-                    }
 
-                })
-                commit('updateLocalTPOList', {
-                    'test': row[i],
-                    'scores': {
-                        'readingCompleted': readingCompleted,
-                        'listeningCompleted': listeningCompleted,
-                        'speakingCompleted': speakingCompleted,
-                        'writingCompleted': writingCompleted,
-                        'readingScore': readingScore,
-                        'listeningScore': listeningScore,
-                        'speakingScore': speakingScore,
-                        'writingScore': writingScore,
-                    }
-                })
-            }
+                    })
+                    commit('updateLocalTPOList', {
+                        'test': row[i],
+                        'scores': {
+                            'readingCompleted': readingCompleted,
+                            'listeningCompleted': listeningCompleted,
+                            'speakingCompleted': speakingCompleted,
+                            'writingCompleted': writingCompleted,
+                            'readingScore': readingScore,
+                            'listeningScore': listeningScore,
+                            'speakingScore': speakingScore,
+                            'writingScore': writingScore,
+                        }
+                    })
+                }
+                return resolve(row)
+            })
         })
     }
 };

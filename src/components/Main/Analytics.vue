@@ -8,7 +8,7 @@
               <v-row>
 
                 <apexchart type=line height=400 :width="`${width*0.7}px`" ref="chart" :options="chartOptions"
-                           :series="series" v-if="dataAvailable"></apexchart>
+                           :series="series" v-if="dataAvailable && !loading"></apexchart>
                 <v-card flat height="400" :width="`${width*0.7}px`" style="margin-left: 14px" :color="cardColor" v-else>
                   <v-img src="../../assets/sad.png" height="200" contain style="margin-top: 30px;" position="center">
                   </v-img>
@@ -92,6 +92,7 @@
 import VueApexCharts from 'vue-apexcharts';
 import {FETCH_ANALYTICS} from "@/store/actions/analytics";
 import {mapGetters} from 'vuex'
+import {GET_LOCAL_TPO_LIST} from "@/store/actions/TPOPage";
 
 export default {
   name: "Analytics",
@@ -107,10 +108,16 @@ export default {
   data() {
     return {
       mode: 'reading',
+      loading: true,
     }
   },
   created() {
-    this.$store.dispatch(FETCH_ANALYTICS)
+    let self = this;
+    this.$store.dispatch(GET_LOCAL_TPO_LIST).then(() => {
+      self.$store.dispatch(FETCH_ANALYTICS).then(() => {
+        self.loading = false
+      })
+    })
   },
   computed: {
     ...mapGetters([
@@ -131,6 +138,7 @@ export default {
       'speakingAverage',
       'writingAverage']),
     chartOptions() {
+      let self = this;
       return {
         chart: {
           toolbar: {
@@ -241,12 +249,11 @@ export default {
             fontSize: '16px',
           },
           x: {
-            formatter: (index) => this.chartOptions.xaxis.categories[index - 1]
+            formatter: (index) => self.chartOptions.xaxis.categories[index - 1]
           },
           y: {
-            // eslint-disable-next-line no-unused-vars
-            formatter: function (value, {series, seriesIndex, dataPointIndex, w}) {
-              return this.mode === 'reading' ? this.readingChartDates[dataPointIndex] : this.mode === 'listening' ? this.listeningChartDates[dataPointIndex] : this.mode === 'speaking' ? this.speakingChartDates[dataPointIndex] : this.writingChartDates[dataPointIndex]
+            formatter: function (value, {dataPointIndex}) {
+              return self.mode === 'reading' ? self.readingDates[dataPointIndex] : self.mode === 'listening' ? self.listeningDates[dataPointIndex] : self.mode === 'speaking' ? self.speakingDates[dataPointIndex] : self.writingDates[dataPointIndex]
             },
             title: {
               // eslint-disable-next-line no-unused-vars

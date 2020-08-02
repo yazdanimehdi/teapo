@@ -71,21 +71,27 @@
         data() {
             return {
                 dialog: true,
+              interval: '',
             }
         },
         computed: {
             ...mapState({
-                currentComponent: state => state.mainTPO.currentComponent
+                currentComponent: state => state.mainTPO.currentComponent,
+                mode: state => state.mainTPO.mode
             }),
         },
 
         created() {
             let self = this;
-            setInterval(function () {
+            if(this.mode !== 'reviewMode'){
+              this.interval = setInterval(function () {
                 self.$store.dispatch(COMPUTE_TIME)
-            }, 1000)
-
-        }
+              }, 1000)
+            }
+        },
+      destroyed() {
+          clearInterval(this.interval)
+      }
     }
 </script>
 

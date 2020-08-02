@@ -15,6 +15,7 @@ import signup from "@/store/modules/signup";
 import user from "@/store/modules/user";
 import download from "@/store/modules/download";
 import analytics from "@/store/modules/analytics";
+import reviewExam from "@/store/modules/reviewExam";
 
 
 Vue.use(Vuex);
@@ -37,7 +38,8 @@ export default new Vuex.Store({
         signup: signup,
         user: user,
         download: download,
-        analytics: analytics
+        analytics: analytics,
+        reviewExam: reviewExam,
     },
     strict: debug
 });

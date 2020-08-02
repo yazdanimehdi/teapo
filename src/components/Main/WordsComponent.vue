@@ -165,6 +165,9 @@
                             hide-default-footer
                             v-if="loaded"
                     >
+                      <template v-slot:no-data >
+                        <div style="text-align: center">No Words Available. Add New Word NOW!!</div>
+                      </template>
                         <template v-slot:header>
                             <v-toolbar
                                     dark
@@ -253,7 +256,7 @@
                                         class="mr-4
             grey--text"
                                 >
-            Page {{ page }} of {{ numberOfPages }}
+            Page {{ numberOfPages === 0 ? 0 : page }} of {{ numberOfPages }}
           </span>
                                 <v-btn
                                         fab

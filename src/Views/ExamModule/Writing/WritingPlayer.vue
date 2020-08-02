@@ -7,7 +7,10 @@
                     <v-container fluid>
                         <v-row justify="start" align="start">
                             <v-col style="padding: 0">
-                                <v-btn to="/" dark rounded small style="margin-right: 10px;">Home</v-btn>
+                              <v-btn to="/review" dark rounded small style="margin-right: 10px"
+                                     v-if="writingMode === 'reviewMode'">Back
+                              </v-btn>
+                              <v-btn @click="endDialog = true" dark rounded small style="margin-right: 10px;" v-else>End</v-btn>
                             </v-col>
                         </v-row>
                     </v-container>
@@ -17,7 +20,7 @@
                         <v-row justify="end" align="start" style="padding: 0">
 
                             <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0"
-                                   v-if="writingMode === 'reviewMode' || writingMode === 'practiceMode'">
+                                   v-if="writingMode === 'practiceMode'">
                                 <v-img src="../../../assets/back.png" contain max-height="60px" min-height="40px"
                                        @click="goToBack"></v-img>
                             </v-col>
@@ -31,6 +34,10 @@
                                 <v-img src="../../../assets/vol.png" contain max-height="60px"
                                        min-height="40px" @click="show_vol"></v-img>
                             </v-col>
+                          <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0" v-if="writingMode === 'reviewMode'">
+                            <v-img src="../../../assets/next.png" @click="goToNext" contain
+                                   max-height="60px" min-height="40px"></v-img>
+                          </v-col>
                         </v-row>
                     </v-container>
                 </v-col>
@@ -42,7 +49,7 @@
             </v-row>
             <v-row align="center" justify="center">
 
-                <audio id="listening" autoplay :controls="(writingMode === 'reviewMode' || writingMode === 'practiceMode')" v-on:ended="listeningEnded" v-on:timeupdate="progressListening">
+                <audio id="listening" autoplay :controls="(writingMode === 'reviewMode' || writingMode === 'practiceMode')" v-on:ended="writingMode !== 'reviewMode' ? listeningEnded : () => {}" v-on:timeupdate="progressListening">
                     <source :src="writingListeningSource">
                 </audio>
             </v-row>
@@ -52,16 +59,32 @@
                 </div>
             </v-row>
         </v-container>
+      <v-dialog max-width="500" v-model="endDialog">
+        <v-card>
+          <v-card-title>
+            Do You Want To End This Session?
+          </v-card-title>
+          <v-card-subtitle>
+            If you end this session you can not continue it later!
+          </v-card-subtitle>
+          <v-card-actions>
+            <v-btn @click="endTPO" color="red" style="color: white">End</v-btn>
+            <v-btn @click="endDialog = false" color="green" style="color: white">Continue</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </v-app>
 </template>
 
 <script>
     import { mapState, mapGetters } from 'vuex'
     import {GO_TO_NEXT_WRITING, GO_TO_PREVIOUS_WRITING} from "@/store/actions/writing";
+    import {END_TPO} from "@/store/actions/mainTPO";
   export default {
     name: 'SpeakingPlayer',
     data: function () {
       return {
+        endDialog: false,
         volume_slide : 100,
         audio:{
           percentage: 0
@@ -81,13 +104,19 @@
     computed:{
         ...mapGetters(['writingImageSource', 'writingListeningSource']),
       ...mapState({
-          writingMode: state => state.writing.writingMode
+          writingMode: state => state.mainTPO.mode
     })
     },
       methods: {
+        endTPO() {
+          this.$store.dispatch(END_TPO);
+        },
           goToBack(){
               this.$store.dispatch(GO_TO_PREVIOUS_WRITING)
           },
+        goToNext(){
+          this.$store.dispatch(GO_TO_NEXT_WRITING);
+        },
 
           listeningEnded(){
               this.$store.dispatch(GO_TO_NEXT_WRITING);

@@ -1,7 +1,7 @@
 import {
     GET_DATA_SPEAKING,
     GO_TO_NEXT_SPEAKING,
-    GO_TO_PREVIOUS_SPEAKING, GO_TO_SPEAKING_QUESTION, SAVE_ANSWER_SPEAKING, UPDATE_STATE_SPEAKING,
+    GO_TO_PREVIOUS_SPEAKING, GO_TO_SPEAKING_QUESTION, SAVE_ANSWER_SPEAKING, UPDATE_STATE_SPEAKING,SET_SPEAKING_ANSWERS
 
 } from '../actions/speaking'
 
@@ -45,7 +45,13 @@ const getters = {
 };
 
 const actions = {
+    [SET_SPEAKING_ANSWERS]: ({commit}, payload) => {
+      for(let i = 0; i < payload.length; i++){
+          commit('saveSpeakingAnswers', [payload[i]['question_id'], payload[i]['answer']])
+      }
+    },
     [GET_DATA_SPEAKING]: ({commit}, payload) => {
+        commit('resetAllSpeaking');
         var knex = require('knex')({
             client: 'sqlite3',
             connection: {
@@ -223,6 +229,10 @@ const actions = {
 };
 
 const mutations = {
+    resetAllSpeaking(state){
+        state.speaking = [];
+        state.answers = {};
+    },
     saveSpeakingAnswers(state, payload){
       state.answers[payload[0]] = payload[1]
     },

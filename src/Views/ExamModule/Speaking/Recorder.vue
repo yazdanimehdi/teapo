@@ -7,7 +7,10 @@
                     <v-container fluid>
                         <v-row justify="start" align="start">
                             <v-col style="padding: 0">
-                                <v-btn to="/" dark rounded small style="margin-right: 10px;">Home</v-btn>
+                              <v-btn to="/review" dark rounded small style="margin-right: 10px"
+                                     v-if="speakingMode === 'reviewMode'">Back
+                              </v-btn>
+                              <v-btn @click="endDialog = true" dark rounded small style="margin-right: 10px" v-else>End</v-btn>
                             </v-col>
                         </v-row>
                     </v-container>
@@ -40,22 +43,22 @@
             <v-row align="center" justify="center" style=" margin-top: 120px; margin-left: 40px; margin-right: 40px">
                 <div class="question"><span style="padding-left: 1em; text-align: left;">{{speakingQuestion}}</span>
                 </div>
-                <audio id="question_audio" :autoplay="speakingAnswer===''|| recordState !== 0" v-on:ended="startRecordingProcess">
+                <audio id="question_audio" :autoplay="speakingAnswer===''|| recordState !== 0" v-on:ended="speakingMode !== 'reviewMode' ? startRecordingProcess : ()=>{}">
                     <source :src="speakingQuestionAudioFile">
                 </audio>
             </v-row>
-            <v-row>
+            <v-row v-if="speakingMode !== 'reviewMode'">
                 <div style="width: 100%; text-align: center; font-family: Verdana; font-size: 16px; border-top:thin solid black; margin-right: 40px; margin-left: 40px"
                      v-show="speakings.enable">
                     <br>
                     <img src="../../../assets/micd.png" style="height: 80px;" v-if="this.speakings.prepare_time > 0">
                     <img src="../../../assets/mic.png" style="height: 80px" v-else>
-                    <div>Preparation Time: &nbsp; &nbsp; {{speakingTimes[this.speakingTaskNumber]['preparation_time']}} Seconds</div>
-                    <div>Response Time: &nbsp; &nbsp; {{speakingTimes[this.speakingTaskNumber]['answering_time']}} Seconds</div>
+                    <div>Preparation Time: &nbsp; &nbsp; {{speakingMode !== 'reviewMode' ? speakingTimes[this.speakingTaskNumber]['preparation_time']: '-'}} Seconds</div>
+                    <div>Response Time: &nbsp; &nbsp; {{speakingMode !== 'reviewMode' ? speakingTimes[this.speakingTaskNumber]['answering_time']: '-'}} Seconds</div>
                     <br>
                 </div>
             </v-row>
-            <v-row align="center" justify="center" v-show="speakings.enable">
+            <v-row align="center" justify="center" v-show="speakings.enable" v-if="speakingMode !== 'reviewMode'">
                 <table class="tg" style="table-layout: fixed; width: 190px; position: relative;">
                     <colgroup>
                         <col style="width: 190px">
@@ -83,28 +86,43 @@
                 </div>
 
             </v-row>
-            <v-row v-if="(speakingMode === 'reviewMode' || speakingMode === 'practiceMode') && speakingAnswer !== '' && recordState === 0" align="center" justify="center">
+            <v-row v-if="(speakingMode === 'practiceMode') && speakingAnswer !== '' && recordState === 0" align="center" justify="center">
                 <v-btn large @click="resetQuestion">Record Again</v-btn>
             </v-row>
         </v-container>
-
+      <v-dialog max-width="500" v-model="endDialog">
+        <v-card>
+          <v-card-title>
+            Do You Want To End This Session?
+          </v-card-title>
+          <v-card-subtitle>
+            If you end this session you can not continue it later!
+          </v-card-subtitle>
+          <v-card-actions>
+            <v-btn @click="endTPO" color="red" style="color: white">End</v-btn>
+            <v-btn @click="endDialog = false" color="green" style="color: white">Continue</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </v-app>
 </template>
 
 <script>
     import {mapState, mapGetters} from 'vuex'
     import {GO_TO_NEXT_SPEAKING, GO_TO_PREVIOUS_SPEAKING, SAVE_ANSWER_SPEAKING} from "@/store/actions/speaking";
+    import {END_TPO} from "@/store/actions/mainTPO";
 
     export default {
         name: "Recorder",
         computed: {
             ...mapGetters(['speakingQuestion', 'speakingQuestionAudioFile', 'speakingTaskNumber', 'speakingTimes', 'speakingAnswer', 'speakingId']),
             ...mapState({
-                speakingMode: state => state.speaking.speakingMode,
+                speakingMode: state => state.mainTPO.mode,
             })
         },
         data() {
             return {
+                endDialog: false,
                 volume_slide: 100,
                 answer: [],
                 recordState: 0,
@@ -142,6 +160,9 @@
             }
         },
         methods: {
+          endTPO() {
+            this.$store.dispatch(END_TPO);
+          },
             goToBack() {
                 this.$store.dispatch(GO_TO_PREVIOUS_SPEAKING);
             },

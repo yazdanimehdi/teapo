@@ -7,7 +7,8 @@
           <v-container fluid>
             <v-row justify="start" align="start">
               <v-col style="padding: 0">
-                <v-btn to="/" dark rounded small style="margin-right: 10px;">Home</v-btn>
+                <v-btn to="/review" dark rounded small style="margin-right: 10px" v-if="listeningMode === 'reviewMode'">Back</v-btn>
+                <v-btn @click="endDialog = true" dark rounded small style="margin-right: 10px" v-else>End</v-btn>
                 <v-btn rounded @click="openDictionary"
                        x-small
                        v-if="listeningMode === 'practiceMode' || listeningMode === 'reviewMode'">
@@ -144,6 +145,20 @@
         </v-card-text>
       </v-card>
     </v-dialog>
+    <v-dialog max-width="500" v-model="endDialog">
+      <v-card>
+        <v-card-title>
+          Do You Want To End This Session?
+        </v-card-title>
+        <v-card-subtitle>
+          If you end this session you can not continue it later!
+        </v-card-subtitle>
+        <v-card-actions>
+          <v-btn @click="endTPO" color="red" style="color: white">End</v-btn>
+          <v-btn @click="endDialog = false" color="green" style="color: white">Continue</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-app>
 </template>
 
@@ -153,12 +168,14 @@ import {GO_TO_NEXT_LISTENING, GO_TO_PREVIOUS_LISTENING} from "@/store/actions/li
 import {LOAD_DICTIONARY} from "@/store/actions/dictionary";
 import DictionaryComponent from "@/components/Subcomponents/DictionaryComponent";
 import {mdiClose, mdiCardSearch} from '@mdi/js'
+import {END_TPO} from "@/store/actions/mainTPO";
 
 export default {
   name: 'Player',
   components: {DictionaryComponent},
   data: function () {
     return {
+      endDialog: false,
       sheet: false,
       dialogDict: false,
       minimized: true,
@@ -200,6 +217,9 @@ export default {
     })
   },
   methods: {
+    endTPO() {
+      this.$store.dispatch(END_TPO);
+    },
     closeDialogDict() {
       this.dialogDict = false;
       this.minimized = true;
@@ -220,7 +240,9 @@ export default {
       this.$store.dispatch(LOAD_DICTIONARY, this.selected)
     },
     listeningEnded() {
-      this.$store.dispatch(GO_TO_NEXT_LISTENING);
+      if(this.listeningMode !== 'reviewMode'){
+        this.$store.dispatch(GO_TO_NEXT_LISTENING);
+      }
     },
     progressListening() {
       let listening = document.getElementById('listening');

@@ -121,7 +121,7 @@
             },
             goToReviewing() {
                 this.$store.dispatch(START_REVIEW);
-                this.$router.push('/review')
+                this.$router.push('/review_words')
             },
             goToSpeedReview() {
                 this.$store.dispatch(START_SPEED_REVIEW);

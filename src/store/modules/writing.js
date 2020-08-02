@@ -1,7 +1,8 @@
 import {
     GET_DATA_WRITING, GO_TO_NEXT_WRITING,
     SAVE_ANSWER_WRITING, GO_TO_PREVIOUS_WRITING,
-    WRITING_TIME_ENDED, GO_TO_WRITING_QUESTION, UPDATE_STATE_WRITING
+    WRITING_TIME_ENDED, GO_TO_WRITING_QUESTION, UPDATE_STATE_WRITING,
+    SET_WRITING_ANSWERS
 
 } from '../actions/writing'
 
@@ -31,7 +32,13 @@ const getters = {
     writingId: state => state.writing[state.taskNumber].id,
 };
 const actions = {
+    [SET_WRITING_ANSWERS]: ({commit}, payload) => {
+      for(let i = 0; i < payload.length; i++){
+          commit('updateWritingAnswers', [payload[i]['question_id'], payload[i]['answer']])
+      }
+    },
     [GET_DATA_WRITING]: ({commit}, payload) => {
+        commit('resetAllWriting');
         let knex = require('knex')({
             client: 'sqlite3',
             connection: {
@@ -46,7 +53,6 @@ const actions = {
                 return a.part - b.part
             })
             for (let m = 0; m < writingList.length; m++) {
-                console.log(writings[m]['writing_id'])
                 let result = knex.select("*").from('tpo_writing').where({id: writingList[m]['writing_id']});
                 result.then(function (rows) {
                     commit('updateWritingData', rows[0])
@@ -172,6 +178,10 @@ const actions = {
 
 };
 const mutations = {
+    resetAllWriting(state){
+        state.writing = [];
+        state.answers = {};
+    },
     updateWritingData(state, payload) {
         state.writing.push(payload);
     },

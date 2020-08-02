@@ -7,7 +7,10 @@
                     <v-container fluid>
                         <v-row justify="start" align="start">
                             <v-col style="padding: 0">
-                                <v-btn to="/" dark rounded small style="margin-right: 10px">Home</v-btn>
+                              <v-btn to="/review" dark rounded small style="margin-right: 10px"
+                                     v-if="writingMode === 'reviewMode'">Back
+                              </v-btn>
+                              <v-btn @click="endDialog = true" dark rounded small style="margin-right: 10px;" v-else>End</v-btn>
                             </v-col>
                         </v-row>
                     </v-container>
@@ -173,6 +176,20 @@
                 </v-card>
             </v-dialog>
         </div>
+      <v-dialog max-width="500" v-model="endDialog">
+        <v-card>
+          <v-card-title>
+            Do You Want To End This Session?
+          </v-card-title>
+          <v-card-subtitle>
+            If you end this session you can not continue it later!
+          </v-card-subtitle>
+          <v-card-actions>
+            <v-btn @click="endTPO" color="red" style="color: white">End</v-btn>
+            <v-btn @click="endDialog = false" color="green" style="color: white">Continue</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </v-app>
 </template>
 
@@ -180,11 +197,13 @@
     import {mapState, mapGetters} from 'vuex'
     import $ from 'jquery'
     import {GO_TO_NEXT_WRITING, GO_TO_PREVIOUS_WRITING, WRITING_TIME_ENDED, SAVE_ANSWER_WRITING} from "@/store/actions/writing";
+    import {END_TPO} from "@/store/actions/mainTPO";
 
     export default {
         name: "WritingIndependent",
         data() {
             return {
+                endDialog: false,
                 wordString: '',
                 wordCount:{
                     show: true,
@@ -234,12 +253,15 @@
         computed: {
             ...mapGetters(['writingQuestionNumber', 'writingLength', 'formattedHours', 'formattedMinutes', 'formattedSeconds', 'initialMinute', 'writingQuestion', 'writingId']),
             ...mapState({
-                writingMode: state => state.writing.writingMode,
+              writingMode: state => state.mainTPO.mode,
                 totalTime: state => state.time.totalTime,
                 writingAnswer: state => state.writing.answers,
             })
         },
         methods: {
+          endTPO() {
+            this.$store.dispatch(END_TPO);
+          },
             handleResize() {
                 this.windowSize.width = window.innerWidth;
                 this.windowSize.height = window.innerHeight;

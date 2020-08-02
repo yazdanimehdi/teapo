@@ -7,7 +7,7 @@
           <v-container fluid>
             <v-row justify="start" align="start">
               <v-col style="padding: 0">
-                <v-btn to="/" dark rounded small style="margin-right: 10px;">Home</v-btn>
+                <v-btn @click="endDialog = true" dark rounded small style="margin-right: 10px;">End</v-btn>
               </v-col>
             </v-row>
           </v-container>
@@ -53,18 +53,35 @@
         </v-row>
       </v-container>
     </div>
-
+    <v-dialog max-width="500" v-model="endDialog">
+      <v-card>
+        <v-card-title>
+          Do You Want To End This Session?
+        </v-card-title>
+        <v-card-subtitle>
+          If you end this session you can not continue it later!
+        </v-card-subtitle>
+        <v-card-actions>
+          <v-btn @click="endTPO" color="red" style="color: white">End</v-btn>
+          <v-btn @click="endDialog = false" color="green" style="color: white">Continue</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-app>
 </template>
 
 <script>
   import { mapGetters } from 'vuex'
   import {GO_TO_NEXT_SPEAKING} from "@/store/actions/speaking";
+  import {END_TPO} from "@/store/actions/mainTPO";
 
   export default {
     name: "SpeakingDirections",
 
     methods: {
+      endTPO() {
+        this.$store.dispatch(END_TPO);
+      },
       goToNext : function() {
         this.$store.dispatch(GO_TO_NEXT_SPEAKING)
       },
@@ -82,6 +99,7 @@
     },
     data() {
       return {
+        endDialog: false,
         ended: false,
         state: 0,
         volume: {

@@ -9,6 +9,7 @@ import SpeedReview from "@/Views/MemriseModules/SpeedReview";
 import Review from "@/Views/MemriseModules/Review";
 import DifficultWords from "@/Views/MemriseModules/DifficultWords";
 import TPOPage from "@/Views/TPOPage";
+import ExamReview from "@/Views/ExamModule/ExamReview";
 
 Vue.use(Router);
 
@@ -38,7 +39,7 @@ export default new Router({
         },
 
         {
-            path: '/review',
+            path: '/review_words',
             name: 'Review',
             component: Review
         },
@@ -63,6 +64,11 @@ export default new Router({
             path: '/tpo_page',
             name: 'TPOPage',
             component: TPOPage
+        },
+        {
+            path: '/review',
+            name: 'ReviewExam',
+            component: ExamReview
         },
 
     ]

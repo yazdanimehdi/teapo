@@ -6,6 +6,7 @@ import {
     TOGGLE_REVIEW,
     GO_TO_READING_QUESTION,
     UPDATE_STATE_READING,
+    SET_READING_ANSWERS
 } from '../actions/reading'
 
 import {NEXT_SECTION, PREVIOUS_SECTION, UPDATE_COMPONENT} from "../actions/mainTPO";
@@ -26,6 +27,16 @@ const state = {
     reading: [],
 };
 const getters = {
+    readingQuestionsWithIndex: state => {
+        let questions = []
+        for(let i = 0; i < state.reading.length; i++){
+            for(let j = 0; j < state.reading[i]['questions'].length; j++){
+                questions.push([i, j, state.reading[i]['questions'][j]])
+            }
+        }
+        return questions
+
+    },
     readingTaskNumber: state => state.taskNumber,
     readingMode: state => state.mode,
     readingTitle: state => {
@@ -104,7 +115,13 @@ const getters = {
 
 };
 const actions = {
+        [SET_READING_ANSWERS]: ({commit}, payload) => {
+            for(let i = 0; i < payload.length; i++){
+                commit('updateReadingAnswers', [payload[i]['question_id'], payload[i]['answer']])
+            }
+        },
         [GET_DATA_READING]: ({commit}, payload) => {
+            commit('resetAllReading');
             let knex = require('knex')({
                 client: 'sqlite3',
                 connection: {
@@ -120,11 +137,11 @@ const actions = {
                 })
                 for (let m = 0; m < readingList.length; m++) {
                     let result = knex.select("*").from('tpo_reading').where({id: readingList[m]['reading_id']});
-                    result.then(function (row) {
+                    result.then(async (row) => {
                         let reading_obj = Object.assign({}, row[0]);
                         let questions = knex.select("*").from('tpo_readingquestions').where({'reading_id': row[0]['id']});
                         let questions_all = [];
-                        questions.then(function (questioninst) {
+                        await questions.then(async (questioninst) => {
                             commit('updateQuestionAll', questioninst.length);
                             let j;
                             questioninst.sort(function (a, b) {
@@ -134,7 +151,7 @@ const actions = {
                                 let question_obj = {};
                                 question_obj = Object.assign({}, questioninst[j]);
                                 let qs = knex.select("*").from("tpo_readinganswers").where({'question_id': questioninst[j]['id']});
-                                qs.then(function (instance) {
+                                await qs.then(function (instance) {
                                     question_obj['answers'] = instance;
                                     questions_all.push(question_obj)
                                 });
@@ -213,6 +230,16 @@ const actions = {
         },
 
         [SAVE_ANSWER_READING]: ({commit, rootState}, payload) => {
+            let answer = ''
+            if(payload[1].length > 1){
+                for(let i = 0; i < payload[1].length; i++){
+                    answer += ' ' + payload[1][i]
+                }
+                answer = answer.trim()
+            }
+            else {
+                answer = payload[1]
+            }
             commit('updateReadingAnswers', payload);
             let knex = require('knex')({
                 client: 'sqlite3',
@@ -230,12 +257,12 @@ const actions = {
                         user_test_id: rootState.mainTPO.userTestId,
                         question_id: payload[0]
                     }).update({
-                        answer: payload[1]
+                        answer: answer
                     }).then(() => {
                     })
                 } else {
                     knex('tpousers_userreadinganswers').insert({
-                        'answer': payload[1],
+                        'answer': answer,
                         'question_id': payload[0],
                         'user_test_id': rootState.mainTPO.userTestId
                     }).then(() => {
@@ -263,6 +290,10 @@ const actions = {
 ;
 
 const mutations = {
+    resetAllReading(state){
+      state.reading = [];
+      state.readingAnswers = {};
+    },
     updateReadingData(state, payload) {
         state.reading.push(payload);
         state.reading = state.reading.sort(function (a, b) {

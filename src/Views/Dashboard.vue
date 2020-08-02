@@ -23,7 +23,7 @@
                 style="padding: 0; margin: 0;position: fixed; z-index: 10"
         >
             <v-spacer></v-spacer>
-            <div style="font-size: 18px; font-family: kalam">Mehdi Yazdani</div>
+            <div style="font-size: 18px; font-family: kalam">{{ firstName }} {{ lastName }}</div>
             <v-menu
 
             >
@@ -35,14 +35,14 @@
                 </template>
 
                 <v-list>
-                    <v-list-item link>
-                        <v-list-item-icon :style="{'margin-right': '10px'}">
-                            <v-icon small>
-                                {{ icons.mdiAccountEdit }}
-                            </v-icon>
-                        </v-list-item-icon>
-                        <v-list-item-title class="menu_class">Edit Account</v-list-item-title>
-                    </v-list-item>
+<!--                    <v-list-item link>-->
+<!--                        <v-list-item-icon :style="{'margin-right': '10px'}">-->
+<!--                            <v-icon small>-->
+<!--                                {{ icons.mdiAccountEdit }}-->
+<!--                            </v-icon>-->
+<!--                        </v-list-item-icon>-->
+<!--                        <v-list-item-title class="menu_class">Edit Account</v-list-item-title>-->
+<!--                    </v-list-item>-->
 
                     <v-list-item link @click="logout">
                         <v-list-item-icon :style="{'margin-right': '10px'}">
@@ -249,7 +249,7 @@
     import Analytics from "@/components/Main/Analytics";
     import Courses from "@/components/Main/Courses";
     import {AUTH_LOGOUT} from "@/store/actions/auth";
-
+    import {GET_USER_DATA} from '@/store/actions/user'
     export default {
         name: "Dashboard",
         components: {
@@ -297,13 +297,16 @@
         created() {
             window.addEventListener('resize', this.handleResize);
             this.handleResize();
+            this.$store.dispatch(GET_USER_DATA)
         },
         destroyed() {
             window.removeEventListener('resize', this.handleResize);
         },
         computed: {
             ...mapState({
-                tabNumber: state => state.dashboard.tabNumber
+                tabNumber: state => state.dashboard.tabNumber,
+                firstName: state => state.user.firstName,
+                lastName: state => state.user.lastName
             })
         },
         mounted(){
