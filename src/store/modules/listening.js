@@ -173,6 +173,7 @@ const actions = {
                     partList.push(listening[m]['part'])
                 }
             }
+            console.log(partList.length);
             commit('updateListeningLength', partList.length)
         })
     },

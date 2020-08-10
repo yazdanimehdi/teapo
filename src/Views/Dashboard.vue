@@ -71,7 +71,7 @@
             <v-list
                     nav
             >
-                <v-list-item link @click="dashboardSelected">
+                <v-list-item link @click="dashboardSelected" style="margin-bottom: 0">
                     <v-list-item-icon :style="{'margin-right': '10px'}">
                         <v-icon :color="linkSelected.dashboard ? '#A40000' : '#1C0153'" large>
                             {{ icons.mdiViewDashboard }}
@@ -86,7 +86,7 @@
                     </v-list-item-content>
                 </v-list-item>
 
-                <v-list-item link @click="TPOSelected">
+                <v-list-item link @click="TPOSelected" style="margin-bottom: 0">
                     <v-list-item-icon :style="{'margin-right': '10px'}">
                         <v-icon :color="linkSelected.TPO ? '#A40000' : '#1C0153'" large>
                             {{ icons.mdiBookOpenPageVariant }}
@@ -101,7 +101,7 @@
                     </v-list-item-content>
                 </v-list-item>
 
-                <v-list-item link @click="CorrectSelected">
+                <v-list-item link @click="CorrectSelected" style="margin-bottom: 0">
                     <v-list-item-icon :style="{'margin-right': '10px'}">
                         <v-icon :color="linkSelected.correct ? '#A40000' : '#1C0153'" large>
                             {{ icons.mdiCheckCircle }}
@@ -116,7 +116,7 @@
                     </v-list-item-content>
                 </v-list-item>
 
-                <v-list-item link @click="analyticsSelected">
+                <v-list-item link @click="analyticsSelected" style="margin-bottom: 0">
                     <v-list-item-icon :style="{'margin-right': '10px'}">
                         <v-icon :color="linkSelected.analytics ? '#A40000' : '#1C0153'" large>
                             {{ icons.mdiChartTimelineVariant }}
@@ -131,7 +131,7 @@
                     </v-list-item-content>
                 </v-list-item>
 
-                <v-list-item link @click="wordsSelected">
+                <v-list-item link @click="wordsSelected" style="margin-bottom: 0">
                     <v-list-item-icon :style="{'margin-right': '10px'}">
                         <v-icon :color="linkSelected.words ? '#A40000' : '#1C0153'" large>
                             {{ icons.mdiBookAlphabet }}
@@ -146,7 +146,7 @@
                     </v-list-item-content>
                 </v-list-item>
 
-                <v-list-item link @click="mockSelected">
+                <v-list-item link @click="mockSelected" style="margin-bottom: 0">
                     <v-list-item-icon :style="{'margin-right': '10px'}">
                         <v-icon :color="linkSelected.mockTest ? '#A40000' : '#1C0153'" large>
                             {{ icons.mdiLeadPencil }}
@@ -161,7 +161,7 @@
                     </v-list-item-content>
                 </v-list-item>
 
-                <v-list-item link @click="classSelected">
+                <v-list-item link @click="classSelected" style="margin-bottom: 0">
                     <v-list-item-icon :style="{'margin-right': '10px'}">
                         <v-icon :color="linkSelected.classes ? '#A40000' : '#1C0153'" large>
                             {{ icons.mdiSchool }}
@@ -176,7 +176,7 @@
                     </v-list-item-content>
                 </v-list-item>
 
-                <v-list-item link @click="onlineCoursesSelected">
+                <v-list-item link @click="onlineCoursesSelected" style="margin-bottom: 0">
                     <v-list-item-icon :style="{'margin-right': '10px'}">
                         <v-icon :color="linkSelected.onlineCourses ? '#A40000' : '#1C0153'" large>
                             {{ icons.mdiTelevision }}
@@ -191,25 +191,28 @@
                     </v-list-item-content>
                 </v-list-item>
 
-<!--                <v-list-item link @click="ordersSelected">-->
-<!--                    <v-list-item-icon :style="{'margin-right': '10px'}">-->
-<!--                        <v-icon :color="linkSelected.orders ? '#A40000' : '#1C0153'" large>-->
-<!--                            {{ icons.mdiCart }}-->
-<!--                        </v-icon>-->
-<!--                    </v-list-item-icon>-->
+                <v-list-item link @click="ordersSelected" style="margin-bottom: 0">
+                    <v-list-item-icon :style="{'margin-right': '10px'}">
+                        <v-icon :color="linkSelected.orders ? '#A40000' : '#1C0153'" large>
+                            {{ icons.mdiCart }}
+                        </v-icon>
+                    </v-list-item-icon>
 
-<!--                    <v-list-item-content>-->
-<!--                        <v-list-item-title class="drawer_links"-->
-<!--                                           :style="{'color': `${linkSelected.orders ? '#A40000' : '#1C0153'}`}"-->
-<!--                        >Orders-->
-<!--                        </v-list-item-title>-->
-<!--                    </v-list-item-content>-->
-<!--                </v-list-item>-->
+                    <v-list-item-content>
+                        <v-list-item-title class="drawer_links"
+                                           :style="{'color': `${linkSelected.orders ? '#A40000' : '#1C0153'}`}"
+                        >Orders
+                        </v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
             </v-list>
         </v-navigation-drawer>
+        <transition name="scroll-x-transition">
         <DashboardComponent :width="mini? width*0.91 : width*0.76" v-if="linkSelected.dashboard"
                             :style="{'margin-left': mini? `${width*0.08 + 10}px`:`${width*0.23 + 10}px`, 'margin-right': '50px', 'margin-top': `${height*0.08}px`}"
                             :height="height"/>
+        <Correction :width="mini? width*0.91 : width*0.76" v-if="linkSelected.correct"
+                    :style="{'margin-left': mini? `${width*0.08 + 10}px`:`${width*0.23 + 10}px`, 'margin-right': '50px', 'margin-top': `${height*0.1}px`}" />
         <WordsComponent :width="mini? width*0.91 : width*0.76" v-if="linkSelected.words"
                         :style="{'margin-left': mini? `${width*0.08 + 10}px`:`${width*0.23 + 10}px`, 'margin-right': '50px', 'margin-top': `${height*0.08}px`}"
                         :height="height"/>
@@ -221,6 +224,7 @@
                    :style="{'margin-left': mini? `${width*0.08 + 10}px`:`${width*0.23 + 10}px`, 'margin-right': '50px', 'margin-top': `${height*0.08}px`}"/>
         <Courses :width="mini? width*0.91 : width*0.76" v-if="linkSelected.onlineCourses"
                  :style="{'margin-left': mini? `${width*0.08 + 10}px`:`${width*0.23 + 10}px`, 'margin-right': '50px', 'margin-top': `${height*0.08}px`}"/>
+        </transition>
     </v-app>
 </template>
 
@@ -250,9 +254,11 @@
     import Courses from "@/components/Main/Courses";
     import {AUTH_LOGOUT} from "@/store/actions/auth";
     import {GET_USER_DATA} from '@/store/actions/user'
+    import Correction from "@/components/Main/Correction";
     export default {
         name: "Dashboard",
         components: {
+          Correction,
             Courses,
             Analytics,
             TPOComponent,
@@ -417,6 +423,18 @@
                 this.linkSelected.classes = false;
                 this.linkSelected.onlineCourses = true;
             },
+          ordersSelected(){
+            this.$store.dispatch(CHANGE_TAB, 8);
+            this.linkSelected.dashboard = false;
+            this.linkSelected.TPO = false;
+            this.linkSelected.words = false;
+            this.linkSelected.mockTest = false;
+            this.linkSelected.orders = true;
+            this.linkSelected.analytics = false;
+            this.linkSelected.correct = false;
+            this.linkSelected.classes = false;
+            this.linkSelected.onlineCourses = false;
+          },
             handleResize() {
                 this.width = window.innerWidth;
                 this.height = window.innerHeight;
@@ -475,7 +493,8 @@
 
     .drawer_links {
         font-family: kalam;
-        font-size: 22px
+      font-weight: bold;
+        font-size: 18px
     }
 
     .menu_class {

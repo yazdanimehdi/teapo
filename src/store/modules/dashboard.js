@@ -1,11 +1,29 @@
-import {CHANGE_TAB, SET_CONNECTION} from "@/store/actions/dashboard";
+import {CHANGE_TAB, SET_CONNECTION, SET_TOEFL_TIME, GET_DASHBOARD_DATA} from "@/store/actions/dashboard";
 
 const state = {
     tabNumber: 0,
     connected: navigator.onLine,
+    dayToTOEFL: -1,
+    listeningDone: 0,
+    readingDone: 0,
+    speakingDone: 0,
+    writingDone: 0,
+    totalListening: 0,
+    totalReading: 0,
+    totalSpeaking: 0,
+    totalWriting: 0,
+    practiceTest: {},
+
 }
 const getters = {
     connected: state => state.connected,
+    dayToTOEFL: state => state.dayToTOEFL,
+    progress: state => {
+        let all = state.totalReading + state.totalListening + state.totalSpeaking + state.totalWriting
+        let done = state.readingDone + state.listeningDone + state.speakingDone + state.writingDone
+        return all !== 0 ? Math.ceil(done / all) : 0
+    },
+    practiceTest: state => state.practiceTest,
 }
 const actions = {
     [CHANGE_TAB]: ({commit}, payload) => {
@@ -13,15 +31,161 @@ const actions = {
     },
     [SET_CONNECTION]: ({commit}, payload) => {
         commit('SET_CONNECTED', payload)
+    },
+    [SET_TOEFL_TIME]: ({rootGetters}, payload) => {
+        let knex = require('knex')({
+            client: 'sqlite3',
+            connection: {
+                filename: './db.sqlite3'
+            },
+            useNullAsDefault: true
+        });
+        return new Promise((resolve) => {
+            knex('institutions_users').where({'id': rootGetters.getId}).update({toefl_time: payload}).then(() => {
+                resolve()
+            })
+        })
+    },
+    [GET_DASHBOARD_DATA]: ({commit, rootGetters}) => {
+        let knex = require('knex')({
+            client: 'sqlite3',
+            connection: {
+                filename: './db.sqlite3'
+            },
+            useNullAsDefault: true
+        });
+
+        function getRandomInt(min, max) {
+            min = Math.ceil(min);
+            max = Math.floor(max);
+            return Math.floor(Math.random() * (max - min)) + min;
+        }
+
+        knex('institutions_users').select('*').where({'id': rootGetters.getId}).then((row) => {
+            if (row[0]['toefl_time'] === null) {
+                commit('updateTOEFLTime', -1)
+            } else {
+                commit('updateTOEFLTime', Math.ceil((row[0]['toefl_time'] - Date.now()) * 1.15741e-8))
+            }
+        })
+        let listeningDone = 0
+        let readingDone = 0
+        let speakingDone = 0
+        let writingDone = 0
+
+        let totalListening = 0
+        let totalReading = 0
+        let totalSpeaking = 0
+        let totalWriting = 0
+
+        let doneTestIds = []
+
+        let promises = []
+        for (let i = 0; i < rootGetters.localTPOListId.length; i++) {
+
+            promises = [...promises, knex('tpo_testlistening').select('*').where({test_id: rootGetters.localTPOListId[i]}).then((listenings) => {
+                totalListening += listenings.length
+            })]
+
+            promises = [...promises, knex('tpo_testreading').select('*').where({test_id: rootGetters.localTPOListId[i]}).then((readings) => {
+                totalReading += readings.length
+            })]
+
+
+            promises = [...promises, knex('tpo_testspeaking').select('*').where({test_id: rootGetters.localTPOListId[i]}).then((speakings) => {
+                totalSpeaking += speakings.length
+            })]
+
+            promises = [...promises, knex('tpo_testwriting').select('*').where({test_id: rootGetters.localTPOListId[i]}).then((writings) => {
+                totalWriting += writings.length
+            })]
+
+        }
+
+        Promise.all(promises).then(() => {
+            knex('tpousers_testuser').select('*').where({
+                user_id: rootGetters.getId,
+                is_done: true,
+            }).then((rows) => {
+                for (let i = 0; i < rows.length; i++) {
+                    doneTestIds.push(rows[i]['test_id'])
+                    let test = rootGetters.getTPOById(rows[i]['test_id'])
+                    if (test !== undefined) {
+                        knex('tpousers_userlisteninganswers').select('*').where({user_test_id: rows[i]['id']}).then((listeningAnswers) => {
+                            if (listeningAnswers.length > 0) {
+                                knex('tpo_testlistening').select('*').where({test_id: test.id}).then((listenings) => {
+                                    listeningDone += listenings.length
+                                })
+                            }
+                        })
+                        knex('tpousers_userreadinganswers').select('*').where({user_test_id: rows[i]['id']}).then((readingAnswers) => {
+                            if (readingAnswers.length > 0) {
+                                knex('tpo_testreading').select('*').where({test_id: test.id}).then((readings) => {
+                                    readingDone += readings.length
+                                })
+                            }
+                        })
+                        knex('tpousers_userspeakinganswers').select('*').where({user_test_id: rows[i]['id']}).then((speakingAnswers) => {
+                            if (speakingAnswers.length > 0) {
+                                knex('tpo_testspeaking').select('*').where({test_id: test.id}).then((speakings) => {
+                                    speakingDone += speakings.length
+                                })
+                            }
+                        })
+                        knex('tpousers_userwritinganswers').select('*').where({user_test_id: rows[i]['id']}).then((writingAnswers) => {
+                            if (writingAnswers.length > 0) {
+                                knex('tpo_testwriting').select('*').where({test_id: test.id}).then((writings) => {
+                                    writingDone += writings.length
+                                })
+                            }
+                        })
+                    }
+
+                }
+            })
+        }).then(() => {
+            commit('updateDashboardProgress',
+                [listeningDone,
+                    readingDone,
+                    speakingDone,
+                    writingDone,
+                    totalListening,
+                    totalReading,
+                    totalSpeaking,
+                    totalWriting])
+            if (rootGetters.localTPOListId.length !== 0) {
+                let notDoneIds = rootGetters.localTPOListId.filter(function (item) {
+                    return doneTestIds.indexOf(item) === -1;
+                });
+                commit('updatePracticeTest', rootGetters.getTPOById(notDoneIds[getRandomInt(0, notDoneIds.length)]))
+            }
+
+        })
     }
 }
 const mutations = {
-    updateTab(state, payload){
+    updateTab(state, payload) {
         state.tabNumber = payload;
     },
     SET_CONNECTED(state, payload) {
         state.connected = payload
     },
+    updateTOEFLTime(state, payload) {
+        state.dayToTOEFL = payload
+    },
+    updateDashboardProgress(state, payload) {
+        state.listeningDone = payload[0]
+        state.readingDone = payload[1]
+        state.speakingDone = payload[2]
+        state.writingDone = payload[3]
+        state.totalListening = payload[4]
+        state.totalReading = payload[5]
+        state.totalSpeaking = payload[6]
+        state.totalWriting = payload[7]
+    },
+    updatePracticeTest(state, payload) {
+        state.practiceTest = payload;
+    }
 }
 
 export default {

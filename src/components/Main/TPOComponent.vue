@@ -1,6 +1,20 @@
 <template>
     <div :style="{'width': `${width}px`, 'font-family':'kalam'}">
-        <v-container fluid style="overflow-y: scroll;margin-top: 0; padding-top: 0">
+        <div v-if="loading" style="text-align: center; margin-top: 100px">
+          <v-progress-circular indeterminate size="50"></v-progress-circular>
+        </div>
+        <v-container fluid style="overflow-y: scroll;margin-top: 0; padding-top: 0" v-else>
+          <v-row align="center" justify="center" v-if="notConnected">
+            <v-col cols="6" sm="6" md="6" lg="6" xl="6" >
+              <v-card flat height="200">
+                <v-img src="../../assets/sad.png" height="60" contain style="margin-top: 30px;" position="center">
+                </v-img>
+                <h2 style="text-align: center; margin-top: 30px">You are not connected to the internet</h2>
+                <h3 style="text-align: center; margin-top: 5px">Only local TPOs are showing here</h3>
+
+              </v-card>
+            </v-col>
+          </v-row>
             <v-row>
                 <v-container style="width: 500px; margin-top: 0; padding-top: 0">
                     <v-row justify="center" align="center">
@@ -63,18 +77,25 @@
         },
         created(){
           if(this.connected === true){
-              this.$store.dispatch(GET_ONLINE_TPO_LIST).catch(() => {
-                console.log('not connected')
+              this.$store.dispatch(GET_ONLINE_TPO_LIST).then(() => {
+                this.loading = false
+              }).catch(() => {
+                this.loading = false
+                this.notConnected = true
               })
               this.$store.dispatch(GET_LOCAL_TPO_LIST)
           }
           else{
+              this.loading = false
+              this.notConnected = true
               this.$store.dispatch(GET_LOCAL_TPO_LIST)
           }
         },
         data() {
             return {
-                practice: true
+                practice: true,
+                loading: true,
+                notConnected: false,
             }
         }
     }

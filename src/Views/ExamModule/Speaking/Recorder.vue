@@ -43,7 +43,7 @@
             <v-row align="center" justify="center" style=" margin-top: 120px; margin-left: 40px; margin-right: 40px">
                 <div class="question"><span style="padding-left: 1em; text-align: left;">{{speakingQuestion}}</span>
                 </div>
-                <audio id="question_audio" :autoplay="speakingAnswer===''|| recordState !== 0" v-on:ended="speakingMode !== 'reviewMode' ? startRecordingProcess : ()=>{}">
+                <audio id="question_audio" :autoplay="speakingAnswer===''|| recordState !== 0" v-on:ended="startRecordingProcess">
                     <source :src="speakingQuestionAudioFile">
                 </audio>
             </v-row>
@@ -53,8 +53,8 @@
                     <br>
                     <img src="../../../assets/micd.png" style="height: 80px;" v-if="this.speakings.prepare_time > 0">
                     <img src="../../../assets/mic.png" style="height: 80px" v-else>
-                    <div>Preparation Time: &nbsp; &nbsp; {{speakingMode !== 'reviewMode' ? speakingTimes[this.speakingTaskNumber]['preparation_time']: '-'}} Seconds</div>
-                    <div>Response Time: &nbsp; &nbsp; {{speakingMode !== 'reviewMode' ? speakingTimes[this.speakingTaskNumber]['answering_time']: '-'}} Seconds</div>
+                    <div>Preparation Time: &nbsp; &nbsp; {{speakingTimes[this.speakingTaskNumber]['preparation_time']}} Seconds</div>
+                    <div>Response Time: &nbsp; &nbsp; {{speakingTimes[this.speakingTaskNumber]['answering_time']}} Seconds</div>
                     <br>
                 </div>
             </v-row>
@@ -167,37 +167,39 @@
                 this.$store.dispatch(GO_TO_PREVIOUS_SPEAKING);
             },
             startRecordingProcess() {
-                let self = this;
-                self.speakings.enable = true;
-                self.speakings.prepare_time = this.speakingTimes[this.speakingTaskNumber]['preparation_time'];
-                self.speakings.response_time = this.speakingTimes[this.speakingTaskNumber]['answering_time'];
-                self.speakings.prepare = this.speakingTimes[this.speakingTaskNumber]['preparation_time'] * 1000;
-                self.speakings.speak = this.speakingTimes[this.speakingTaskNumber]['answering_time'] * 1000;
-                let interval = setInterval(function () {
+                if(this.speakingMode !== 'reviewMode') {
+                  let self = this;
+                  self.speakings.enable = true;
+                  self.speakings.prepare_time = this.speakingTimes[this.speakingTaskNumber]['preparation_time'];
+                  self.speakings.response_time = this.speakingTimes[this.speakingTaskNumber]['answering_time'];
+                  self.speakings.prepare = this.speakingTimes[this.speakingTaskNumber]['preparation_time'] * 1000;
+                  self.speakings.speak = this.speakingTimes[this.speakingTaskNumber]['answering_time'] * 1000;
+                  let interval = setInterval(function () {
                     if (self.speakings.prepare_time > 0) {
-                        self.speakings.prepare_time--;
-                        self.prepare.minutes = parseInt(self.speakings.prepare_time / 60);
-                        self.prepare.hours = parseInt(self.prepare.minutes / 60);
-                        self.prepare.minutes = self.prepare.minutes % 60;
-                        self.prepare.seconds = self.speakings.prepare_time % 60;
+                      self.speakings.prepare_time--;
+                      self.prepare.minutes = parseInt(self.speakings.prepare_time / 60);
+                      self.prepare.hours = parseInt(self.prepare.minutes / 60);
+                      self.prepare.minutes = self.prepare.minutes % 60;
+                      self.prepare.seconds = self.speakings.prepare_time % 60;
 
                     } else {
-                        if (self.speakings.response_time > 0) {
-                            self.speakings.response_time--;
-                            self.response.minutes = parseInt(self.speakings.response_time / 60);
-                            self.response.hours = parseInt(self.response.minutes / 60);
-                            self.response.minutes = self.response.minutes % 60;
-                            self.response.seconds = self.speakings.response_time % 60;
-                        }
+                      if (self.speakings.response_time > 0) {
+                        self.speakings.response_time--;
+                        self.response.minutes = parseInt(self.speakings.response_time / 60);
+                        self.response.hours = parseInt(self.response.minutes / 60);
+                        self.response.minutes = self.response.minutes % 60;
+                        self.response.seconds = self.speakings.response_time % 60;
+                      }
                     }
-                }, 1000);
+                  }, 1000);
 
-                setTimeout(function () {
+                  setTimeout(function () {
                     self.startRecording()
                     setTimeout(function () {
-                        clearInterval(interval);
+                      clearInterval(interval);
                     }, self.speakings.speak)
-                }, self.speakings.prepare)
+                  }, self.speakings.prepare)
+                }
             },
             resetQuestion() {
                 this.recordState = 1;

@@ -256,13 +256,22 @@ const actions = {
 
     },
     [NEXT_SECTION]: ({state, commit, dispatch}) => {
+        let knex = require('knex')({
+            client: 'sqlite3',
+            connection: {
+                filename: './db.sqlite3'
+            },
+            useNullAsDefault: true
+        });
         commit('updateSeenArray', state.examArray[state.examSectionNumber]);
         if (state.examSectionNumber + 1 < state.examArray.length) {
             commit('updateExamSectionNumber', state.examSectionNumber + 1)
             dispatch(SET_NEW_TIME, 0)
             dispatch(UPDATE_INITIAL_STATE);
         } else {
-           dispatch(END_TPO);
+            knex('tpousers_testuser').where({id: state.userTestId}).update({is_done: true}).then(() => {
+                dispatch(END_TPO);
+            })
         }
     },
     [PREVIOUS_SECTION]: ({state, commit, dispatch}) => {

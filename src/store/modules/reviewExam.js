@@ -10,12 +10,14 @@ const state = {
     speakingScore: 0,
     writingScore: 0,
     reviewUserTestId: 0,
+    testId: 0
 }
 const getters = {
     readingReviewScore: state => state.readingScore,
     listeningReviewScore: state => state.listeningScore,
     speakingReviewScore: state => state.speakingScore,
     writingReviewScore: state => state.writingScore,
+    reviewTestId: state => state.testId
 }
 const actions = {
     [SET_REVIEW_USER_TEST_ID]: ({commit}, payload) => {
@@ -35,6 +37,7 @@ const actions = {
             dispatch(GET_DATA_LISTENING, row[0]['test_id'])
             dispatch(GET_DATA_SPEAKING, row[0]['test_id'])
             dispatch(GET_DATA_WRITING, row[0]['test_id'])
+            commit('updateReviewTestId', row[0]['test_id'])
             commit('updateReadingScore', row[0]['reading_score'])
             commit('updateListeningScore', row[0]['listening_score'])
             commit('updateSpeakingScore', row[0]['speaking_score'])
@@ -83,6 +86,9 @@ const mutations = {
     updateWritingScore(state, payload){
         state.writingScore = payload
     },
+    updateReviewTestId(state, payload){
+        state.testId = payload
+    }
 }
 
 export default {

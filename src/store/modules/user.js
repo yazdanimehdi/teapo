@@ -6,7 +6,7 @@ const state = {userId: 0, firstName: null, lastName: null, email: null, phone: n
 
 const getters = {
     getProfile: state => state.profile,
-    getId: state => state.user_id,
+    getId: state => state.userId,
 };
 
 const actions = {
@@ -20,8 +20,9 @@ const actions = {
         });
         let userId = localStorage.getItem('user-id');
         knex('institutions_users').select('*').where({'id': userId}).then(function (rows) {
-            console.log(rows);
-            commit(USER_SUCCESS, rows[0])
+            if(rows.length !== 0) {
+                commit(USER_SUCCESS, rows[0])
+            }
         })
 
     },
@@ -30,6 +31,7 @@ const actions = {
         commit(USER_REQUEST);
          return new Promise((resolve, reject) => {
             axios.get('http://127.0.0.1:8000/api/v1/profile/').then((resp) => {
+                console.log(resp.data)
                 commit(USER_SUCCESS, resp.data);
                 localStorage.setItem('user-id', resp.data['id']);
                 let knex = require('knex')({

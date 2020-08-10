@@ -22,6 +22,9 @@ export default {
     }
   },
   created(){
+    if(this.isAuthenticated === false){
+      this.$router.push('/register_login')
+    }
   }
 }
 </script>

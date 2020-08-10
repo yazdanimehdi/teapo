@@ -35,4 +35,19 @@ new Vue({
 Vue.filter('formatTime', function (d) {
   let value = d.toString()
   return value.length >= 2 ? value : new Array(2 - value.length + 1).join('0') + value;
-}) ;
+});
+
+Vue.filter('formatCurrency', function (d) {
+  let currency = d
+  let returnString = '';
+  let firstComma = currency.length%3
+  for(let i=0; i < currency.length; i++){
+    if(i%3 === firstComma && i !== 0){
+      returnString += ',' + currency[i]
+    }
+    else {
+      returnString += currency[i]
+    }
+  }
+  return returnString
+})

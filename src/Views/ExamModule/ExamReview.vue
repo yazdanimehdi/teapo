@@ -16,6 +16,7 @@
 
     <div
         :style="{'margin-left':`${width*0.06}px`, 'margin-right': `${width*0.06}px`, 'margin-top': `${height*0.1 + 30}px`}">
+      <h1 style="margin-bottom: 20px; font-family: kalam">{{test.title}}</h1>
       <div v-if="loading">
         <v-progress-circular indeterminate></v-progress-circular>
       </div>
@@ -187,8 +188,8 @@
               </span>
                     </td>
                     <td class="tg-hvao" style="text-align: center"
-                        :id="[question[0], question[1], question[3]].toString()">
-              <span v-for="(code, i) in listeningAnswers[question[3].id]" :key="i">
+                        :id="[question[0], question[1], question[2]].toString()">
+                      <span v-for="(code, i) in listeningAnswers[question[3].id]" :key="i">
               <span v-if="code === '1'">
                 A
               </span>
@@ -226,7 +227,7 @@
                 </v-col>
                 <v-col cols="4" sm="4" md="4" lg="4" xl="4"
                        style="padding: 0 20px 0 0; text-align: right">
-                  <v-btn @click="buyDialog = true" color="#1C0153" style="color: white; font-weight: bold"
+                  <v-btn @click="orderDialog = true" color="#1C0153" style="color: white; font-weight: bold"
                          :disabled="Object.keys(speakingAnswers).length === 0 && speakingAnswers.constructor === Object">
                     Correct
                   </v-btn>
@@ -283,8 +284,8 @@
                 </v-col>
                 <v-col cols="4" sm="4" md="4" lg="4" xl="4"
                        style="padding: 0 20px 0 0; text-align: right">
-                  <v-btn @click="buyDialog = true" color="#1C0153" style="color: white; font-weight: bold"
-                         :disabled="Object.keys(speakingAnswers).length === 0 && speakingAnswers.constructor === Object">
+                  <v-btn @click="orderDialog = true" color="#1C0153" style="color: white; font-weight: bold"
+                         :disabled="Object.keys(writingAnswers).length === 0 && writingAnswers.constructor === Object">
                     Correct
                   </v-btn>
                 </v-col>
@@ -303,11 +304,14 @@
           <v-expansion-panel-content>
             <div style="margin-top: 20px">
               <div v-for="(writingInst, index) in writing" :key="index" style="background-color: #c0c0c0">
-                <div style="padding: 20px;  border-bottom: solid white thin; color: blue" @click="gotoQuestionWriting(index)">
+                <div style="padding: 20px;  border-bottom: solid white thin; color: blue"
+                     @click="gotoQuestionWriting(index)">
                   {{ writingInst['writing_question'] }}
                 </div>
                 <div style="background-color: white; padding: 20px">
-                  {{writingAnswers[writingInst['id']] === undefined ? 'You did not answer this question' : writingAnswers[writingInst['id']]}}
+                  {{
+                    writingAnswers[writingInst['id']] === undefined ? 'You did not answer this question' : writingAnswers[writingInst['id']]
+                  }}
                 </div>
               </div>
             </div>
@@ -315,23 +319,50 @@
         </v-expansion-panel>
       </v-expansion-panels>
     </div>
-    <v-dialog width="400" v-model="buyDialog">
-      <v-card width="400" height="400"></v-card>
+    <v-dialog width="400" v-model="orderDialog">
+      <v-card width="400" height="400" style="border-radius: 30px" flat>
+        <v-card-title style="font-family: kalam; font-weight: bold; font-size: 30px">{{ test.title }}</v-card-title>
+        <v-card-subtitle style="font-family: kalam; font-size: 15px; margin-top: 0">
+          {{
+            `${new Date(test['time']).getFullYear()}/${new Date(test['time']).getMonth()}/${new Date(test['time']).getDate()}`
+          }}
+        </v-card-subtitle>
+        <v-card-text>
+          <v-container fluid style="font-family: kalam; padding: 0">
+            <v-checkbox :disabled="Object.keys(speakingAnswers).length === 0 && speakingAnswers.constructor === Object" label="Speaking" v-model="speakingChecked"
+                        :off-icon="icons.mdiCheckboxBlankOutline" :on-icon="icons.mdiCheckboxMarkedOutline"
+                        hide-details></v-checkbox>
+            {{writingAnswers.length}}
+            <v-checkbox :disabled="Object.keys(writingAnswers).length === 0 && writingAnswers.constructor === Object" label="Writing" v-model="writingChecked"
+                        :off-icon="icons.mdiCheckboxBlankOutline" :on-icon="icons.mdiCheckboxMarkedOutline"
+                        hide-details></v-checkbox>
+          </v-container>
+          <h2 style="font-family: kalam; font-weight: bold; margin-top: 20px">Price</h2>
+          <h3 style="font-family: kalam; font-weight: bold; margin-top: 10px; color:#1C0153; margin-bottom: 70px">
+            {{ totalPrice.toString() | formatCurrency}}
+            Toman</h3>
+          <v-btn color="#1C0153" style="color: white; font-family: kalam; font-weight: bold"
+                 :disabled="!writingChecked && !speakingChecked"
+                 @click="payMethod(test.id, test.userTestId)">Confirm & Pay
+          </v-btn>
+        </v-card-text>
+      </v-card>
     </v-dialog>
 
   </v-app>
 </template>
 
 <script>
-import {mdiChevronRight, mdiChevronDown} from '@mdi/js'
+import {mdiChevronRight, mdiChevronDown, mdiCheckboxBlankOutline, mdiCheckboxMarkedOutline} from '@mdi/js'
 import {mapState, mapGetters} from "vuex";
 import {GO_TO_READING_QUESTION} from "@/store/actions/reading";
-import {GO_TO_EXAM_REVIEW, SET_REVIEW_USER_TEST_ID} from "@/store/actions/reviewExam";
-import {CHANGE_TPO_MODE, SET_REVIEW_TIMES} from "@/store/actions/mainTPO";
+import {GO_TO_EXAM_REVIEW} from "@/store/actions/reviewExam";
+import {CHANGE_TPO_MODE} from "@/store/actions/mainTPO";
 import {TIME_STOP} from "@/store/actions/time";
 import {GO_TO_LISTENING_QUESTION} from "@/store/actions/listening";
 import {GO_TO_SPEAKING_QUESTION} from "@/store/actions/speaking";
 import {GO_TO_WRITING_QUESTION} from "@/store/actions/writing";
+import {ORDER_CORRECTION} from "@/store/actions/correction";
 
 export default {
   name: "ExamReview",
@@ -341,14 +372,18 @@ export default {
       height: 0,
       icons: {
         mdiChevronRight,
-        mdiChevronDown
+        mdiChevronDown,
+        mdiCheckboxBlankOutline,
+        mdiCheckboxMarkedOutline
       },
       answers: [],
       ended: false,
       state: 0,
       loading: true,
       panel: [],
-      buyDialog: false
+      orderDialog: false,
+      speakingChecked: false,
+      writingChecked: false
     }
   },
 
@@ -356,13 +391,10 @@ export default {
     window.addEventListener('resize', this.handleResize);
     this.handleResize();
     let self = this;
-    let userTestId = this.$route.query['id'] ;
-    this.$store.dispatch(SET_REVIEW_USER_TEST_ID, userTestId)
     this.$store.dispatch(CHANGE_TPO_MODE, 'reviewMode')
     this.$store.dispatch(TIME_STOP, true)
     this.$store.dispatch(GO_TO_EXAM_REVIEW).then(() => {
       self.loading = false;
-      self.$store.dispatch(SET_REVIEW_TIMES)
     })
   },
   destroyed() {
@@ -374,10 +406,13 @@ export default {
         for (let i = 0; i < this.readingQuestionsWithIndex.length; i++) {
           let a = [this.readingQuestionsWithIndex[i][0], this.readingQuestionsWithIndex[i][1]];
           let idToFind = a.toString();
-          if (this.readingQuestionsWithIndex[i][2].right_answer === this.readingAnswers[this.readingQuestionsWithIndex[i][2].id]) {
-            document.getElementById(idToFind).style.background = 'rgba(0,255,0,0.4)';
+          if (this.readingAnswers[this.readingQuestionsWithIndex[i][2].id] === undefined) {
+            document.getElementById(idToFind).style.background = 'rgba(255,0,0,0.4)';
           } else {
-            if (document.getElementById(idToFind) != null) {
+            if (this.readingQuestionsWithIndex[i][2].right_answer === this.readingAnswers[this.readingQuestionsWithIndex[i][2].id]) {
+              document.getElementById(idToFind).style.background = 'rgba(0,255,0,0.4)';
+            } else {
+
               if (this.readingQuestionsWithIndex[i][2].right_answer.trim().split(/\s+/).length > 1) {
                 let cloneAnswer = [...this.readingAnswers[this.readingQuestionsWithIndex[i][2].id]];
                 let setA = new Set(cloneAnswer);
@@ -400,10 +435,12 @@ export default {
         for (let i = 0; i < this.listeningQuestions.length; i++) {
           let a = [this.listeningQuestions[i][0], this.listeningQuestions[i][1], this.listeningQuestions[i][2]];
           let idToFind = a.toString();
-          if (this.listeningQuestions[i][3].right_answer === this.listeningAnswers[this.listeningQuestions[i][3].id]) {
-            document.getElementById(idToFind).style.background = 'rgba(0,255,0,0.4)';
+          if (this.listeningAnswers[this.listeningQuestions[i][3].id] === undefined) {
+            document.getElementById(idToFind).style.background = 'rgba(255,0,0,0.4)';
           } else {
-            if (document.getElementById(idToFind) != null) {
+            if (this.listeningQuestions[i][3].right_answer === this.listeningAnswers[this.listeningQuestions[i][3].id]) {
+              document.getElementById(idToFind).style.background = 'rgba(0,255,0,0.4)';
+            } else {
               if (this.listeningQuestions[i][3].right_answer.trim().split(/\s+/).length > 1) {
                 let cloneAnswer = [...this.listeningAnswers[this.listeningQuestions[i][3].id]];
                 let setA = new Set(cloneAnswer);
@@ -449,6 +486,13 @@ export default {
       if (as.size !== bs.size) return false;
       for (var a of as) if (!bs.has(a)) return false;
       return true;
+    },
+    payMethod(testId, userTestId) {
+      this.$store.dispatch(ORDER_CORRECTION, [testId, userTestId, this.speakingChecked, this.writingChecked]).then((resp) => {
+        const {shell} = require("electron");
+        shell.openExternal(resp.data['link']);
+        console.log(resp)
+      })
     }
   },
   computed: {
@@ -460,14 +504,29 @@ export default {
       speakingAnswers: state => state.speaking.answers,
       writing: state => state.writing.writing,
       writingAnswers: state => state.writing.answers,
+      userTestId: state => state.mainTPO.userTestId
     }),
     ...mapGetters(['readingReviewScore',
       'listeningReviewScore',
       'speakingReviewScore',
       'writingReviewScore',
       'readingQuestionsWithIndex',
-      'listeningQuestions'])
+      'listeningQuestions', 'reviewTestId', 'writingPrice', 'speakingPrice']),
+    test(){
+      return this.$store.getters.getTPOById(this.reviewTestId)
+    },
+    totalPrice() {
+      let totalPrice = 0;
+      if (this.writingChecked) {
+        totalPrice += this.writingPrice
+      }
+      if (this.speakingChecked) {
+        totalPrice += this.speakingPrice
+      }
+      return totalPrice
+    }
   },
+
 }
 </script>
 

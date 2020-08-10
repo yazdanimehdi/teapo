@@ -17,6 +17,7 @@ const state = {
 
 const getters = {
     isAuthenticated: state => !!state.token,
+    authToken: state => state.token
 };
 
 const actions = {
@@ -51,6 +52,7 @@ const actions = {
             commit(AUTH_LOGOUT);
             localStorage.removeItem('user-token'); // clear your user's token from localstorage
             localStorage.removeItem('user-id');
+            console.log(localStorage.getItem("user-token"))
             resolve()
         })
     }
