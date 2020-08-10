@@ -148,7 +148,7 @@
               <v-card-text style="color: black; font-size: 20px; font-weight: bold; margin-top: 20px; text-align: center" v-if="Object.keys(practiceTest).length === 0 && practiceTest.constructor === Object">
                 There is no new downloaded TPOs
               </v-card-text>
-              <v-card-text style="9 text-align: center" v-else>
+              <v-card-text style="text-align: center" v-else>
                 {{practiceTest.title}} <v-btn icon x-large><v-icon x-large>{{icons.mdiArrowRightBold}}</v-icon></v-btn>
               </v-card-text>
             </v-img>
