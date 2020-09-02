@@ -1,4 +1,5 @@
 import {FETCH_ANALYTICS} from "@/store/actions/analytics";
+let knex = require('@/db/knex')
 
 const state = {
     categoriesReading: [],
@@ -107,13 +108,6 @@ const actions = {
     [FETCH_ANALYTICS]: ({commit, rootGetters}) => {
         commit('resetAllAnalytics');
         let userId = localStorage.getItem('user-id')
-        var knex = require('knex')({
-            client: 'sqlite3',
-            connection: {
-                filename: './db.sqlite3'
-            },
-            useNullAsDefault: true
-        });
         return new Promise((resolve) => {
             knex.select("*").from('tpousers_testuser').where({
                 user_id: userId,

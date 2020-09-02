@@ -22,6 +22,8 @@ import {UPDATE_TIME} from "@/store/actions/time";
 import router from '@/router'
 import {SET_REVIEW_USER_TEST_ID} from "@/store/actions/reviewExam";
 
+let knex = require('@/db/knex')
+
 const state = {
     mode: 'practiceMode',
     currentComponent: '',
@@ -98,13 +100,6 @@ const actions = {
         }
     },
     [CORRECT_EXAM]: ({state, rootState}) => {
-        var knex = require('knex')({
-            client: 'sqlite3',
-            connection: {
-                filename: './db.sqlite3'
-            },
-            useNullAsDefault: true
-        });
         function eqSet(as, bs) {
             if (as.size !== bs.size) return false;
             for (var a of as) if (!bs.has(a)) return false;
@@ -179,13 +174,7 @@ const actions = {
     },
 
     [START_TPO]: ({state, commit, dispatch}, payload) => {
-        let knex = require('knex')({
-            client: 'sqlite3',
-            connection: {
-                filename: './db.sqlite3'
-            },
-            useNullAsDefault: true
-        });
+
         let userId = localStorage.getItem('user-id')
         knex('tpousers_testuser').insert({
             test_id: payload['TPO'],
@@ -256,13 +245,7 @@ const actions = {
 
     },
     [NEXT_SECTION]: ({state, commit, dispatch}) => {
-        let knex = require('knex')({
-            client: 'sqlite3',
-            connection: {
-                filename: './db.sqlite3'
-            },
-            useNullAsDefault: true
-        });
+
         commit('updateSeenArray', state.examArray[state.examSectionNumber]);
         if (state.examSectionNumber + 1 < state.examArray.length) {
             commit('updateExamSectionNumber', state.examSectionNumber + 1)

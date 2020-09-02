@@ -13,6 +13,8 @@ import {NEXT_SECTION, PREVIOUS_SECTION, UPDATE_COMPONENT} from "../actions/mainT
 
 import {TIME_STOP, UPDATE_REMAINED_READING_TIME} from "@/store/actions/time";
 
+let knex = require('@/db/knex')
+
 const state = {
     readingAnswers: {},
     reading_passage_component: 'ReadingPassage',
@@ -122,13 +124,7 @@ const actions = {
         },
         [GET_DATA_READING]: ({commit}, payload) => {
             commit('resetAllReading');
-            let knex = require('knex')({
-                client: 'sqlite3',
-                connection: {
-                    filename: './db.sqlite3'
-                },
-                useNullAsDefault: true
-            });
+
             let tpo = knex.select("*").from('tpo_testreading').where({test_id: payload});
             tpo.then(function (readings) {
                 let readingList = [...readings];
@@ -241,13 +237,7 @@ const actions = {
                 answer = payload[1]
             }
             commit('updateReadingAnswers', payload);
-            let knex = require('knex')({
-                client: 'sqlite3',
-                connection: {
-                    filename: './db.sqlite3'
-                },
-                useNullAsDefault: true
-            });
+
             knex.select('*').from('tpousers_userreadinganswers').where({
                 'question_id': payload[0],
                 'user_test_id': rootState.mainTPO.userTestId

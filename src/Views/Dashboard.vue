@@ -161,35 +161,35 @@
                     </v-list-item-content>
                 </v-list-item>
 
-                <v-list-item link @click="classSelected" style="margin-bottom: 0">
-                    <v-list-item-icon :style="{'margin-right': '10px'}">
-                        <v-icon :color="linkSelected.classes ? '#A40000' : '#1C0153'" large>
-                            {{ icons.mdiSchool }}
-                        </v-icon>
-                    </v-list-item-icon>
+<!--                <v-list-item link @click="classSelected" style="margin-bottom: 0">-->
+<!--                    <v-list-item-icon :style="{'margin-right': '10px'}">-->
+<!--                        <v-icon :color="linkSelected.classes ? '#A40000' : '#1C0153'" large>-->
+<!--                            {{ icons.mdiSchool }}-->
+<!--                        </v-icon>-->
+<!--                    </v-list-item-icon>-->
 
-                    <v-list-item-content>
-                        <v-list-item-title class="drawer_links"
-                                           :style="{'color': `${linkSelected.classes ? '#A40000' : '#1C0153'}`}"
-                        >My Classes
-                        </v-list-item-title>
-                    </v-list-item-content>
-                </v-list-item>
+<!--                    <v-list-item-content>-->
+<!--                        <v-list-item-title class="drawer_links"-->
+<!--                                           :style="{'color': `${linkSelected.classes ? '#A40000' : '#1C0153'}`}"-->
+<!--                        >My Classes-->
+<!--                        </v-list-item-title>-->
+<!--                    </v-list-item-content>-->
+<!--                </v-list-item>-->
 
-                <v-list-item link @click="onlineCoursesSelected" style="margin-bottom: 0">
-                    <v-list-item-icon :style="{'margin-right': '10px'}">
-                        <v-icon :color="linkSelected.onlineCourses ? '#A40000' : '#1C0153'" large>
-                            {{ icons.mdiTelevision }}
-                        </v-icon>
-                    </v-list-item-icon>
+<!--                <v-list-item link @click="onlineCoursesSelected" style="margin-bottom: 0">-->
+<!--                    <v-list-item-icon :style="{'margin-right': '10px'}">-->
+<!--                        <v-icon :color="linkSelected.onlineCourses ? '#A40000' : '#1C0153'" large>-->
+<!--                            {{ icons.mdiTelevision }}-->
+<!--                        </v-icon>-->
+<!--                    </v-list-item-icon>-->
 
-                    <v-list-item-content>
-                        <v-list-item-title class="drawer_links"
-                                           :style="{'color': `${linkSelected.onlineCourses ? '#A40000' : '#1C0153'}`}"
-                        >Courses
-                        </v-list-item-title>
-                    </v-list-item-content>
-                </v-list-item>
+<!--                    <v-list-item-content>-->
+<!--                        <v-list-item-title class="drawer_links"-->
+<!--                                           :style="{'color': `${linkSelected.onlineCourses ? '#A40000' : '#1C0153'}`}"-->
+<!--                        >Courses-->
+<!--                        </v-list-item-title>-->
+<!--                    </v-list-item-content>-->
+<!--                </v-list-item>-->
 
                 <v-list-item link @click="ordersSelected" style="margin-bottom: 0">
                     <v-list-item-icon :style="{'margin-right': '10px'}">

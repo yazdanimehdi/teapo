@@ -4,6 +4,8 @@ import {GET_DATA_LISTENING, SET_LISTENING_ANSWERS} from "@/store/actions/listeni
 import {GET_DATA_SPEAKING, SET_SPEAKING_ANSWERS} from "@/store/actions/speaking";
 import {GET_DATA_WRITING, SET_WRITING_ANSWERS} from "@/store/actions/writing";
 
+let knex = require('@/db/knex')
+
 const state = {
     readingScore: 0,
     listeningScore: 0,
@@ -24,13 +26,7 @@ const actions = {
         commit('updateReviewUserTestId', payload)
     },
     [GO_TO_EXAM_REVIEW]: ({state, commit, dispatch}) => {
-        let knex = require('knex')({
-            client: 'sqlite3',
-            connection: {
-                filename: './db.sqlite3'
-            },
-            useNullAsDefault: true
-        });
+
         let promises = []
         promises = [...promises, knex.select('*').from('tpousers_testuser').where({id: state.reviewUserTestId}).then((row) => {
             dispatch(GET_DATA_READING, row[0]['test_id'])

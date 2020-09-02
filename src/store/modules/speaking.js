@@ -15,6 +15,8 @@ const Recorder = 'Recorder';
 const SpeakingReading = 'SpeakingReading';
 const SpeakingPlayer = 'SpeakingPlayer';
 
+let knex = require('@/db/knex')
+
 const state = {
     speaking: [],
     taskNumber: -1,
@@ -52,13 +54,7 @@ const actions = {
     },
     [GET_DATA_SPEAKING]: ({commit}, payload) => {
         commit('resetAllSpeaking');
-        var knex = require('knex')({
-            client: 'sqlite3',
-            connection: {
-                filename: './db.sqlite3'
-            },
-            useNullAsDefault: true
-        });
+
         let tpo = knex.select("*").from('tpo_testspeaking').where({test_id: payload});
         tpo.then(function (speakings) {
             let speakingList = [...speakings];
@@ -196,13 +192,7 @@ const actions = {
 
     [SAVE_ANSWER_SPEAKING]: ({commit, rootState}, payload) => {
         commit('saveSpeakingAnswers', payload)
-        let knex = require('knex')({
-            client: 'sqlite3',
-            connection: {
-                filename: './db.sqlite3'
-            },
-            useNullAsDefault: true
-        });
+
         knex.select('*').from('tpousers_userspeakinganswers').where({
             'question_id': payload[0],
             'user_test_id': rootState.mainTPO.userTestId

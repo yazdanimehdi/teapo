@@ -15,6 +15,8 @@ import {
 } from "../actions/mainTPO";
 import {TIME_STOP, UPDATE_REMAINED_WRITING_TIME} from "@/store/actions/time";
 
+let knex = require('@/db/knex')
+
 const state = {
     taskNumber: 0,
     stateNumber: -1,
@@ -39,13 +41,7 @@ const actions = {
     },
     [GET_DATA_WRITING]: ({commit}, payload) => {
         commit('resetAllWriting');
-        let knex = require('knex')({
-            client: 'sqlite3',
-            connection: {
-                filename: './db.sqlite3'
-            },
-            useNullAsDefault: true
-        });
+
         let tpo = knex.select("*").from('tpo_testwriting').where({test_id: payload});
         tpo.then(function (writings) {
             let writingList = [...writings]
@@ -146,13 +142,7 @@ const actions = {
     },
     [SAVE_ANSWER_WRITING]: ({commit, rootState}, payload) => {
         commit('updateWritingAnswers', payload)
-        let knex = require('knex')({
-            client: 'sqlite3',
-            connection: {
-                filename: './db.sqlite3'
-            },
-            useNullAsDefault: true
-        });
+
         knex.select('*').from('tpousers_userwritinganswers').where({
             'question_id': payload[0],
             'user_test_id': rootState.mainTPO.userTestId

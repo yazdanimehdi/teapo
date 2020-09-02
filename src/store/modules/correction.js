@@ -5,6 +5,7 @@ import {
     GET_PRICES
 } from '@/store/actions/correction';
 import axios from 'axios';
+let knex = require('@/db/knex')
 
 const state = {
     tests: [],
@@ -31,13 +32,7 @@ const getters = {
 const actions = {
     [GET_CORRECTION_CAPABLE_TESTS]: ({commit, rootGetters}) => {
         commit('resetCorrectionTestList')
-        let knex = require('knex')({
-            client: 'sqlite3',
-            connection: {
-                filename: './db.sqlite3'
-            },
-            useNullAsDefault: true
-        });
+
         return new Promise((resolve, reject) => {
             let promises = [];
             promises = [...promises, knex.select('*').from('tpousers_userspeakinganswers').then((rows) => {
@@ -78,13 +73,6 @@ const actions = {
         })
     },
     [GET_CORRECTION_CONTENT]: ({commit}, payload) => {
-        let knex = require('knex')({
-            client: 'sqlite3',
-            connection: {
-                filename: './db.sqlite3'
-            },
-            useNullAsDefault: true
-        });
         let promises = []
         promises = [...promises, knex.select('*').from('tpo_testspeaking').where({test_id: payload[0]}).then((rows) => {
             for (let i = 0; i < rows.length; i++) {
@@ -105,13 +93,6 @@ const actions = {
         return Promise.all(promises)
     },
     [ORDER_CORRECTION]: ({state, commit}, payload) => {
-        let knex = require('knex')({
-            client: 'sqlite3',
-            connection: {
-                filename: './db.sqlite3'
-            },
-            useNullAsDefault: true
-        });
         return new Promise((resolve, reject) => {
             let promises = []
             promises = [...promises, knex.select('*').from('tpo_testspeaking').where({test_id: payload[0]}).then((rows) => {

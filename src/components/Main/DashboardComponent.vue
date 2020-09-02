@@ -149,7 +149,7 @@
                 There is no new downloaded TPOs
               </v-card-text>
               <v-card-text style="text-align: center" v-else>
-                {{practiceTest.title}} <v-btn icon x-large><v-icon x-large>{{icons.mdiArrowRightBold}}</v-icon></v-btn>
+                <div style="color: black; font-size: 30px; font-weight: bold">{{practiceTest.title}}</div> <v-btn icon x-large><v-icon x-large>{{icons.mdiArrowRightBold}}</v-icon></v-btn>
               </v-card-text>
             </v-img>
 

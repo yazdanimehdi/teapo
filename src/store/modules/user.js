@@ -2,6 +2,7 @@ import {USER_REQUEST, USER_ERROR, USER_SUCCESS, GET_USER_DATA} from "../actions/
 import {AUTH_LOGOUT} from "../actions/auth";
 import axios from 'axios'
 
+let knex = require('@/db/knex')
 const state = {userId: 0, firstName: null, lastName: null, email: null, phone: null};
 
 const getters = {
@@ -11,13 +12,6 @@ const getters = {
 
 const actions = {
     [GET_USER_DATA]: ({commit}) => {
-        let knex = require('knex')({
-            client: 'sqlite3',
-            connection: {
-                filename: './db.sqlite3'
-            },
-            useNullAsDefault: true
-        });
         let userId = localStorage.getItem('user-id');
         knex('institutions_users').select('*').where({'id': userId}).then(function (rows) {
             if(rows.length !== 0) {
@@ -34,13 +28,6 @@ const actions = {
                 console.log(resp.data)
                 commit(USER_SUCCESS, resp.data);
                 localStorage.setItem('user-id', resp.data['id']);
-                let knex = require('knex')({
-                    client: 'sqlite3',
-                    connection: {
-                        filename: './db.sqlite3'
-                    },
-                    useNullAsDefault: true
-                });
                 knex('institutions_users').select('*').where({'id': resp.data['id']}).then(function (rows) {
                     if (rows.length===0) {
                         knex('institutions_users').insert({

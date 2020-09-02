@@ -1,4 +1,5 @@
 import {CHANGE_TAB, SET_CONNECTION, SET_TOEFL_TIME, GET_DASHBOARD_DATA} from "@/store/actions/dashboard";
+let knex = require('@/db/knex')
 
 const state = {
     tabNumber: 0,
@@ -33,13 +34,7 @@ const actions = {
         commit('SET_CONNECTED', payload)
     },
     [SET_TOEFL_TIME]: ({rootGetters}, payload) => {
-        let knex = require('knex')({
-            client: 'sqlite3',
-            connection: {
-                filename: './db.sqlite3'
-            },
-            useNullAsDefault: true
-        });
+
         return new Promise((resolve) => {
             knex('institutions_users').where({'id': rootGetters.getId}).update({toefl_time: payload}).then(() => {
                 resolve()
@@ -47,13 +42,6 @@ const actions = {
         })
     },
     [GET_DASHBOARD_DATA]: ({commit, rootGetters}) => {
-        let knex = require('knex')({
-            client: 'sqlite3',
-            connection: {
-                filename: './db.sqlite3'
-            },
-            useNullAsDefault: true
-        });
 
         function getRandomInt(min, max) {
             min = Math.ceil(min);

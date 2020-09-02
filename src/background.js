@@ -5,7 +5,7 @@ import {
     createProtocol,
     installVueDevtools
 } from 'vue-cli-plugin-electron-builder/lib'
-
+import WebpackMigrationSource from './WebpackMigrationSource'
 const isDevelopment = process.env.NODE_ENV !== 'production';
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -13,6 +13,46 @@ let win;
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([{scheme: 'app', privileges: {secure: true, standard: true}}]);
+
+
+const path = require('path')
+const userDir = path.join(app.getPath('userData'), 'database.sqlite');
+
+const fs = require('fs')
+if(!fs.existsSync(userDir)){
+    const sqlite3 = require('sqlite3');
+    const db = new sqlite3.Database(userDir);
+    db.close()
+}
+
+let knex = require('knex')({
+    client: 'sqlite3',
+    connection: {
+        filename: userDir
+    },
+    migrations: {
+        tableName: 'knex_migrations',
+        directory: './src/db/migrations'
+    },
+    useNullAsDefault: true
+})
+
+const m1 = require('./db/migrations/20200823044448_users')
+const m2 = require('./db/migrations/20200823045315_tpo')
+const m3 = require('./db/migrations/20200823192406_class')
+const m4 = require('./db/migrations/20200823192410_test')
+const m5 = require('./db/migrations/20200823192413_time')
+const m6 = require('./db/migrations/20200823192431_user_test')
+knex.migrate.latest({
+    migrationSource: new WebpackMigrationSource({
+        '20200823044448_users.js': m1,
+        '20200823045315_tpo.js': m2,
+        '20200823192406_class.js': m3,
+        '20200823192410_test.js': m4,
+        '20200823192413_time.js': m5,
+        '20200823192431_user_test.js': m6
+    })
+}).then(()=>{}).catch((err)=>{console.log(err)})
 
 function createWindow() {
     win = new BrowserWindow({

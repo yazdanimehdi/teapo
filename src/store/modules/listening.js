@@ -16,6 +16,7 @@ import {
 } from "../actions/mainTPO";
 
 import {TIME_STOP, UPDATE_REMAINED_LISTENING_TIME} from "@/store/actions/time";
+let knex = require('@/db/knex')
 
 const state = {
     listening_player_component: 'Player',
@@ -130,13 +131,6 @@ const actions = {
         }
     },
     [GET_DATA_LISTENING]: ({commit}, payload) => {
-        var knex = require('knex')({
-            client: 'sqlite3',
-            connection: {
-                filename: './db.sqlite3'
-            },
-            useNullAsDefault: true
-        });
         let tpo = knex.select("*").from('tpo_testlistening').where({test_id: payload});
         tpo.then(function (listening) {
             for(let m = 0; m < listening.length; m++){
@@ -266,13 +260,6 @@ const actions = {
             answer = payload[1]
         }
         commit('updateListeningAnswers', payload);
-        let knex = require('knex')({
-            client: 'sqlite3',
-            connection: {
-                filename: './db.sqlite3'
-            },
-            useNullAsDefault: true
-        });
         knex.select('*').from('tpousers_userlisteninganswers').where({
             'question_id': payload[0],
             'user_test_id': rootState.mainTPO.userTestId

@@ -1,6 +1,7 @@
 import {DOWNLOAD_TPO} from "@/store/actions/download";
 import axios from 'axios';
 import {GET_LOCAL_TPO_LIST} from "@/store/actions/TPOPage";
+let knex = require('@/db/knex')
 
 const state = {
     percentCompleted: 0,
@@ -22,13 +23,6 @@ const actions = {
                     commit('updatePercentCompleted', percentCompleted)
                 }
             }).then((resp) => {
-                var knex = require('knex')({
-                    client: 'sqlite3',
-                    connection: {
-                        filename: './db.sqlite3'
-                    },
-                    useNullAsDefault: true
-                });
                 let data = resp.data;
                 knex('tpo_test').insert(
                     {

@@ -1,6 +1,8 @@
 import {GET_ONLINE_TPO_LIST, GET_LOCAL_TPO_LIST, GO_TO_TPO_PAGE} from "@/store/actions/TPOPage";
 import axios from 'axios'
 
+let knex = require('@/db/knex')
+
 const state = {
     onlineTPOList: [],
     localTPOList: [],
@@ -45,13 +47,7 @@ const actions = {
     [GET_LOCAL_TPO_LIST]: ({commit}) => {
         commit('resetLocalTPOList')
         let userId = localStorage.getItem('user-id')
-        var knex = require('knex')({
-            client: 'sqlite3',
-            connection: {
-                filename: './db.sqlite3'
-            },
-            useNullAsDefault: true
-        });
+
         let result = knex.select("*").from('tpo_test').where({mode: 'T'}).orWhere({mode: 'P'});
         return new Promise((resolve) => {
             result.then((row) => {
