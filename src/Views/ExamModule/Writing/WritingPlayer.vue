@@ -49,7 +49,7 @@
             </v-row>
             <v-row align="center" justify="center">
 
-                <audio id="listening" autoplay :controls="(writingMode === 'reviewMode' || writingMode === 'practiceMode')" v-on:ended="writingMode !== 'reviewMode' ? listeningEnded : () => {}" v-on:timeupdate="progressListening">
+                <audio id="listening" autoplay :controls="(writingMode === 'reviewMode' || writingMode === 'practiceMode')" v-on:ended="listeningEnded" v-on:timeupdate="progressListening">
                     <source :src="writingListeningSource">
                 </audio>
             </v-row>
@@ -65,10 +65,10 @@
             Do You Want To End This Session?
           </v-card-title>
           <v-card-subtitle>
-            If you end this session you can not continue it later!
+            You can continue this session later.
           </v-card-subtitle>
           <v-card-actions>
-            <v-btn @click="endTPO" color="red" style="color: white">End</v-btn>
+            <v-btn @click="endTPO" color="red" style="color: white">Save & End</v-btn>
             <v-btn @click="endDialog = false" color="green" style="color: white">Continue</v-btn>
           </v-card-actions>
         </v-card>
@@ -79,7 +79,7 @@
 <script>
     import { mapState, mapGetters } from 'vuex'
     import {GO_TO_NEXT_WRITING, GO_TO_PREVIOUS_WRITING} from "@/store/actions/writing";
-    import {END_TPO} from "@/store/actions/mainTPO";
+    import {SAVE_TPO} from "@/store/actions/mainTPO";
   export default {
     name: 'SpeakingPlayer',
     data: function () {
@@ -109,7 +109,7 @@
     },
       methods: {
         endTPO() {
-          this.$store.dispatch(END_TPO);
+          this.$store.dispatch(SAVE_TPO);
         },
           goToBack(){
               this.$store.dispatch(GO_TO_PREVIOUS_WRITING)
@@ -119,7 +119,9 @@
         },
 
           listeningEnded(){
-              this.$store.dispatch(GO_TO_NEXT_WRITING);
+          if(this.writingMode !== 'reviewMode') {
+            this.$store.dispatch(GO_TO_NEXT_WRITING);
+          }
           },
           progressListening(){
               let listening = document.getElementById('listening');

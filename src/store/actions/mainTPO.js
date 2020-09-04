@@ -12,3 +12,6 @@ export const CORRECT_EXAM = 'correctExam';
 export const END_TPO = 'endTPO';
 export const CHANGE_TPO_MODE = 'changeTPOMode';
 export const SET_REVIEW_TIMES = 'setReviewTimes';
+export const TIME_ENDED = 'timeEnded';
+export const SAVE_TPO = 'saveTPO';
+export const RESUME_TPO = 'resumeTPO';

@@ -75,7 +75,7 @@
               }
             }
         },
-        created(){
+        mounted(){
           if(this.connected === true){
               this.$store.dispatch(GET_ONLINE_TPO_LIST).then(() => {
                 this.loading = false
@@ -91,7 +91,7 @@
               this.$store.dispatch(GET_LOCAL_TPO_LIST)
           }
         },
-        data() {
+      data() {
             return {
                 practice: true,
                 loading: true,

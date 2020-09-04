@@ -1,4 +1,5 @@
 <template>
+  <div>
   <v-hover v-slot:default="{ hover }">
     <v-card width="100%" height="180px" flat
             style="border-radius: 30px"
@@ -157,13 +158,25 @@
       </v-expand-transition>
     </v-card>
   </v-hover>
+    <v-dialog max-width="500" v-model="dialog">
+      <v-card>
+        <v-card-title>
+          Do You Want To Continue Previous Session?
+        </v-card-title>
+        <v-card-actions>
+          <v-btn @click="startOver" color="red" style="color: white">Start Over</v-btn>
+          <v-btn @click="continueTest" color="green" style="color: white">Continue</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </div>
 </template>
 
 <script>
-import {START_TPO} from "@/store/actions/mainTPO";
+import {RESUME_TPO, START_TPO} from "@/store/actions/mainTPO";
 import {DOWNLOAD_TPO} from "@/store/actions/download";
 import {mapGetters} from 'vuex'
-// import {GO_TO_TPO_PAGE} from "@/store/actions/TPOPage";
+import {CHECK_EXISTING_USER_TEST} from "@/store/actions/TPOPage";
 
 export default {
   name: "TPOCard",
@@ -194,6 +207,9 @@ export default {
       downloadQuery: false,
       downloadShow: false,
       interval: 0,
+      dialog: false,
+      examArray: [],
+      userTestId: 0,
     }
   },
   computed: {
@@ -237,51 +253,107 @@ export default {
   },
   methods: {
     goToTPO() {
-      // this.$store.dispatch(GO_TO_TPO_PAGE, [this.tpoId, this.mode]);
-      // this.$router.push('/tpo_page')
-      this.$store.dispatch(START_TPO, {
-        'examArray': ['Reading', 'Listening', 'Speaking', 'Writing'],
-        'TPO': this.tpoId,
-        'mode': this.mode
+      this.$store.dispatch(CHECK_EXISTING_USER_TEST, [this.tpoId, ['Reading', 'Listening', 'Speaking', 'Writing'], this.mode]).then((result) => {
+        if(!result.isAvailable){
+          this.$store.dispatch(START_TPO, {
+            'examArray': ['Reading', 'Listening', 'Speaking', 'Writing'],
+            'TPO': this.tpoId,
+            'mode': this.mode
+          })
+          this.$router.push('/tpo')
+        }
+        else {
+          this.userTestId = result.userTestId
+          this.examArray = ['Reading', 'Listening', 'Speaking', 'Writing']
+          this.dialog = true
+        }
       })
-      this.$router.push('/tpo')
     },
     goToReading() {
-      this.$store.dispatch(START_TPO, {
-        'examArray': ['Reading'],
-        'TPO': this.tpoId,
-        'mode': this.mode
+      this.$store.dispatch(CHECK_EXISTING_USER_TEST, [this.tpoId, ['Reading'], this.mode]).then((result) => {
+        if(!result.isAvailable){
+          this.$store.dispatch(START_TPO, {
+            'examArray': ['Reading'],
+            'TPO': this.tpoId,
+            'mode': this.mode
+          })
+          this.$router.push('/tpo')
+        }
+        else {
+          this.userTestId = result.userTestId
+          this.examArray = ['Reading']
+          this.dialog = true
+        }
       })
-      this.$router.push('/tpo')
     },
     goToListening() {
-      this.$store.dispatch(START_TPO, {
-        'examArray': ['Listening'],
-        'TPO': this.tpoId,
-        'mode': this.mode
+      this.$store.dispatch(CHECK_EXISTING_USER_TEST, [this.tpoId, ['Listening'], this.mode]).then((result) => {
+        if(!result.isAvailable){
+          this.$store.dispatch(START_TPO, {
+            'examArray': ['Listening'],
+            'TPO': this.tpoId,
+            'mode': this.mode
+          })
+          this.$router.push('/tpo')
+        }
+        else {
+          this.userTestId = result.userTestId
+          this.examArray = ['Listening']
+          this.dialog = true
+        }
       })
-      this.$router.push('/tpo')
     },
     goToSpeaking() {
-      this.$store.dispatch(START_TPO, {
-        'examArray': ['Speaking'],
-        'TPO': this.tpoId,
-        'mode': this.mode
+      this.$store.dispatch(CHECK_EXISTING_USER_TEST, [this.tpoId, ['Speaking'], this.mode]).then((result) => {
+        if(!result.isAvailable){
+          this.$store.dispatch(START_TPO, {
+            'examArray': ['Speaking'],
+            'TPO': this.tpoId,
+            'mode': this.mode
+          })
+          this.$router.push('/tpo')
+        }
+        else {
+          this.userTestId = result.userTestId
+          this.examArray = ['Speaking']
+          this.dialog = true
+        }
       })
-      this.$router.push('/tpo')
     },
     goToWriting() {
-      this.$store.dispatch(START_TPO, {
-        'examArray': ['Writing'],
-        'TPO': this.tpoId,
-        'mode': this.mode
+      this.$store.dispatch(CHECK_EXISTING_USER_TEST, [this.tpoId, ['Writing'], this.mode]).then((result) => {
+        if(!result.isAvailable){
+          this.$store.dispatch(START_TPO, {
+            'examArray': ['Writing'],
+            'TPO': this.tpoId,
+            'mode': this.mode
+          })
+          this.$router.push('/tpo')
+        }
+        else {
+          this.userTestId = result.userTestId
+          this.examArray = ['Writing']
+          this.dialog = true
+        }
       })
-      this.$router.push('/tpo')
     },
     downloadTPO() {
       this.$store.dispatch(DOWNLOAD_TPO, this.tpoId)
       this.downloadQuery = true
       this.downloadShow = true
+    },
+    startOver(){
+      this.$store.dispatch(START_TPO, {
+        'examArray': this.examArray,
+        'TPO': this.tpoId,
+        'mode': this.mode
+      })
+      this.$router.push('/tpo')
+    },
+    continueTest(){
+      this.$store.dispatch(RESUME_TPO, this.userTestId).then(() => {
+        this.$router.push('/tpo')
+      })
     },
   },
 }

@@ -1,4 +1,4 @@
-import {GET_ONLINE_TPO_LIST, GET_LOCAL_TPO_LIST, GO_TO_TPO_PAGE} from "@/store/actions/TPOPage";
+import {GET_ONLINE_TPO_LIST, GET_LOCAL_TPO_LIST, GO_TO_TPO_PAGE, CHECK_EXISTING_USER_TEST} from "@/store/actions/TPOPage";
 import axios from 'axios'
 
 let knex = require('@/db/knex')
@@ -31,6 +31,54 @@ const getters = {
     }
 };
 const actions = {
+    // eslint-disable-next-line no-unused-vars
+    [CHECK_EXISTING_USER_TEST]: ({_}, payload) =>{
+        return new Promise((resolve) => {
+            let tpoId = payload[0]
+            let examArray = payload[1]
+            let mode = payload[2]
+            let array_slot_1 = null
+            let array_slot_2 = null
+            let array_slot_3 = null
+            let array_slot_4 = null
+            if(examArray.length === 1){
+                array_slot_1 = examArray[0]
+            }
+            if(examArray.length === 2){
+                array_slot_1 = examArray[0]
+                array_slot_2 = examArray[1]
+            }
+            if(examArray.length === 3){
+                array_slot_1 = examArray[0]
+                array_slot_2 = examArray[1]
+                array_slot_3 = examArray[2]
+            }
+            if(examArray.length === 4){
+                array_slot_1 = examArray[0]
+                array_slot_2 = examArray[1]
+                array_slot_3 = examArray[2]
+                array_slot_4 = examArray[3]
+            }
+            let userId = localStorage.getItem('user-id')
+            knex.select('*').from('tpousers_testuser').where({
+                user_id: userId,
+                test_id: tpoId,
+                array_slot_1: array_slot_1,
+                array_slot_2: array_slot_2,
+                array_slot_3: array_slot_3,
+                array_slot_4: array_slot_4,
+                is_done: false,
+                mode: mode
+            }).then((row)=>{
+                if(row.length === 0){
+                    resolve({isAvailable: false})
+                }
+                else {
+                    resolve({isAvailable: true, userTestId: row[0]['id']})
+                }
+            })
+        })
+    },
     [GO_TO_TPO_PAGE]: ({commit}, payload) => {
         commit('updateGoToTPO', payload);
     },
@@ -47,10 +95,9 @@ const actions = {
     [GET_LOCAL_TPO_LIST]: ({commit}) => {
         commit('resetLocalTPOList')
         let userId = localStorage.getItem('user-id')
-
         let result = knex.select("*").from('tpo_test').where({mode: 'T'}).orWhere({mode: 'P'});
         return new Promise((resolve) => {
-            result.then((row) => {
+            result.then(async (row) => {
                 for (let i = 0; i < row.length; i++) {
                     let readingCompleted = false;
                     let listeningCompleted = false;
@@ -60,42 +107,39 @@ const actions = {
                     let listeningScore = 0;
                     let speakingScore = 0;
                     let writingScore = 0;
-                    knex.select("*").from('tpousers_testuser').where({
+                    await knex.select("*").from('tpousers_testuser').where({
                         user_id: userId,
                         test_id: row[i]['id'],
-                        is_done: true
-                    }).then((userTests) => {
+                    }).then(async (userTests) => {
                         for (let j = 0; j < userTests.length; j++) {
-                            if (userTests[j]['is_done'] === true) {
-                                knex.select("*").from('tpousers_testuserreading').where({
-                                    test_user_id: userTests[j]['id'],
+                                await knex.select("*").from('tpousers_userreadinganswers').where({
+                                    user_test_id: userTests[j]['id'],
                                 }).then((reading) => {
                                     if (reading.length !== 0) {
                                         readingCompleted = true
                                     }
                                 })
-                                knex.select("*").from('tpousers_testuserlistening').where({
-                                    test_user_id: userTests[j]['id'],
+                                await knex.select("*").from('tpousers_userlisteninganswers').where({
+                                    user_test_id: userTests[j]['id'],
                                 }).then((listening) => {
                                     if (listening.length !== 0) {
                                         listeningCompleted = true
                                     }
                                 })
-                                knex.select("*").from('tpousers_testuserspeaking').where({
-                                    test_user_id: userTests[j]['id'],
+                                await knex.select("*").from('tpousers_userspeakinganswers').where({
+                                    user_test_id: userTests[j]['id'],
                                 }).then((speaking) => {
                                     if (speaking.length !== 0) {
                                         speakingCompleted = true
                                     }
                                 })
-                                knex.select("*").from('tpousers_testuserwriting').where({
-                                    test_user_id: userTests[j]['id'],
+                            await knex.select("*").from('tpousers_userwritinganswers').where({
+                                    user_test_id: userTests[j]['id'],
                                 }).then((writing) => {
                                     if (writing.length !== 0) {
                                         writingCompleted = true
                                     }
                                 })
-                            }
                             if (userTests[j]['reading_score'] > readingScore) {
                                 readingScore = userTests[j]['reading_score']
                             }
@@ -110,22 +154,23 @@ const actions = {
                             }
                         }
 
-                    })
-                    commit('updateLocalTPOList', {
-                        'test': row[i],
-                        'scores': {
-                            'readingCompleted': readingCompleted,
-                            'listeningCompleted': listeningCompleted,
-                            'speakingCompleted': speakingCompleted,
-                            'writingCompleted': writingCompleted,
-                            'readingScore': readingScore,
-                            'listeningScore': listeningScore,
-                            'speakingScore': speakingScore,
-                            'writingScore': writingScore,
-                        }
+                    }).then(()=>{
+                        commit('updateLocalTPOList', {
+                            'test': row[i],
+                            'scores': {
+                                'readingCompleted': readingCompleted,
+                                'listeningCompleted': listeningCompleted,
+                                'speakingCompleted': speakingCompleted,
+                                'writingCompleted': writingCompleted,
+                                'readingScore': readingScore,
+                                'listeningScore': listeningScore,
+                                'speakingScore': speakingScore,
+                                'writingScore': writingScore,
+                            }
+                        })
                     })
                 }
-                return resolve(row)
+                resolve()
             })
         })
     }
@@ -156,7 +201,14 @@ const mutations = {
         tpoObject['speakingScore'] = payload['scores']['speakingScore']
         tpoObject['writingScore'] = payload['scores']['writingScore']
         tpoObject['paid'] = true
-        state.localTPOList.push(tpoObject)
+
+        let localIds = state.localTPOList.map((val) => {
+            return val.id
+        })
+
+        if(localIds.indexOf(tpoObject['id']) === -1){
+            state.localTPOList.push(tpoObject)
+        }
     }
 };
 

@@ -10,28 +10,60 @@
           </v-layout>
         </v-layout>
       </div>
-      <div style="background-color: rgb(231, 214, 206); height: 1000px">
-        <v-layout column fill-height>
-          <div style="height: 10%"></div>
-          <div class="direction">
-            <div class="text">
-              <p>Your time has ended for answering the questions in this section of the test</p>
+      <v-container fluid style="background-color: rgb(231, 214, 206)" :style="{'height': `${height - 110}px`}">
+        <v-row align="center" justify="center">
+          <v-col sm="6" md="6" cols="6" lg="6" xl="6" :style="{'padding-top': `${(height - 110)/2}px`}">
+            <div class="direction">
+              <div class="text">
+                <p>Your time has ended for answering the questions in this section of the test</p>
+              </div>
             </div>
-          </div>
-        </v-layout>
+          </v-col>
 
-      </div>
+        </v-row>
+      </v-container>
     </div>
   </v-app>
 </template>
 
 <script>
+import {mapGetters} from 'vuex'
+import {NEXT_SECTION} from "@/store/actions/mainTPO";
+import {LISTENING_TIME_ENDED} from "@/store/actions/listening";
+import {GET_USER_DATA} from "@/store/actions/user";
+
 export default {
   name: "TimeEnded",
+  computed: {
+    ...mapGetters(['currentSection'])
+  },
+  data() {
+    return {
+      width: 0,
+      height: 0,
+    }
+    },
+  created() {
+    window.addEventListener('resize', this.handleResize);
+    this.handleResize();
+    this.$store.dispatch(GET_USER_DATA)
+  },
+  destroyed() {
+    window.removeEventListener('resize', this.handleResize);
+  },
   methods: {
     goToNext() {
-      this.$store.dispatch('timeEnded')
-    }
+      if (this.currentSection === 'Reading') {
+        this.$store.dispatch(NEXT_SECTION)
+      }
+      if (this.currentSection === 'Listening') {
+        this.$store.dispatch(LISTENING_TIME_ENDED)
+      }
+    },
+    handleResize() {
+      this.width = window.innerWidth;
+      this.height = window.innerHeight;
+    },
   }
 }
 </script>
@@ -55,12 +87,7 @@ export default {
 
 .text {
   font-family: Verdana;
-  font-size: 16px;
   font-weight: bold;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
   font-size: 18px;
 }
 </style>

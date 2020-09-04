@@ -57,10 +57,10 @@
             Do You Want To End This Session?
           </v-card-title>
           <v-card-subtitle>
-            If you end this session you can not continue it later!
+            You can continue this session later.
           </v-card-subtitle>
           <v-card-actions>
-            <v-btn @click="endTPO" color="red" style="color: white">End</v-btn>
+            <v-btn @click="endTPO" color="red" style="color: white">Save & End</v-btn>
             <v-btn @click="endDialog = false" color="green" style="color: white">Continue</v-btn>
           </v-card-actions>
         </v-card>
@@ -71,7 +71,7 @@
 <script>
     import { mapGetters, mapState} from 'vuex'
     import {GO_TO_PREVIOUS_LISTENING, QUOTE_PLAYED} from '@/store/actions/listening'
-    import {END_TPO} from "@/store/actions/mainTPO";
+    import {SAVE_TPO} from "@/store/actions/mainTPO";
 
     export default {
         name: 'QuotePlayer',
@@ -108,7 +108,7 @@
         },
         methods: {
           endTPO() {
-            this.$store.dispatch(END_TPO);
+            this.$store.dispatch(SAVE_TPO);
           },
             progressListening(){
                 let listening = document.getElementById('listening');

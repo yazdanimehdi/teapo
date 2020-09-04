@@ -53,21 +53,21 @@ const actions = {
       }
     },
     [GET_DATA_SPEAKING]: ({commit}, payload) => {
-        commit('resetAllSpeaking');
-
-        let tpo = knex.select("*").from('tpo_testspeaking').where({test_id: payload});
-        tpo.then(function (speakings) {
-            let speakingList = [...speakings];
-            speakingList = speakingList.sort(function (a, b){
-                return a.part - b.part
+            commit('resetAllSpeaking');
+            let tpo = knex.select("*").from('tpo_testspeaking').where({test_id: payload});
+            return tpo.then(async function (speakings) {
+                let speakingList = [...speakings];
+                speakingList = speakingList.sort(function (a, b){
+                    return a.part - b.part
+                })
+                for (let m = 0; m < speakingList.length; m++) {
+                    let result = knex.select("*").from('tpo_speaking').where({id: speakingList[m]['speaking_id']});
+                    await result.then(function (rows) {
+                        commit('updateSpeakingData', rows[0])
+                    });
+                }
             })
-            for (let m = 0; m < speakingList.length; m++) {
-                let result = knex.select("*").from('tpo_speaking').where({id: speakingList[m]['speaking_id']});
-                result.then(function (rows) {
-                    commit('updateSpeakingData', rows[0])
-                });
-            }
-        })
+
     },
     [UPDATE_STATE_SPEAKING]: ({state, dispatch}) => {
         if (state.taskNumber === -1) {
@@ -220,8 +220,10 @@ const actions = {
 
 const mutations = {
     resetAllSpeaking(state){
-        state.speaking = [];
-        state.answers = {};
+        state.speaking = []
+        state.taskNumber = -1
+        state.stateNumber = -1
+        state.answers = {}
     },
     saveSpeakingAnswers(state, payload){
       state.answers[payload[0]] = payload[1]

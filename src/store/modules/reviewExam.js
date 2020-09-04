@@ -12,14 +12,16 @@ const state = {
     speakingScore: 0,
     writingScore: 0,
     reviewUserTestId: 0,
-    testId: 0
+    testId: 0,
+    userTestDate: 0,
 }
 const getters = {
     readingReviewScore: state => state.readingScore,
     listeningReviewScore: state => state.listeningScore,
     speakingReviewScore: state => state.speakingScore,
     writingReviewScore: state => state.writingScore,
-    reviewTestId: state => state.testId
+    reviewTestId: state => state.testId,
+    reviewDateTime: state => state.userTestDate
 }
 const actions = {
     [SET_REVIEW_USER_TEST_ID]: ({commit}, payload) => {
@@ -29,6 +31,7 @@ const actions = {
 
         let promises = []
         promises = [...promises, knex.select('*').from('tpousers_testuser').where({id: state.reviewUserTestId}).then((row) => {
+            commit('updateUserTestDate', row[0]['date_time'])
             dispatch(GET_DATA_READING, row[0]['test_id'])
             dispatch(GET_DATA_LISTENING, row[0]['test_id'])
             dispatch(GET_DATA_SPEAKING, row[0]['test_id'])
@@ -67,6 +70,9 @@ const actions = {
     },
 }
 const mutations = {
+    updateUserTestDate(state, payload){
+      state.userTestDate = payload
+    },
     updateReviewUserTestId(state, payload){
       state.reviewUserTestId = payload
     },

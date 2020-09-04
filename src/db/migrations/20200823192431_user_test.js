@@ -14,6 +14,11 @@ exports.up = function(knex) {
       table.integer('task_number').nullable();
       table.integer('question_number').nullable();
       table.integer('exam_section').nullable();
+      table.string('array_slot_1', 20).nullable();
+      table.string('array_slot_2', 20).nullable();
+      table.string('array_slot_3', 20).nullable();
+      table.string('array_slot_4', 20).nullable();
+      table.string('mode', 20).nullable();
       table.integer('test_id').unsigned().index().references('id').inTable('tpo_test').nullable();
       table.integer('user_id').unsigned().index().references('id').inTable('institutions_users').nullable();
 

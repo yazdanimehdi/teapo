@@ -21,7 +21,6 @@ const state = {
     taskNumber: 0,
     stateNumber: -1,
     writing: [],
-    writingMode: "practiceMode",
     answers: {},
 };
 const getters = {
@@ -35,22 +34,22 @@ const getters = {
 };
 const actions = {
     [SET_WRITING_ANSWERS]: ({commit}, payload) => {
-      for(let i = 0; i < payload.length; i++){
-          commit('updateWritingAnswers', [payload[i]['question_id'], payload[i]['answer']])
-      }
+        for (let i = 0; i < payload.length; i++) {
+            commit('updateWritingAnswers', [payload[i]['question_id'], payload[i]['answer']])
+        }
     },
     [GET_DATA_WRITING]: ({commit}, payload) => {
         commit('resetAllWriting');
 
         let tpo = knex.select("*").from('tpo_testwriting').where({test_id: payload});
-        tpo.then(function (writings) {
+        return tpo.then(async function (writings) {
             let writingList = [...writings]
-            writingList = writingList.sort(function (a, b){
+            writingList = writingList.sort(function (a, b) {
                 return a.part - b.part
             })
             for (let m = 0; m < writingList.length; m++) {
                 let result = knex.select("*").from('tpo_writing').where({id: writingList[m]['writing_id']});
-                result.then(function (rows) {
+                await result.then(function (rows) {
                     commit('updateWritingData', rows[0])
                 });
             }
@@ -168,9 +167,11 @@ const actions = {
 
 };
 const mutations = {
-    resetAllWriting(state){
-        state.writing = [];
-        state.answers = {};
+    resetAllWriting(state) {
+        state.taskNumber = 0
+        state.stateNumber = -1
+        state.writing = []
+        state.answers = {}
     },
     updateWritingData(state, payload) {
         state.writing.push(payload);

@@ -16,7 +16,7 @@
 
     <div
         :style="{'margin-left':`${width*0.06}px`, 'margin-right': `${width*0.06}px`, 'margin-top': `${height*0.1 + 30}px`}">
-      <h1 style="margin-bottom: 20px; font-family: kalam">{{test.title}}</h1>
+      <h1 style="margin-bottom: 20px; font-family: kalam">{{ test === undefined ? '' : test.title }}</h1>
       <div v-if="loading">
         <v-progress-circular indeterminate></v-progress-circular>
       </div>
@@ -228,7 +228,7 @@
                 <v-col cols="4" sm="4" md="4" lg="4" xl="4"
                        style="padding: 0 20px 0 0; text-align: right">
                   <v-btn @click="orderDialog = true" color="#1C0153" style="color: white; font-weight: bold"
-                         :disabled="Object.keys(speakingAnswers).length === 0 && speakingAnswers.constructor === Object">
+                         :disabled="Object.keys(speakingAnswers).length < speaking.length && speakingAnswers.constructor === Object">
                     Correct
                   </v-btn>
                 </v-col>
@@ -285,7 +285,7 @@
                 <v-col cols="4" sm="4" md="4" lg="4" xl="4"
                        style="padding: 0 20px 0 0; text-align: right">
                   <v-btn @click="orderDialog = true" color="#1C0153" style="color: white; font-weight: bold"
-                         :disabled="Object.keys(writingAnswers).length === 0 && writingAnswers.constructor === Object">
+                         :disabled="Object.keys(writingAnswers).length < writing.length && writingAnswers.constructor === Object">
                     Correct
                   </v-btn>
                 </v-col>
@@ -321,25 +321,29 @@
     </div>
     <v-dialog width="400" v-model="orderDialog">
       <v-card width="400" height="400" style="border-radius: 30px" flat>
-        <v-card-title style="font-family: kalam; font-weight: bold; font-size: 30px">{{ test.title }}</v-card-title>
+        <v-card-title style="font-family: kalam; font-weight: bold; font-size: 30px">
+          {{ test === undefined ? '' : test.title }}
+        </v-card-title>
         <v-card-subtitle style="font-family: kalam; font-size: 15px; margin-top: 0">
           {{
-            `${new Date(test['time']).getFullYear()}/${new Date(test['time']).getMonth()}/${new Date(test['time']).getDate()}`
+            `${new Date(reviewDateTime).getFullYear()}/${new Date(reviewDateTime).getMonth()}/${new Date(reviewDateTime).getDate()}`
           }}
         </v-card-subtitle>
         <v-card-text>
           <v-container fluid style="font-family: kalam; padding: 0">
-            <v-checkbox :disabled="Object.keys(speakingAnswers).length === 0 && speakingAnswers.constructor === Object" label="Speaking" v-model="speakingChecked"
+            <v-checkbox :disabled="Object.keys(speakingAnswers).length === 0 && speakingAnswers.constructor === Object"
+                        label="Speaking" v-model="speakingChecked"
                         :off-icon="icons.mdiCheckboxBlankOutline" :on-icon="icons.mdiCheckboxMarkedOutline"
                         hide-details></v-checkbox>
-            {{writingAnswers.length}}
-            <v-checkbox :disabled="Object.keys(writingAnswers).length === 0 && writingAnswers.constructor === Object" label="Writing" v-model="writingChecked"
+            {{ writingAnswers.length }}
+            <v-checkbox :disabled="Object.keys(writingAnswers).length === 0 && writingAnswers.constructor === Object"
+                        label="Writing" v-model="writingChecked"
                         :off-icon="icons.mdiCheckboxBlankOutline" :on-icon="icons.mdiCheckboxMarkedOutline"
                         hide-details></v-checkbox>
           </v-container>
           <h2 style="font-family: kalam; font-weight: bold; margin-top: 20px">Price</h2>
           <h3 style="font-family: kalam; font-weight: bold; margin-top: 10px; color:#1C0153; margin-bottom: 70px">
-            {{ totalPrice.toString() | formatCurrency}}
+            {{ totalPrice.toString() | formatCurrency }}
             Toman</h3>
           <v-btn color="#1C0153" style="color: white; font-family: kalam; font-weight: bold"
                  :disabled="!writingChecked && !speakingChecked"
@@ -414,13 +418,15 @@ export default {
             } else {
 
               if (this.readingQuestionsWithIndex[i][2].right_answer.trim().split(/\s+/).length > 1) {
-                let cloneAnswer = [...this.readingAnswers[this.readingQuestionsWithIndex[i][2].id]];
-                let setA = new Set(cloneAnswer);
-                let setB = new Set(this.readingQuestionsWithIndex[i][2].right_answer.trim().split(/\s+/));
-                if (this.eqSet(setA, setB)) {
-                  document.getElementById(idToFind).style.background = 'rgba(0,255,0,0.4)';
-                } else {
-                  document.getElementById(idToFind).style.background = 'rgba(255,0,0,0.4)';
+                if(this.isIterable(this.readingAnswers[this.readingQuestionsWithIndex[i][2].id])){
+                  let cloneAnswer = [...this.readingAnswers[this.readingQuestionsWithIndex[i][2].id]];
+                  let setA = new Set(cloneAnswer);
+                  let setB = new Set(this.readingQuestionsWithIndex[i][2].right_answer.trim().split(/\s+/));
+                  if (this.eqSet(setA, setB)) {
+                    document.getElementById(idToFind).style.background = 'rgba(0,255,0,0.4)';
+                  } else {
+                    document.getElementById(idToFind).style.background = 'rgba(255,0,0,0.4)';
+                  }
                 }
               } else {
                 document.getElementById(idToFind).style.background = 'rgba(255,0,0,0.4)';
@@ -442,13 +448,15 @@ export default {
               document.getElementById(idToFind).style.background = 'rgba(0,255,0,0.4)';
             } else {
               if (this.listeningQuestions[i][3].right_answer.trim().split(/\s+/).length > 1) {
-                let cloneAnswer = [...this.listeningAnswers[this.listeningQuestions[i][3].id]];
-                let setA = new Set(cloneAnswer);
-                let setB = new Set(this.listeningQuestions[i][3].right_answer.trim().split(/\s+/));
-                if (this.eqSet(setA, setB)) {
-                  document.getElementById(idToFind).style.background = 'rgba(0,255,0,0.4)';
-                } else {
-                  document.getElementById(idToFind).style.background = 'rgba(255,0,0,0.4)';
+                if(this.isIterable(this.listeningAnswers[this.listeningQuestions[i][3].id])){
+                  let cloneAnswer = [...this.listeningAnswers[this.listeningQuestions[i][3].id]];
+                  let setA = new Set(cloneAnswer);
+                  let setB = new Set(this.listeningQuestions[i][3].right_answer.trim().split(/\s+/));
+                  if (this.eqSet(setA, setB)) {
+                    document.getElementById(idToFind).style.background = 'rgba(0,255,0,0.4)';
+                  } else {
+                    document.getElementById(idToFind).style.background = 'rgba(255,0,0,0.4)';
+                  }
                 }
               } else {
                 document.getElementById(idToFind).style.background = 'rgba(255,0,0,0.4)';
@@ -462,6 +470,13 @@ export default {
     }
   },
   methods: {
+    isIterable(obj) {
+      // checks for null and undefined
+      if (obj == null) {
+        return false;
+      }
+      return typeof obj[Symbol.iterator] === 'function';
+    },
     handleResize() {
       this.width = window.innerWidth;
       this.height = window.innerHeight;
@@ -511,8 +526,8 @@ export default {
       'speakingReviewScore',
       'writingReviewScore',
       'readingQuestionsWithIndex',
-      'listeningQuestions', 'reviewTestId', 'writingPrice', 'speakingPrice']),
-    test(){
+      'listeningQuestions', 'reviewTestId', 'writingPrice', 'speakingPrice', 'reviewDateTime']),
+    test() {
       return this.$store.getters.getTPOById(this.reviewTestId)
     },
     totalPrice() {

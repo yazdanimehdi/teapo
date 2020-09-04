@@ -16,12 +16,12 @@ import {TIME_STOP, UPDATE_REMAINED_READING_TIME} from "@/store/actions/time";
 let knex = require('@/db/knex')
 
 const state = {
-    readingAnswers: {},
     reading_passage_component: 'ReadingPassage',
     reading_insertion_component: 'ReadingInsertion',
     reading_normal_question_component: 'ReadingNormalQuestion',
     reading_summary_component: 'ReadingSummary',
     showReview: false,
+    readingAnswers: {},
     seenQuestionsReading: {},
     readingAllQuestionsNumber: 0,
     taskNumber: -1,
@@ -31,8 +31,8 @@ const state = {
 const getters = {
     readingQuestionsWithIndex: state => {
         let questions = []
-        for(let i = 0; i < state.reading.length; i++){
-            for(let j = 0; j < state.reading[i]['questions'].length; j++){
+        for (let i = 0; i < state.reading.length; i++) {
+            for (let j = 0; j < state.reading[i]['questions'].length; j++) {
                 questions.push([i, j, state.reading[i]['questions'][j]])
             }
         }
@@ -118,22 +118,21 @@ const getters = {
 };
 const actions = {
         [SET_READING_ANSWERS]: ({commit}, payload) => {
-            for(let i = 0; i < payload.length; i++){
+            for (let i = 0; i < payload.length; i++) {
                 commit('updateReadingAnswers', [payload[i]['question_id'], payload[i]['answer']])
             }
         },
         [GET_DATA_READING]: ({commit}, payload) => {
             commit('resetAllReading');
-
             let tpo = knex.select("*").from('tpo_testreading').where({test_id: payload});
-            tpo.then(function (readings) {
+            return tpo.then(async function (readings) {
                 let readingList = [...readings];
-                readingList.sort(function (a, b){
+                readingList.sort(function (a, b) {
                     return a.part - b.part
                 })
                 for (let m = 0; m < readingList.length; m++) {
                     let result = knex.select("*").from('tpo_reading').where({id: readingList[m]['reading_id']});
-                    result.then(async (row) => {
+                    await result.then(async (row) => {
                         let reading_obj = Object.assign({}, row[0]);
                         let questions = knex.select("*").from('tpo_readingquestions').where({'reading_id': row[0]['id']});
                         let questions_all = [];
@@ -154,10 +153,11 @@ const actions = {
                                 reading_obj['questions'] = questions_all;
                             }
                         });
-                        commit('updateReadingData', reading_obj);
+                         commit('updateReadingData', reading_obj);
                     });
                 }
             })
+
         },
 
         [UPDATE_STATE_READING]: ({state, dispatch}) => {
@@ -227,38 +227,39 @@ const actions = {
 
         [SAVE_ANSWER_READING]: ({commit, rootState}, payload) => {
             let answer = ''
-            if(payload[1].length > 1){
-                for(let i = 0; i < payload[1].length; i++){
-                    answer += ' ' + payload[1][i]
-                }
-                answer = answer.trim()
-            }
-            else {
-                answer = payload[1]
-            }
-            commit('updateReadingAnswers', payload);
-
-            knex.select('*').from('tpousers_userreadinganswers').where({
-                'question_id': payload[0],
-                'user_test_id': rootState.mainTPO.userTestId
-            }).then((rows) => {
-                if (rows.length > 0) {
-                    knex('tpousers_userreadinganswers').where({
-                        user_test_id: rootState.mainTPO.userTestId,
-                        question_id: payload[0]
-                    }).update({
-                        answer: answer
-                    }).then(() => {
-                    })
+            if (payload[1] !== null) {
+                if (payload[1].length > 1) {
+                    for (let i = 0; i < payload[1].length; i++) {
+                        answer += ' ' + payload[1][i]
+                    }
+                    answer = answer.trim()
                 } else {
-                    knex('tpousers_userreadinganswers').insert({
-                        'answer': answer,
-                        'question_id': payload[0],
-                        'user_test_id': rootState.mainTPO.userTestId
-                    }).then(() => {
-                    })
+                    answer = payload[1]
                 }
-            })
+                commit('updateReadingAnswers', payload);
+
+                knex.select('*').from('tpousers_userreadinganswers').where({
+                    'question_id': payload[0],
+                    'user_test_id': rootState.mainTPO.userTestId
+                }).then((rows) => {
+                    if (rows.length > 0) {
+                        knex('tpousers_userreadinganswers').where({
+                            user_test_id: rootState.mainTPO.userTestId,
+                            question_id: payload[0]
+                        }).update({
+                            answer: answer
+                        }).then(() => {
+                        })
+                    } else {
+                        knex('tpousers_userreadinganswers').insert({
+                            'answer': answer,
+                            'question_id': payload[0],
+                            'user_test_id': rootState.mainTPO.userTestId
+                        }).then(() => {
+                        })
+                    }
+                })
+            }
 
         },
 
@@ -274,15 +275,19 @@ const actions = {
             commit('updateTaskNumber', payload[0]);
             commit('updateQuestionNumber', payload[1]);
             dispatch(UPDATE_STATE_READING);
-        }
-
+        },
     }
 ;
 
 const mutations = {
-    resetAllReading(state){
-      state.reading = [];
-      state.readingAnswers = {};
+    resetAllReading(state) {
+        state.readingAnswers = {}
+        state.seenQuestionsReading = {}
+        state.readingAllQuestionsNumber = 0
+        state.taskNumber = -1
+        state.questionNumber = -1
+        state.reading = []
+
     },
     updateReadingData(state, payload) {
         state.reading.push(payload);

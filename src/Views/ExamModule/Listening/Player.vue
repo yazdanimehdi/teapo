@@ -151,10 +151,10 @@
           Do You Want To End This Session?
         </v-card-title>
         <v-card-subtitle>
-          If you end this session you can not continue it later!
+          You can continue this session later.
         </v-card-subtitle>
         <v-card-actions>
-          <v-btn @click="endTPO" color="red" style="color: white">End</v-btn>
+          <v-btn @click="endTPO" color="red" style="color: white">Save & End</v-btn>
           <v-btn @click="endDialog = false" color="green" style="color: white">Continue</v-btn>
         </v-card-actions>
       </v-card>
@@ -168,7 +168,7 @@ import {GO_TO_NEXT_LISTENING, GO_TO_PREVIOUS_LISTENING} from "@/store/actions/li
 import {LOAD_DICTIONARY} from "@/store/actions/dictionary";
 import DictionaryComponent from "@/components/Subcomponents/DictionaryComponent";
 import {mdiClose, mdiCardSearch} from '@mdi/js'
-import {END_TPO} from "@/store/actions/mainTPO";
+import {SAVE_TPO} from "@/store/actions/mainTPO";
 
 export default {
   name: 'Player',
@@ -218,7 +218,7 @@ export default {
   },
   methods: {
     endTPO() {
-      this.$store.dispatch(END_TPO);
+      this.$store.dispatch(SAVE_TPO);
     },
     closeDialogDict() {
       this.dialogDict = false;

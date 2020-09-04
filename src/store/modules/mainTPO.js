@@ -12,12 +12,32 @@ import {
     CORRECT_EXAM,
     END_TPO,
     CHANGE_TPO_MODE,
-    SET_REVIEW_TIMES
+    SET_REVIEW_TIMES, TIME_ENDED,
+    SAVE_TPO,
+    RESUME_TPO
 } from "../actions/mainTPO";
-import {GET_DATA_READING, UPDATE_STATE_READING} from "@/store/actions/reading";
-import {GET_DATA_LISTENING, UPDATE_STATE_LISTENING} from "@/store/actions/listening";
-import {GET_DATA_SPEAKING, UPDATE_STATE_SPEAKING} from "@/store/actions/speaking";
-import {GET_DATA_WRITING, UPDATE_STATE_WRITING} from "@/store/actions/writing";
+import {
+    GET_DATA_READING,
+    GO_TO_READING_QUESTION,
+    SET_READING_ANSWERS,
+    UPDATE_STATE_READING
+} from "@/store/actions/reading";
+import {
+    GET_DATA_LISTENING,
+    GO_TO_LISTENING_QUESTION,
+    SET_LISTENING_ANSWERS,
+    UPDATE_STATE_LISTENING
+} from "@/store/actions/listening";
+import {
+    GET_DATA_SPEAKING,
+    GO_TO_SPEAKING_QUESTION,
+    SET_SPEAKING_ANSWERS,
+    UPDATE_STATE_SPEAKING
+} from "@/store/actions/speaking";
+import {
+    GET_DATA_WRITING, GO_TO_WRITING_QUESTION,
+    SET_WRITING_ANSWERS, UPDATE_STATE_WRITING, WRITING_TIME_ENDED
+} from "@/store/actions/writing";
 import {UPDATE_TIME} from "@/store/actions/time";
 import router from '@/router'
 import {SET_REVIEW_USER_TEST_ID} from "@/store/actions/reviewExam";
@@ -40,26 +60,259 @@ const state = {
 const getters = {
     backAvailable: state => state.examSectionNumber !== 0,
     speakingTimes: state => state.speakingTimes,
-    writingTimes: state => state.writingTimes
+    writingTimes: state => state.writingTimes,
+    currentSection: state => state.examArray[state.examSectionNumber]
 };
 const actions = {
     [SET_REVIEW_TIMES]: ({commit, rootState}) => {
         let times = []
-        for(let i = 0; i < rootState.speaking.speaking.length; i ++){
-           times.push({'number': i + 1, 'preparation_time': 0, 'answering_time': 0, 'reading_time': 0})
+        for (let i = 0; i < rootState.speaking.speaking.length; i++) {
+            times.push({'number': i + 1, 'preparation_time': 0, 'answering_time': 0, 'reading_time': 0})
         }
         commit('updateSpeakingTime', times)
     },
     [CHANGE_TPO_MODE]: ({commit}, payload) => {
-      commit('updateMode', payload)
+        commit('updateMode', payload)
+    },
+    [RESUME_TPO]: async ({commit, dispatch}, payload) => {
+        commit('updateUserTestId', payload)
+        let usetTest = knex.select('*').from('tpousers_testuser').where({id: state.userTestId})
+        let time = 0;
+        let section_number = 0;
+        let task_number = 0;
+        let question_number = 0;
+        let test_id = 0;
+
+        async function getData() {
+            await usetTest.then(async (rows) => {
+                if (rows.length === 1) {
+                    commit('updateMode', rows[0]['mode'])
+                    if (rows[0]['array_slot_1'] !== null) {
+                        commit('updateStepExamArray', rows[0]['array_slot_1'])
+                    }
+                    if (rows[0]['array_slot_2'] !== null) {
+                        commit('updateStepExamArray', rows[0]['array_slot_2'])
+                    }
+                    if (rows[0]['array_slot_3'] !== null) {
+                        commit('updateStepExamArray', rows[0]['array_slot_3'])
+                    }
+                    if (rows[0]['array_slot_4'] !== null) {
+                        commit('updateStepExamArray', rows[0]['array_slot_4'])
+                    }
+                    commit('updateExamSectionNumber', rows[0]['exam_section'])
+                    for (let i = 0; i < state.examArray.length; i++) {
+                        if (state.examArray[i] === 'Reading') {
+                            await knex.select('*').from('tpo_test').where({id: rows[0]['test_id']}).then(async (row) => {
+                                commit('updateReadingTime', row[0]['reading_time'])
+                                dispatch(SET_NEW_TIME, 0)
+                                await dispatch(GET_DATA_READING, rows[0]['test_id'])
+                            })
+                        }
+                        if (state.examArray[i] === 'Listening') {
+                            let listeningTimes = []
+                            await knex.select('*').from('tpo_listeningtimes').where({test_id: rows[0]['test_id']}).then(async (row) => {
+                                for (let i = 0; i < row.length; i++) {
+                                    listeningTimes.push(row[i])
+                                }
+                                listeningTimes = listeningTimes.sort(function (a, b) {
+                                    return a['number'] - b['number']
+                                });
+                                listeningTimes = listeningTimes.map((inst) => inst['time'])
+                                commit('updateListeningTime', listeningTimes);
+                                dispatch(SET_NEW_TIME, 0)
+                            })
+
+                        }
+                        if (state.examArray[i] === 'Speaking') {
+                            let speakingTimes = [];
+                            await knex.select('*').from('tpo_speakingtimes').where({test_id: rows[0]['test_id']}).then(async (row) => {
+                                for (let i = 0; i < row.length; i++) {
+                                    speakingTimes.push(row[i])
+                                }
+                                speakingTimes = speakingTimes.sort(function (a, b) {
+                                    return a['number'] - b['number']
+                                });
+                                commit('updateSpeakingTime', speakingTimes);
+                                await dispatch(GET_DATA_SPEAKING, rows[0]['test_id'])
+                            })
+                        }
+                        if (state.examArray[i] === 'Writing') {
+                            let writingTimes = [];
+                            await knex.select('*').from('tpo_writingtimes').where({test_id: rows[0]['test_id']}).then(async (row) => {
+                                for (let i = 0; i < row.length; i++) {
+                                    writingTimes.push(row[i])
+                                }
+                                writingTimes = writingTimes.sort(function (a, b) {
+                                    return a['number'] - b['number']
+                                });
+                                commit('updateWritingTime', writingTimes);
+                                dispatch(SET_NEW_TIME, 0)
+                                await dispatch(GET_DATA_WRITING, rows[0]['test_id'])
+                            })
+                        }
+                    }
+                    await knex.select('*').from('tpousers_userreadinganswers').where({
+                        user_test_id: payload
+                    }).then((row) => {
+                        dispatch(SET_READING_ANSWERS, row)
+                    })
+
+                    await knex.select('*').from('tpousers_userlisteninganswers').where({
+                        user_test_id: payload
+                    }).then((row) => {
+                        dispatch(SET_LISTENING_ANSWERS, row)
+                    })
+
+                    await knex.select('*').from('tpousers_userspeakinganswers').where({
+                        user_test_id: payload
+                    }).then((row) => {
+                        dispatch(SET_SPEAKING_ANSWERS, row)
+                    })
+
+                    await knex.select('*').from('tpousers_userwritinganswers').where({
+                        user_test_id: payload
+                    }).then((row) => {
+                        dispatch(SET_WRITING_ANSWERS, row)
+                    })
+                    time = rows[0]['remaining_time']
+                    task_number = rows[0]['task_number']
+                    question_number = rows[0]['question_number']
+                    section_number = rows[0]['section_number']
+                    test_id = rows[0]['test_id']
+
+                }
+            })
+        }
+
+        await getData()
+        let promises = []
+        if(state.examArray.indexOf('Listening') !== -1){
+            promises = [...promises, dispatch(GET_DATA_LISTENING, test_id)]
+        }
+        if(state.examArray.indexOf('Reading') !== -1){
+            promises = [...promises, dispatch(GET_DATA_READING, test_id)]
+        }
+        if(state.examArray.indexOf('Speaking') !== -1){
+            promises = [...promises, dispatch(GET_DATA_SPEAKING, test_id)]
+        }
+        if(state.examArray.indexOf('Writing') !== -1){
+            promises = [...promises, dispatch(GET_DATA_WRITING, test_id)]
+        }
+        Promise.all(promises).then(() => {
+            if (state.examArray[state.examSectionNumber] === 'Reading') {
+                dispatch(UPDATE_TIME, time)
+                dispatch(GO_TO_READING_QUESTION, [task_number, question_number])
+            }
+            if (state.examArray[state.examSectionNumber] === 'Listening') {
+                dispatch(UPDATE_TIME, time)
+                dispatch(GO_TO_LISTENING_QUESTION, [section_number, task_number, question_number])
+            }
+            if (state.examArray[state.examSectionNumber] === 'Speaking') {
+                dispatch(GO_TO_SPEAKING_QUESTION, task_number)
+            }
+            if (state.examArray[state.examSectionNumber] === 'Writing') {
+                dispatch(UPDATE_TIME, time)
+                dispatch(GO_TO_WRITING_QUESTION, task_number)
+            }
+        })
+    },
+    [SAVE_TPO]: ({state, dispatch, rootState}) => {
+        let data = {}
+        let array_slot_1 = null
+        let array_slot_2 = null
+        let array_slot_3 = null
+        let array_slot_4 = null
+
+        if (state.examArray.length === 1) {
+            array_slot_1 = state.examArray[0]
+        }
+        if (state.examArray.length === 2) {
+            array_slot_1 = state.examArray[0]
+            array_slot_2 = state.examArray[1]
+        }
+        if (state.examArray.length === 3) {
+            array_slot_1 = state.examArray[0]
+            array_slot_2 = state.examArray[1]
+            array_slot_3 = state.examArray[2]
+        }
+        if (state.examArray.length === 4) {
+            array_slot_1 = state.examArray[0]
+            array_slot_2 = state.examArray[1]
+            array_slot_3 = state.examArray[2]
+            array_slot_4 = state.examArray[3]
+        }
+        if (state.examArray[state.examSectionNumber] === 'Reading') {
+            data = {
+                remaining_time: rootState.time.totalTime,
+                exam_section: state.examSectionNumber,
+                question_number: rootState.reading.questionNumber,
+                task_number: rootState.reading.taskNumber,
+                array_slot_1: array_slot_1,
+                array_slot_2: array_slot_2,
+                array_slot_3: array_slot_3,
+                array_slot_4: array_slot_4,
+                mode: state.mode
+            }
+        }
+        if (state.examArray[state.examSectionNumber] === 'Listening') {
+            data = {
+                remaining_time: rootState.time.totalTime,
+                exam_section: state.examSectionNumber,
+                question_number: rootState.listening.questionNumber,
+                task_number: rootState.listening.taskNumber,
+                section_number: rootState.listening.sectionNumber,
+                array_slot_1: array_slot_1,
+                array_slot_2: array_slot_2,
+                array_slot_3: array_slot_3,
+                array_slot_4: array_slot_4,
+                mode: state.mode
+            }
+        }
+        if (state.examArray[state.examSectionNumber] === 'Speaking') {
+            data = {
+                exam_section: state.examSectionNumber,
+                question_number: rootState.speaking.stateNumber,
+                task_number: rootState.speaking.taskNumber,
+                array_slot_1: array_slot_1,
+                array_slot_2: array_slot_2,
+                array_slot_3: array_slot_3,
+                array_slot_4: array_slot_4,
+                mode: state.mode
+            }
+        }
+        if (state.examArray[state.examSectionNumber] === 'Writing') {
+            data = {
+                remaining_time: rootState.time.totalTime,
+                exam_section: state.examSectionNumber,
+                question_number: rootState.writing.stateNumber,
+                task_number: rootState.writing.taskNumber,
+                array_slot_1: array_slot_1,
+                array_slot_2: array_slot_2,
+                array_slot_3: array_slot_3,
+                array_slot_4: array_slot_4,
+                mode: state.mode
+            }
+        }
+        knex('tpousers_testuser').where({id: state.userTestId}).update(data).then(() => {
+            dispatch(SET_REVIEW_USER_TEST_ID, state.userTestId)
+            dispatch(CORRECT_EXAM);
+            router.push('/review');
+        })
     },
     [END_TPO]: ({state, dispatch}) => {
+        knex('tpousers_testuser').where({id: state.userTestId}).update({
+            is_done: true,
+        }).then(() => {
+        })
         dispatch(SET_REVIEW_USER_TEST_ID, state.userTestId)
         dispatch(CORRECT_EXAM);
         router.push('/review');
     },
     [SET_WRITING_READING_TIME]: ({state, dispatch}, payload) => {
-        if(state.mode !== 'reviewMode') {
+        if (state.mode === 'reviewMode' || state.mode === 'practiceMode') {
+            dispatch(UPDATE_TIME, 0)
+        }
+        else{
             dispatch(UPDATE_TIME, state.writingTimes[payload]['reading_time'])
         }
     },
@@ -105,7 +358,16 @@ const actions = {
             for (var a of as) if (!bs.has(a)) return false;
             return true;
         }
-        if(state.examArray.indexOf('Reading') !== -1) {
+
+        function isIterable(obj) {
+            // checks for null and undefined
+            if (obj == null) {
+                return false;
+            }
+            return typeof obj[Symbol.iterator] === 'function';
+        }
+
+        if (state.examArray.indexOf('Reading') !== -1) {
             let correctReadingAnswers = 0;
             let readingQuestionsCount = 0;
             for (let i = 0; i < rootState.reading.reading.length; i++) {
@@ -115,19 +377,21 @@ const actions = {
                     } else {
                         readingQuestionsCount += 1;
                     }
-                    if(rootState.reading.readingAnswers[rootState.reading.reading[i].questions[j].id] !== undefined) {
+                    if (rootState.reading.readingAnswers[rootState.reading.reading[i].questions[j].id] !== undefined) {
                         if (rootState.reading.reading[i].questions[j].right_answer === rootState.reading.readingAnswers[rootState.reading.reading[i].questions[j].id]) {
                             correctReadingAnswers++;
                         } else {
                             if (rootState.reading.reading[i].questions[j].right_answer.trim().split(/\s+/).length > 1) {
-                                let cloneAnswer = [...rootState.reading.readingAnswers[rootState.reading.reading[i].questions[j].id]];
-                                let setA = new Set(cloneAnswer);
-                                let setB = new Set(rootState.reading.reading[i].questions[j].right_answer.trim().split(/\s+/));
-                                if (eqSet(setA, setB)) {
-                                    if (rootState.reading.reading[i].questions[j]['question_type'] === 'Summary') {
-                                        correctReadingAnswers += 2;
-                                    } else {
-                                        correctReadingAnswers += 1;
+                                if (isIterable(rootState.reading.readingAnswers[rootState.reading.reading[i].questions[j].id])) {
+                                    let cloneAnswer = [...rootState.reading.readingAnswers[rootState.reading.reading[i].questions[j].id]];
+                                    let setA = new Set(cloneAnswer);
+                                    let setB = new Set(rootState.reading.reading[i].questions[j].right_answer.trim().split(/\s+/));
+                                    if (eqSet(setA, setB)) {
+                                        if (rootState.reading.reading[i].questions[j]['question_type'] === 'Summary') {
+                                            correctReadingAnswers += 2;
+                                        } else {
+                                            correctReadingAnswers += 1;
+                                        }
                                     }
                                 }
                             }
@@ -138,10 +402,11 @@ const actions = {
             let readingScore = Math.ceil((correctReadingAnswers / readingQuestionsCount) * 30);
             knex('tpousers_testuser').where({id: state.userTestId}).update({
                 reading_score: readingScore
-            }).then(() => {})
+            }).then(() => {
+            })
         }
 
-        if(state.examArray.indexOf('Listening') !== -1) {
+        if (state.examArray.indexOf('Listening') !== -1) {
             let correctListeningAnswers = 0;
             let listeningQuestionsCount = 0;
             for (let i = 0; i < rootState.listening.listening.length; i++) {
@@ -152,12 +417,14 @@ const actions = {
                             if (rootState.listening.listening[i][j].questions[k].right_answer === rootState.listening.listeningAnswers[rootState.listening.listening[i][j].questions[k].id]) {
                                 correctListeningAnswers++;
                             } else {
-                                if (rootState.reading.reading[i][j].questions[k].right_answer.trim().split(/\s+/).length > 1) {
-                                    let cloneAnswer = [...rootState.listening.listeningAnswers[rootState.listening.listening[i][j].questions[k].id]];
-                                    let setA = new Set(cloneAnswer);
-                                    let setB = new Set(rootState.listening.listening[i][j].questions[k].right_answer.trim().split(/\s+/));
-                                    if (eqSet(setA, setB)) {
-                                        correctListeningAnswers++;
+                                if (rootState.listening.listening[i][j].questions[k].right_answer.trim().split(/\s+/).length > 1) {
+                                    if (isIterable(rootState.listening.listeningAnswers[rootState.listening.listening[i][j].questions[k].id])) {
+                                        let cloneAnswer = [...rootState.listening.listeningAnswers[rootState.listening.listening[i][j].questions[k].id]];
+                                        let setA = new Set(cloneAnswer);
+                                        let setB = new Set(rootState.listening.listening[i][j].questions[k].right_answer.trim().split(/\s+/));
+                                        if (eqSet(setA, setB)) {
+                                            correctListeningAnswers++;
+                                        }
                                     }
                                 }
                             }
@@ -168,7 +435,8 @@ const actions = {
             let listeningScore = Math.ceil((correctListeningAnswers / listeningQuestionsCount) * 30);
             knex('tpousers_testuser').where({id: state.userTestId}).update({
                 listening_score: listeningScore
-            }).then(() => {})
+            }).then(() => {
+            })
         }
 
     },
@@ -272,15 +540,28 @@ const actions = {
             dispatch(UPDATE_INITIAL_STATE);
         }
     },
-    [SET_NEW_TIME]: ({dispatch}, payload) => {
+    [SET_NEW_TIME]: ({state, dispatch}, payload) => {
         if (state.examArray[state.examSectionNumber] === 'Reading') {
-            dispatch(UPDATE_TIME, state.readingTime)
+            if (state.mode === 'testMode' || state.mode === 'mockMode') {
+                dispatch(UPDATE_TIME, state.readingTime)
+            } else {
+                dispatch(UPDATE_TIME, 0)
+            }
+
         }
         if (state.examArray[state.examSectionNumber] === 'Listening') {
-            dispatch(UPDATE_TIME, state.listeningTimes[payload])
+            if (state.mode === 'testMode' || state.mode === 'mockMode') {
+                dispatch(UPDATE_TIME, state.listeningTimes[payload])
+            } else {
+                dispatch(UPDATE_TIME, 0)
+            }
         }
         if (state.examArray[state.examSectionNumber] === 'Writing') {
-            dispatch(UPDATE_TIME, state.writingTimes[payload]['time'])
+            if (state.mode === 'testMode' || state.mode === 'mockMode') {
+                dispatch(UPDATE_TIME, state.writingTimes[payload]['time'])
+            } else {
+                dispatch(UPDATE_TIME, 0)
+            }
         }
     },
     [UPDATE_REMAINING_TIME_READING]: ({commit}, payload) => {
@@ -291,6 +572,14 @@ const actions = {
     },
     [UPDATE_REMAINING_TIME_WRITING]: ({commit}, payload) => {
         commit('updateWritingTime', payload);
+    },
+    [TIME_ENDED]: ({state, dispatch}) => {
+        if (state.examArray[state.examSectionNumber] === 'Writing') {
+            dispatch(WRITING_TIME_ENDED)
+        } else {
+            dispatch(UPDATE_COMPONENT, 'timeEnded')
+        }
+
     }
 };
 
@@ -302,7 +591,10 @@ const mutations = {
         state.currentComponent = payload;
     },
     updateExamArray(state, payload) {
-        state.examArray = payload
+        state.examArray = payload;
+    },
+    updateStepExamArray(state, payload) {
+        state.examArray.push(payload);
     },
     updateExamSectionNumber(state, payload) {
         state.examSectionNumber = payload

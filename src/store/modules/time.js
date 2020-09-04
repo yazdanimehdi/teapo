@@ -9,7 +9,8 @@ import {
 import {
     UPDATE_REMAINING_TIME_LISTENING,
     UPDATE_REMAINING_TIME_READING,
-    UPDATE_REMAINING_TIME_WRITING
+    UPDATE_REMAINING_TIME_WRITING,
+    TIME_ENDED
 } from "@/store/actions/mainTPO";
 
 const state = {
@@ -29,9 +30,13 @@ const getters = {
     initialSeconds: state => state.totalUnchangedTime % 60
 };
 const actions = {
-    [COMPUTE_TIME]: ({state, commit}) => {
+    [COMPUTE_TIME]: ({state, commit, dispatch, rootState}) => {
         if (state.timeStop === false) {
-            commit('computeTime')
+            if (state.totalTime <= 0 && (rootState.mainTPO.mode === 'testMode' || rootState.mainTPO.mode === 'mockMode')) {
+                dispatch(TIME_STOP)
+                dispatch(TIME_ENDED)
+            }
+            commit('computeTime', rootState.mainTPO.mode)
         }
     },
     [TIME_STOP]: ({commit}, payload) => {
@@ -53,17 +58,17 @@ const actions = {
 };
 
 const mutations = {
-    updateTimeModules(state){
+    updateTimeModules(state) {
         state.minutes = parseInt(state.totalTime / 60);
         state.hours = parseInt(state.minutes / 60);
         state.minutes = state.minutes % 60;
         state.seconds = state.totalTime % 60;
     },
-    computeTime(state) {
-        state.totalTime = state.totalTime - 1;
-        if (state.totalTime <= 0) {
-            console.log('Time Ended')
-
+    computeTime(state, mode) {
+        if (mode === 'testMode' || mode === 'mockMode') {
+            state.totalTime = state.totalTime - 1;
+        } else {
+            state.totalTime = state.totalTime + 1;
         }
         state.minutes = parseInt(state.totalTime / 60);
         state.hours = parseInt(state.minutes / 60);
@@ -76,7 +81,6 @@ const mutations = {
     updateTime(state, payload) {
         state.totalTime = payload;
         state.totalUnchangedTime = payload;
-        console.log(state.totalTime)
     }
 
 };

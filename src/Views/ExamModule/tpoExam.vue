@@ -66,7 +66,7 @@
             WritingPlayer,
             WritingReading,
             WritingDirection,
-            TimeEndedWriting
+            TimeEndedWriting,
         },
         data() {
             return {
