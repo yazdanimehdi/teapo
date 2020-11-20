@@ -40,7 +40,6 @@ const actions = {
     },
     [GET_DATA_WRITING]: ({commit}, payload) => {
         commit('resetAllWriting');
-
         let tpo = knex.select("*").from('tpo_testwriting').where({test_id: payload});
         return tpo.then(async function (writings) {
             let writingList = [...writings]

@@ -31,6 +31,7 @@ const state = {
     difficultExampleList: [],
 };
 
+let knex = require('@/db/knex')
 const getters = {
     learntWordsCount: state => {
         let items = 0;
@@ -87,13 +88,6 @@ const getters = {
 
 const actions = {
     [ADD_TO_DIFFICULT]: ({commit}, payload) => {
-        let knex = require('knex')({
-            client: 'sqlite3',
-            connection: {
-                filename: './db.sqlite3'
-            },
-            useNullAsDefault: true
-        });
         commit('updateLabelWordsList', {'word': payload['word']})
         knex('tpousers_studywords').where({'id': payload['word']['id']}).update(
             {
@@ -109,13 +103,6 @@ const actions = {
         if (state.words.length <= 8) {
             dispatch(GET_RANDOM_WORDS);
         }
-        let knex = require('knex')({
-            client: 'sqlite3',
-            connection: {
-                filename: './db.sqlite3'
-            },
-            useNullAsDefault: true
-        });
         if(payload['word']['state'] === -1){
             commit('updateStateDifficultWordsList', {'word': payload['word'], 'state': payload['word']['state'] + 1})
             knex('tpousers_studywords').where({'id': payload['word']['id']}).update({'state': 0}).then(
@@ -216,13 +203,6 @@ const actions = {
         if (state.words.length <= 8) {
             dispatch(GET_RANDOM_WORDS);
         }
-        let knex = require('knex')({
-            client: 'sqlite3',
-            connection: {
-                filename: './db.sqlite3'
-            },
-            useNullAsDefault: true
-        });
         if (payload['correct']) {
             knex('tpousers_studywords').where({'id': payload['word']['id']}).update({
                 'correct_times': payload['word']['correct_times'] + 1,
@@ -254,13 +234,6 @@ const actions = {
         if (state.words.length <= 8) {
             dispatch(GET_RANDOM_WORDS);
         }
-        let knex = require('knex')({
-            client: 'sqlite3',
-            connection: {
-                filename: './db.sqlite3'
-            },
-            useNullAsDefault: true
-        });
         if (payload['correct']) {
             knex('tpousers_studywords').where({'id': payload['word']['id']}).update({
                 'correct_times': payload['word']['correct_times'] + 1,
@@ -333,13 +306,6 @@ const actions = {
     },
 
     [GO_TO_NEXT_LEARNING_WORD]: ({commit, dispatch}, payload) => {
-        let knex = require('knex')({
-            client: 'sqlite3',
-            connection: {
-                filename: './db.sqlite3'
-            },
-            useNullAsDefault: true
-        });
         dispatch(GET_RANDOM_WORDS);
         if (payload['word']['state'] === 0) {
             commit('updateStateWordsList', {'word': payload['word'], 'state': 1})
@@ -406,13 +372,6 @@ const actions = {
 
     },
     [GET_STUDY_WORDS]: ({commit}) => {
-        let knex = require('knex')({
-            client: 'sqlite3',
-            connection: {
-                filename: './db.sqlite3'
-            },
-            useNullAsDefault: true
-        });
         let userId = localStorage.getItem('user-id')
         let studyWords = knex.select('*').from('tpousers_studywords').where({'user_id': userId})
         return studyWords.then(async function (row) {
@@ -492,13 +451,6 @@ const actions = {
     },
     // eslint-disable-next-line no-unused-vars
     [ADD_NEW_WORD]: ({state, dispatch}, payload) => {
-        let knex = require('knex')({
-            client: 'sqlite3',
-            connection: {
-                filename: './db.sqlite3'
-            },
-            useNullAsDefault: true
-        });
         let userId = localStorage.getItem('user-id')
         let studyWordSearch = knex.select('*').from('tpousers_studywords').where({
             'word': payload['word'],
@@ -513,6 +465,7 @@ const actions = {
                     correct_times: 0,
                     uncorrect_times: 0,
                     label: 'Learning',
+                    last_time: Date.now(),
                     state: 0,
                     user_id: userId,
                 })

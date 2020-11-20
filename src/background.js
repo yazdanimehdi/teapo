@@ -13,11 +13,10 @@ let win;
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([{scheme: 'app', privileges: {secure: true, standard: true}}]);
-
+app.setAsDefaultProtocolClient('teapo')
 
 const path = require('path')
 const userDir = path.join(app.getPath('userData'), 'database.sqlite');
-
 const fs = require('fs')
 if(!fs.existsSync(userDir)){
     const sqlite3 = require('sqlite3');
@@ -43,6 +42,7 @@ const m3 = require('./db/migrations/20200823192406_class')
 const m4 = require('./db/migrations/20200823192410_test')
 const m5 = require('./db/migrations/20200823192413_time')
 const m6 = require('./db/migrations/20200823192431_user_test')
+const m7 = require('./db/migrations/20200904062350_user_words')
 knex.migrate.latest({
     migrationSource: new WebpackMigrationSource({
         '20200823044448_users.js': m1,
@@ -50,9 +50,36 @@ knex.migrate.latest({
         '20200823192406_class.js': m3,
         '20200823192410_test.js': m4,
         '20200823192413_time.js': m5,
-        '20200823192431_user_test.js': m6
+        '20200823192431_user_test.js': m6,
+        '20200904062350_user_words.js': m7,
     })
 }).then(()=>{}).catch((err)=>{console.log(err)})
+
+let deeplinkingUrl;
+// Force Single Instance Application
+const gotTheLock = app.requestSingleInstanceLock()
+if (gotTheLock) {
+    app.on('second-instance', (e, argv) => {
+        // Someone tried to run a second instance, we should focus our window.
+
+        // Protocol handler for win32
+        // argv: An array of the second instance’s (command line / deep linked) arguments
+        if (process.platform === 'win32') {
+            // Keep only command line / deep linked arguments
+            deeplinkingUrl = argv.slice(1)
+        }
+        win.webContents.send('deep-link', deeplinkingUrl)
+
+        if (win) {
+            if (win.isMinimized()) win.restore()
+            win.focus()
+        }
+    })
+} else {
+    app.quit()
+}
+
+
 
 function createWindow() {
     win = new BrowserWindow({
@@ -92,6 +119,11 @@ function createWindow() {
     win.on('closed', () => {
         win = null;
     })
+
+    if (process.platform === 'win32') {
+        // Keep only command line / deep linked arguments
+        deeplinkingUrl = process.argv.slice(1)
+    }
     // win.setIgnoreMouseEvents(true)
 
 }
@@ -134,6 +166,7 @@ app.on('ready', async () => {
         }
     }
     createWindow()
+    win.webContents.send('deep-link', deeplinkingUrl)
 })
 
 // Exit cleanly on request from parent process in development mode.
@@ -151,3 +184,18 @@ if (isDevelopment) {
         })
     }
 }
+
+if (!app.isDefaultProtocolClient('teapo')) {
+    app.setAsDefaultProtocolClient('teapo')
+}
+
+app.on('will-finish-launching', function() {
+    app.on('open-url', function(event, url) {
+        event.preventDefault()
+        deeplinkingUrl = url
+        win.webContents.send('deep-link', deeplinkingUrl)
+    })
+})
+
+
+

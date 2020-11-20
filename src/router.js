@@ -8,8 +8,8 @@ import LearnNewWords from "@/Views/MemriseModules/LearnNewWords";
 import SpeedReview from "@/Views/MemriseModules/SpeedReview";
 import Review from "@/Views/MemriseModules/Review";
 import DifficultWords from "@/Views/MemriseModules/DifficultWords";
-import TPOPage from "@/Views/TPOPage";
 import ExamReview from "@/Views/ExamModule/ExamReview";
+import OrderDetailPage from "@/Views/OrderDetailPage";
 
 Vue.use(Router);
 
@@ -19,6 +19,11 @@ export default new Router({
             path: '/login',
             name: 'Login',
             component: RegisterLogin
+        },
+        {
+            path: '/order_detail',
+            name: 'OrderDetail',
+            component: OrderDetailPage
         },
         {
             path: '/',
@@ -59,11 +64,6 @@ export default new Router({
             path: '/register_login',
             name: 'RegisterLogin',
             component: RegisterLogin
-        },
-        {
-            path: '/tpo_page',
-            name: 'TPOPage',
-            component: TPOPage
         },
         {
             path: '/review',

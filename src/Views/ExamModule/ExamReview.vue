@@ -9,7 +9,7 @@
                style="padding-top:8px;margin: 0;position: fixed; z-index: 10; font-family: Kalam">
       <div style="font-weight: bold; font-size: 20px">Exam Review</div>
       <v-spacer></v-spacer>
-      <v-btn icon to="/">
+      <v-btn icon @click="goToDashboard">
         <v-icon>{{ icons.mdiChevronRight }}</v-icon>
       </v-btn>
     </v-app-bar>
@@ -380,6 +380,7 @@ export default {
         mdiCheckboxBlankOutline,
         mdiCheckboxMarkedOutline
       },
+      prevRoute: null,
       answers: [],
       ended: false,
       state: 0,
@@ -469,7 +470,20 @@ export default {
       }
     }
   },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.prevRoute = from
+    })
+  },
   methods: {
+    goToDashboard(){
+      if(this.prevRoute.name === 'OrderDetail'){
+        this.$router.push(this.prevRoute.path)
+      }
+      else {
+        this.$router.push('/')
+      }
+    },
     isIterable(obj) {
       // checks for null and undefined
       if (obj == null) {

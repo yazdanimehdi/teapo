@@ -145,7 +145,7 @@
                   <span style="margin-left: 8px; font-size: 18px; font-weight: bold">Practice Now</span>
                 </div>
               </v-card-subtitle>
-              <v-card-text style="color: black; font-size: 20px; font-weight: bold; margin-top: 20px; text-align: center" v-if="Object.keys(practiceTest).length === 0 && practiceTest.constructor === Object">
+              <v-card-text style="color: black; font-size: 20px; font-weight: bold; margin-top: 20px; text-align: center" v-if="Object.keys(this.practiceTest).length === 0 && practiceTest.constructor === Object">
                 There is no new downloaded TPOs
               </v-card-text>
               <v-card-text style="text-align: center" v-else>

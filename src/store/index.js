@@ -16,7 +16,8 @@ import user from "@/store/modules/user";
 import download from "@/store/modules/download";
 import analytics from "@/store/modules/analytics";
 import reviewExam from "@/store/modules/reviewExam";
-import correction from "@/store/modules/correction"
+import correction from "@/store/modules/correction";
+import correctionReview from "@/store/modules/correctionReview";
 
 
 Vue.use(Vuex);
@@ -41,7 +42,8 @@ export default new Vuex.Store({
         download: download,
         analytics: analytics,
         reviewExam: reviewExam,
-        correction: correction
+        correction: correction,
+        correctionReview: correctionReview,
     },
     strict: debug
 });

@@ -41,15 +41,14 @@ const actions = {
             })
         })
     },
-    [GET_DASHBOARD_DATA]: ({commit, rootGetters}) => {
-
+    [GET_DASHBOARD_DATA]: async ({commit, rootGetters}) => {
         function getRandomInt(min, max) {
             min = Math.ceil(min);
             max = Math.floor(max);
             return Math.floor(Math.random() * (max - min)) + min;
         }
 
-        knex('institutions_users').select('*').where({'id': rootGetters.getId}).then((row) => {
+        await knex('institutions_users').select('*').where({'id': rootGetters.getId}).then((row) => {
             if (row[0]['toefl_time'] === null) {
                 commit('updateTOEFLTime', -1)
             } else {
@@ -65,8 +64,6 @@ const actions = {
         let totalReading = 0
         let totalSpeaking = 0
         let totalWriting = 0
-
-        let doneTestIds = []
 
         let promises = []
         for (let i = 0; i < rootGetters.localTPOListId.length; i++) {
@@ -90,39 +87,38 @@ const actions = {
 
         }
 
-        Promise.all(promises).then(() => {
-            knex('tpousers_testuser').select('*').where({
+        Promise.all(promises).then(async () => {
+            await knex('tpousers_testuser').select('*').where({
                 user_id: rootGetters.getId,
                 is_done: true,
-            }).then((rows) => {
+            }).then(async (rows) => {
                 for (let i = 0; i < rows.length; i++) {
-                    doneTestIds.push(rows[i]['test_id'])
                     let test = rootGetters.getTPOById(rows[i]['test_id'])
                     if (test !== undefined) {
-                        knex('tpousers_userlisteninganswers').select('*').where({user_test_id: rows[i]['id']}).then((listeningAnswers) => {
+                        await knex('tpousers_userlisteninganswers').select('*').where({user_test_id: rows[i]['id']}).then(async (listeningAnswers) => {
                             if (listeningAnswers.length > 0) {
-                                knex('tpo_testlistening').select('*').where({test_id: test.id}).then((listenings) => {
+                                await knex('tpo_testlistening').select('*').where({test_id: test.id}).then((listenings) => {
                                     listeningDone += listenings.length
                                 })
                             }
                         })
-                        knex('tpousers_userreadinganswers').select('*').where({user_test_id: rows[i]['id']}).then((readingAnswers) => {
+                        await knex('tpousers_userreadinganswers').select('*').where({user_test_id: rows[i]['id']}).then(async(readingAnswers) => {
                             if (readingAnswers.length > 0) {
-                                knex('tpo_testreading').select('*').where({test_id: test.id}).then((readings) => {
+                                await knex('tpo_testreading').select('*').where({test_id: test.id}).then((readings) => {
                                     readingDone += readings.length
                                 })
                             }
                         })
-                        knex('tpousers_userspeakinganswers').select('*').where({user_test_id: rows[i]['id']}).then((speakingAnswers) => {
+                        await knex('tpousers_userspeakinganswers').select('*').where({user_test_id: rows[i]['id']}).then(async (speakingAnswers) => {
                             if (speakingAnswers.length > 0) {
-                                knex('tpo_testspeaking').select('*').where({test_id: test.id}).then((speakings) => {
+                                await knex('tpo_testspeaking').select('*').where({test_id: test.id}).then((speakings) => {
                                     speakingDone += speakings.length
                                 })
                             }
                         })
-                        knex('tpousers_userwritinganswers').select('*').where({user_test_id: rows[i]['id']}).then((writingAnswers) => {
+                        await knex('tpousers_userwritinganswers').select('*').where({user_test_id: rows[i]['id']}).then(async (writingAnswers) => {
                             if (writingAnswers.length > 0) {
-                                knex('tpo_testwriting').select('*').where({test_id: test.id}).then((writings) => {
+                                await knex('tpo_testwriting').select('*').where({test_id: test.id}).then((writings) => {
                                     writingDone += writings.length
                                 })
                             }
@@ -130,24 +126,19 @@ const actions = {
                     }
 
                 }
+                commit('updateDashboardProgress',
+                    [listeningDone,
+                        readingDone,
+                        speakingDone,
+                        writingDone,
+                        totalListening,
+                        totalReading,
+                        totalSpeaking,
+                        totalWriting])
+                if (rootGetters.localTPOListId.length !== 0) {
+                    commit('updatePracticeTest', rootGetters.getTPOById(rootGetters.localTPOListId[getRandomInt(0, rootGetters.localTPOListId.length)]))
+                }
             })
-        }).then(() => {
-            commit('updateDashboardProgress',
-                [listeningDone,
-                    readingDone,
-                    speakingDone,
-                    writingDone,
-                    totalListening,
-                    totalReading,
-                    totalSpeaking,
-                    totalWriting])
-            if (rootGetters.localTPOListId.length !== 0) {
-                let notDoneIds = rootGetters.localTPOListId.filter(function (item) {
-                    return doneTestIds.indexOf(item) === -1;
-                });
-                commit('updatePracticeTest', rootGetters.getTPOById(notDoneIds[getRandomInt(0, notDoneIds.length)]))
-            }
-
         })
     }
 }

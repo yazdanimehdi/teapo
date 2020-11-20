@@ -51,3 +51,6 @@ Vue.filter('formatCurrency', function (d) {
   }
   return returnString
 })
+Vue.filter('formatDate', function (d){
+  return `${new Date(d).getFullYear()}/${new Date(d).getMonth()}/${new Date(d).getDate()}`
+});

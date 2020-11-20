@@ -240,7 +240,7 @@
             window.removeEventListener('resize', this.handleResize);
         },
         mounted(){
-            if(this.writingAnswer[this.writingId]=== undefined){
+            if(this.writingAnswer[this.writingId] === undefined){
                 this.wordString = "";
             }
             else {
@@ -285,12 +285,12 @@
                 this.time_component.enable = !this.time_component.enable;
             },
             goToNext: function () {
-                this.$store.dispatch(GO_TO_NEXT_WRITING);
-                this.$store.dispatch(SAVE_ANSWER_WRITING, [this.writingId, this.wordString]);
+              this.$store.dispatch(SAVE_ANSWER_WRITING, [this.writingId, this.wordString]);
+              this.$store.dispatch(GO_TO_NEXT_WRITING);
             },
             goToBack() {
-                this.$store.dispatch(GO_TO_PREVIOUS_WRITING);
-                this.$store.dispatch(SAVE_ANSWER_WRITING, [this.writingId, this.wordString]);
+              this.$store.dispatch(SAVE_ANSWER_WRITING, [this.writingId, this.wordString]);
+              this.$store.dispatch(GO_TO_PREVIOUS_WRITING);
             },
             triggerUndo() {
                 $('.input').focus()

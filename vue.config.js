@@ -2,12 +2,21 @@ module.exports = {
     pluginOptions: {
         electronBuilder: {
             builderOptions: {
+                appId: "ir.teapo.tpo",
+                protocols: {
+                    name: "teapo-protocol",
+                    schemes: [
+                        "teapo"
+                    ]
+                },
+                mac: {
+                    category: "public.app-category.education"
+                },
                 icon:"./icon.icns",
                 extraResources: ['./db.sqlite3'],
                 win: {
-                    appId: "com.isto.gpo",
                     icon: "./icon.icns",
-                    publisherName: "Mehdi Yazdani",
+                    publisherName: "TEAPO",
                 }
             }
         }
