@@ -248,7 +248,7 @@ import {mapState} from 'vuex'
 import {CHANGE_TAB} from "@/store/actions/dashboard";
 import DashboardComponent from "@/components/Main/DashboardComponent";
 import WordsComponent from "@/components/Main/WordsComponent";
-import MockTestComponent from "@/components/Subcomponents/MockTestComponent";
+import MockTestComponent from "@/components/Main/MockTestComponent";
 import TPOComponent from "@/components/Main/TPOComponent";
 import Analytics from "@/components/Main/Analytics";
 import Courses from "@/components/Main/Courses";

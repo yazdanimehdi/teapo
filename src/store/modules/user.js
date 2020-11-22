@@ -24,7 +24,7 @@ const actions = {
     [USER_REQUEST]: ({commit, dispatch}) => {
         commit(USER_REQUEST);
          return new Promise((resolve, reject) => {
-            axios.get('http://127.0.0.1:8000/api/v1/profile/').then((resp) => {
+            axios.get('api/v1/profile/').then((resp) => {
                 console.log(resp.data)
                 commit(USER_SUCCESS, resp.data);
                 localStorage.setItem('user-id', resp.data['id']);

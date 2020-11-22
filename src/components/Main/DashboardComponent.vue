@@ -2,7 +2,7 @@
   <div :style="{'width': `${width}px`, 'font-family':'kalam'}">
     <v-container fluid style="overflow-y: scroll">
       <v-row>
-        <v-col cols="12" sm="8" md="8" lg="8" xl="8">
+        <v-col cols="12" sm="12" md="12" lg="12" xl="12">
           <v-card class="mx-auto"
                   style="background-image: linear-gradient(#DF55B1, #CEA0BF); height: 300px; border-radius: 15px"
           >
@@ -20,20 +20,20 @@
           </v-card>
 
         </v-col>
-        <v-col cols="12" sm="4" md="4" lg="4" xl="4">
-          <v-card style="background-image: linear-gradient(#5362C5, #676D9A); height: 300px; border-radius: 15px">
-            <v-img src="../../assets/inbox.png" class="white--text" contain
-                   height="300px">
-              <v-card-subtitle>
-                <div>
-                  <v-icon>{{ icons.mdiInboxArrowDown }}</v-icon>
-                  <span style="margin-left: 8px; font-size: 18px; font-weight: bold">Inbox</span>
-                </div>
+<!--        <v-col cols="12" sm="4" md="4" lg="4" xl="4">-->
+<!--          <v-card style="background-image: linear-gradient(#5362C5, #676D9A); height: 300px; border-radius: 15px">-->
+<!--            <v-img src="../../assets/inbox.png" class="white&#45;&#45;text" contain-->
+<!--                   height="300px">-->
+<!--              <v-card-subtitle>-->
+<!--                <div>-->
+<!--                  <v-icon>{{ icons.mdiInboxArrowDown }}</v-icon>-->
+<!--                  <span style="margin-left: 8px; font-size: 18px; font-weight: bold">Inbox</span>-->
+<!--                </div>-->
 
-              </v-card-subtitle>
-            </v-img>
-          </v-card>
-        </v-col>
+<!--              </v-card-subtitle>-->
+<!--            </v-img>-->
+<!--          </v-card>-->
+<!--        </v-col>-->
       </v-row>
       <v-row>
         <v-col cols="12" sm="3" md="3" lg="3" xl="3">

@@ -13,7 +13,7 @@ const getters = {
 const actions = {
     [DOWNLOAD_TPO]: ({commit, dispatch}, payload) => {
         return new Promise((resolve, reject) => {
-            axios.get(`http://127.0.0.1:8000/api/v1/test`, {
+            axios.get(`api/v1/test`, {
                 params: {
                     id: payload
                 },

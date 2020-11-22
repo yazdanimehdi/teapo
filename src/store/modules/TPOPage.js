@@ -1,4 +1,4 @@
-import {GET_ONLINE_TPO_LIST, GET_LOCAL_TPO_LIST, GO_TO_TPO_PAGE, CHECK_EXISTING_USER_TEST} from "@/store/actions/TPOPage";
+import {GET_ONLINE_TPO_LIST, GET_LOCAL_TPO_LIST, CHECK_EXISTING_USER_TEST} from "@/store/actions/TPOPage";
 import axios from 'axios'
 
 let knex = require('@/db/knex')
@@ -7,7 +7,6 @@ const state = {
     onlineTPOList: [],
     localTPOList: [],
     tpoId: 0,
-    mode: 'practice',
 };
 const getters = {
     onlineTPOList: (state) => {
@@ -79,12 +78,9 @@ const actions = {
             })
         })
     },
-    [GO_TO_TPO_PAGE]: ({commit}, payload) => {
-        commit('updateGoToTPO', payload);
-    },
     [GET_ONLINE_TPO_LIST]: ({commit}) => {
         return new Promise((resolve, reject) => {
-            axios.get('http://127.0.0.1:8000/api/v1/tpo_list/').then((resp) => {
+            axios.get('api/v1/tpo_list/').then((resp) => {
                 commit('updateOnlineTPOList', resp.data)
                 resolve(resp)
             }).catch((err) => {
@@ -176,10 +172,6 @@ const actions = {
     }
 };
 const mutations = {
-    updateGoToTPO(state, payload) {
-        state.tpoId = payload[0]
-        state.mode = payload[1]
-    },
     resetLocalTPOList(state) {
         state.localTPOList = []
     },

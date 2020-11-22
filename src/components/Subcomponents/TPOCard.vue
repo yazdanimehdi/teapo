@@ -198,15 +198,11 @@ export default {
       type: Boolean
     },
   },
-  beforeDestroy() {
-    clearInterval(this.interval)
-  },
   data() {
     return {
       downloadValue: 0,
       downloadQuery: false,
       downloadShow: false,
-      interval: 0,
       dialog: false,
       examArray: [],
       userTestId: 0,

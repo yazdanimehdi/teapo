@@ -17,6 +17,8 @@ if (token) {
   axios.defaults.headers.common['Authorization'] = `Token ${token}`
 }
 
+axios.defaults.baseURL = 'http://127.0.0.1:8000'
+
 new Vue({
   store,
   router,
@@ -38,7 +40,7 @@ Vue.filter('formatTime', function (d) {
 });
 
 Vue.filter('formatCurrency', function (d) {
-  let currency = d
+  let currency = d.toString()
   let returnString = '';
   let firstComma = currency.length%3
   for(let i=0; i < currency.length; i++){

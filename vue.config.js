@@ -14,10 +14,6 @@ module.exports = {
                 },
                 icon:"./icon.icns",
                 extraResources: ['./db.sqlite3'],
-                win: {
-                    icon: "./icon.icns",
-                    publisherName: "TEAPO",
-                }
             }
         }
     }

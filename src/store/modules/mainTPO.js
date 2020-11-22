@@ -442,7 +442,8 @@ const actions = {
     },
 
     [START_TPO]: ({state, commit, dispatch}, payload) => {
-
+        commit('updateExamArray', payload['examArray']);
+        commit('updateMode', payload['mode'])
         let userId = localStorage.getItem('user-id')
         knex('tpousers_testuser').insert({
             test_id: payload['TPO'],
@@ -452,8 +453,6 @@ const actions = {
             is_paid: true,
         }).then((id) => {
             commit('updateUserTestId', id[0])
-            commit('updateExamArray', payload['examArray']);
-            commit('updateMode', payload['mode'])
             for (let i = 0; i < state.examArray.length; i++) {
                 if (state.examArray[i] === 'Reading') {
                     knex.select('*').from('tpo_test').where({id: payload['TPO']}).then((row) => {

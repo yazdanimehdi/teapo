@@ -22,7 +22,7 @@ const getters = {
     progress: state => {
         let all = state.totalReading + state.totalListening + state.totalSpeaking + state.totalWriting
         let done = state.readingDone + state.listeningDone + state.speakingDone + state.writingDone
-        return all !== 0 ? Math.ceil(done / all) : 0
+        return all !== 0 ? Math.ceil((done / all) * 100) : 0
     },
     practiceTest: state => state.practiceTest,
 }

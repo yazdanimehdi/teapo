@@ -18,6 +18,7 @@ import analytics from "@/store/modules/analytics";
 import reviewExam from "@/store/modules/reviewExam";
 import correction from "@/store/modules/correction";
 import correctionReview from "@/store/modules/correctionReview";
+import mockExams from "@/store/modules/mockExams";
 
 
 Vue.use(Vuex);
@@ -44,6 +45,7 @@ export default new Vuex.Store({
         reviewExam: reviewExam,
         correction: correction,
         correctionReview: correctionReview,
+        mockExams: mockExams
     },
     strict: debug
 });

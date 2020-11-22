@@ -89,7 +89,7 @@
               }, 1000)
             }
         },
-      destroyed() {
+      beforeDestroy() {
           clearInterval(this.interval)
       }
     }

@@ -126,7 +126,7 @@ const actions = {
                 if (payload[2] === true) {
                     dataList[0] = state.speakingAnswers
                 }
-                axios.post('http://127.0.0.1:8000/api/v1/order_correction/', dataList).then((resp) => {
+                axios.post('api/v1/order_correction/', dataList).then((resp) => {
                     resolve(resp)
                 }).catch((err) => {
                     reject(err)
@@ -138,7 +138,7 @@ const actions = {
     [GET_PRICES]: ({commit, rootGetters, dispatch}) => {
         let userId = localStorage.getItem('user-id')
         return new Promise((resolve, reject) => {
-            axios.get('http://127.0.0.1:8000/api/v1/prices/').then(async (resp) => {
+            axios.get('api/v1/prices/').then(async (resp) => {
                 commit('updatePrices', [resp.data['speaking_price'], resp.data['writing_price']])
 
                 for (let i = 0; i < resp.data['speaking_list'].length; i++) {
