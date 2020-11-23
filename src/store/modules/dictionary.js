@@ -6,6 +6,8 @@ import {
     LOAD_OTHER_EXAMPLES
 } from "@/store/actions/dictionary";
 
+let knex = require('@/db/dictionary')
+
 const state = {
     word: '',
     wildCardSuggestion: [],
@@ -21,13 +23,6 @@ const state = {
 
 const actions = {
     [LOAD_THESAURUS]: ({commit}, payload) => {
-        let knex = require('knex')({
-            client: 'sqlite3',
-            connection: {
-                filename: './longman.sqlite3'
-            },
-            useNullAsDefault: true
-        });
         let wordThesaurus = knex.select("*").from('longman_thesaurus').where({'definition_id': payload})
         wordThesaurus.then(function (rows) {
             for (let i = 0; i < rows.length; i++) {
@@ -43,13 +38,6 @@ const actions = {
 
     },
     [LOAD_OTHER_EXAMPLES]: ({commit}, payload) => {
-        let knex = require('knex')({
-            client: 'sqlite3',
-            connection: {
-                filename: './longman.sqlite3'
-            },
-            useNullAsDefault: true
-        });
         let wordOtherExamples = knex.select("*").from('longman_otherexamples').where({'definition_id': payload})
         wordOtherExamples.then(function (rows) {
             commit('updateWordOtherExamples', rows);
@@ -57,13 +45,6 @@ const actions = {
 
     },
     [LOAD_ETYMOLOGY]: ({commit}, payload) => {
-        let knex = require('knex')({
-            client: 'sqlite3',
-            connection: {
-                filename: './longman.sqlite3'
-            },
-            useNullAsDefault: true
-        });
         let wordEtymology = knex.select("*").from('longman_etymology').where({'definition_id': payload})
         wordEtymology.then(function (rows) {
             commit('updateWordEtymology', rows);
@@ -71,13 +52,6 @@ const actions = {
 
     },
     [LOAD_WORD_FAMILY]: ({commit}, payload) => {
-        let knex = require('knex')({
-            client: 'sqlite3',
-            connection: {
-                filename: './longman.sqlite3'
-            },
-            useNullAsDefault: true
-        });
         let wordFamily = knex.select("*").from('longman_wordfamily').where({'definition_id': payload})
         wordFamily.then(function (rows) {
             commit('updateWordFamily', rows);
@@ -86,13 +60,6 @@ const actions = {
     },
     [LOAD_DICTIONARY]: ({commit, dispatch}, payload) => {
         commit('resetAll');
-        let knex = require('knex')({
-            client: 'sqlite3',
-            connection: {
-                filename: 'longman.sqlite3'
-            },
-            useNullAsDefault: true
-        });
         let result = knex.select("*").from('longman_words').where({'word': payload});
         result.then(
             function (row) {

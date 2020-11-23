@@ -1,4 +1,5 @@
 'use strict'
+/* global __static */
 
 import {app, protocol, BrowserWindow, Menu} from 'electron'
 import {
@@ -6,6 +7,7 @@ import {
     installVueDevtools
 } from 'vue-cli-plugin-electron-builder/lib'
 import WebpackMigrationSource from './WebpackMigrationSource'
+import { autoUpdater } from "electron-updater"
 const isDevelopment = process.env.NODE_ENV !== 'production';
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -17,12 +19,14 @@ app.setAsDefaultProtocolClient('teapo')
 
 const path = require('path')
 const userDir = path.join(app.getPath('userData'), 'database.sqlite');
+
 const fs = require('fs')
 if(!fs.existsSync(userDir)){
     const sqlite3 = require('sqlite3');
     const db = new sqlite3.Database(userDir);
     db.close()
 }
+
 
 let knex = require('knex')({
     client: 'sqlite3',
@@ -91,7 +95,8 @@ function createWindow() {
         transparent: true,
         webPreferences: {
             nodeIntegration:true,
-        }
+        },
+        icon: path.join(__static, 'icon.png')
     });
     const template = [
         // { role: 'appMenu' }
@@ -114,6 +119,7 @@ function createWindow() {
         createProtocol('app')
         // Load the index.html when not in development
         win.loadURL('app://./index.html')
+        autoUpdater.checkForUpdatesAndNotify()
 
     }
     win.on('closed', () => {

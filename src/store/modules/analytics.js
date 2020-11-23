@@ -113,17 +113,19 @@ const actions = {
                 user_id: userId,
             }).then((userTests) => {
                 for (let j = 0; j < userTests.length; j++) {
-                    if (userTests[j]['reading_score'] !== null) {
-                        commit('updateReadingChartData', [userTests[j]['date_time'], rootGetters.getTPOById(userTests[j]['test_id']), userTests[j]['reading_score']])
-                    }
-                    if (userTests[j]['listening_score'] !== null) {
-                        commit('updateListeningChartData', [userTests[j]['date_time'], rootGetters.getTPOById(userTests[j]['test_id']), userTests[j]['listening_score']])
-                    }
-                    if (userTests[j]['speaking_score'] !== null) {
-                        commit('updateSpeakingChartData', [userTests[j]['date_time'], rootGetters.getTPOById(userTests[j]['test_id']), userTests[j]['speaking_score']])
-                    }
-                    if (userTests[j]['writing_score'] !== null) {
-                        commit('updateWritingChartData', [userTests[j]['date_time'], rootGetters.getTPOById(userTests[j]['test_id']), userTests[j]['writing_score']])
+                    if(rootGetters.getTPOById(userTests[j]['test_id']) !== undefined) {
+                        if (userTests[j]['reading_score'] !== null) {
+                            commit('updateReadingChartData', [userTests[j]['date_time'], rootGetters.getTPOById(userTests[j]['test_id']), userTests[j]['reading_score']])
+                        }
+                        if (userTests[j]['listening_score'] !== null) {
+                            commit('updateListeningChartData', [userTests[j]['date_time'], rootGetters.getTPOById(userTests[j]['test_id']), userTests[j]['listening_score']])
+                        }
+                        if (userTests[j]['speaking_score'] !== null) {
+                            commit('updateSpeakingChartData', [userTests[j]['date_time'], rootGetters.getTPOById(userTests[j]['test_id']), userTests[j]['speaking_score']])
+                        }
+                        if (userTests[j]['writing_score'] !== null) {
+                            commit('updateWritingChartData', [userTests[j]['date_time'], rootGetters.getTPOById(userTests[j]['test_id']), userTests[j]['writing_score']])
+                        }
                     }
                 }
                 resolve(userTests)
