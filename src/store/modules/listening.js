@@ -45,7 +45,9 @@ const getters = {
         }
         return questions
     },
-    taskType: state => state.listening[state.sectionNumber][state.taskNumber].type,
+    taskType: state => {
+        return state.listening[state.sectionNumber][state.taskNumber].type
+    },
     taskTypeNumber: state => {
         let typeNumber = 0;
         for (let i = 0; i <= state.taskNumber; i++) {
@@ -133,59 +135,65 @@ const actions = {
         }
     },
     [GET_DATA_LISTENING]: ({commit}, payload) => {
-                commit('resetAllListening')
-                let tpo = knex.select("*").from('tpo_testlistening').where({test_id: payload});
-                return tpo.then(async function (listening) {
-                    let partList = [];
-                    for (let m = 0; m < listening.length; m++) {
-                        if (partList.indexOf(listening[m]['phase']) === -1) {
-                            partList.push(listening[m]['phase'])
+        commit('resetAllListening')
+        return new Promise((resolve) => {
+            knex.select("*").from('tpo_testlistening').where({test_id: payload}).then(async function (listening) {
+                let partList = [];
+                for (let m = 0; m < listening.length; m++) {
+                    if (partList.indexOf(listening[m]['phase']) === -1) {
+                        partList.push(listening[m]['phase'])
+                    }
+                }
+                commit('updateListeningLength', partList.length)
+                for (let m = 0; m < listening.length; m++) {
+                    await knex.select("*").from('tpo_listening').where({id: listening[m]['listening_id']}).then(async function (rows) {
+                        let i;
+                        for (i = 0; i < rows.length; i++) {
+                            let listening_obj = Object.assign({}, rows[i]);
+                            let questions_all = [];
+                            await knex.select("*").from('tpo_listeningquestions').where({'listening_id': rows[i]['id']}).then(async function (questioninst) {
+                                let j;
+                                for (j = 0; j < questioninst.length; j++) {
+                                    let question_obj = Object.assign({}, questioninst[j]);
+                                    await knex.select("*").from("tpo_listeninganswers").where({'question_id': questioninst[j]['id']}).then(function (instance) {
+
+                                        question_obj['answers'] = instance;
+                                        questions_all.push(question_obj)
+
+                                    });
+                                }
+                                listening_obj['questions'] = questions_all;
+                            });
+                            commit('updateListeningData', [listening_obj, listening[m]['part'], listening[m]['phase']])
                         }
-                    }
-                    commit('updateListeningLength', partList.length)
-                    for (let m = 0; m < listening.length; m++) {
-                        let result = knex.select("*").from('tpo_listening').where({id: listening[m]['listening_id']});
-                        await result.then( async function (rows) {
-                            let i;
-                            for (i = 0; i < rows.length; i++) {
-                                let listening_obj = Object.assign({}, rows[i]);
-                                let questions = knex.select("*").from('tpo_listeningquestions').where({'listening_id': rows[i]['id']});
-                                let questions_all = [];
-                                await questions.then( async function (questioninst) {
-                                    let j;
-                                    for (j = 0; j < questioninst.length; j++) {
-                                        let question_obj = Object.assign({}, questioninst[j]);
-                                        let qs = knex.select("*").from("tpo_listeninganswers").where({'question_id': questioninst[j]['id']});
-                                        await qs.then(function (instance) {
-
-                                            question_obj['answers'] = instance;
-                                            questions_all.push(question_obj)
-
-                                        });
-                                    }
-                                    listening_obj['questions'] = questions_all;
-                                });
-                                 commit('updateListeningData', [listening_obj, listening[m]['part'], listening[m]['phase']])
-                            }
-                        });
-                    }
-                })
+                    });
+                }
+            }).then(() => {
+                resolve()
+            })
+        })
     },
     [UPDATE_STATE_LISTENING]: ({state, commit, dispatch}) => {
-        if (state.questionNumber === -1) {
-            dispatch(UPDATE_COMPONENT, state.listening_player_component)
+        if (state.sectionNumber === -1) {
+            dispatch(TIME_STOP, true)
+            commit('updateListeningSectionNumber', 0);
+            dispatch(UPDATE_STATE_LISTENING);
         } else {
-            if (state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber].quote === 0) {
-                dispatch(UPDATE_COMPONENT, state.listening_question_component)
-            }
-            if (state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber].quote === 1) {
-                if (state.quotePlayed === false) {
-                    dispatch(UPDATE_COMPONENT, state.listening_quote_player_component)
-                } else {
-                    dispatch(UPDATE_COMPONENT, state.listening_question_component);
-                    commit('updateQuotePlayed', false);
+            if (state.questionNumber === -1) {
+                dispatch(UPDATE_COMPONENT, state.listening_player_component)
+            } else {
+                if (state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber].quote === 0) {
+                    dispatch(UPDATE_COMPONENT, state.listening_question_component)
                 }
+                if (state.listening[state.sectionNumber][state.taskNumber].questions[state.questionNumber].quote === 1) {
+                    if (state.quotePlayed === false) {
+                        dispatch(UPDATE_COMPONENT, state.listening_quote_player_component)
+                    } else {
+                        dispatch(UPDATE_COMPONENT, state.listening_question_component);
+                        commit('updateQuotePlayed', false);
+                    }
 
+                }
             }
         }
     },
@@ -288,24 +296,21 @@ const actions = {
     },
 
     [LISTENING_TIME_ENDED]: ({state, commit, dispatch}) => {
-        if (state.questionNumber + 1 >= state.listening[state.sectionNumber][state.taskNumber].questions.length) {
-            if (state.taskNumber + 1 >= state.listening[state.sectionNumber].length) {
-                if (state.sectionNumber + 1 >= state.listening.length) {
-                    dispatch(TIME_STOP);
-                    dispatch(UPDATE_REMAINED_LISTENING_TIME, state.sectionNumber)
-                    dispatch(NEXT_SECTION)
-                } else {
-                    dispatch(TIME_STOP);
-                    dispatch(UPDATE_REMAINED_LISTENING_TIME, state.sectionNumber);
-                    commit('updateListeningSectionNumber', state.sectionNumber + 1)
-                    dispatch(SET_NEW_TIME, state.sectionNumber)
-                    commit('updateListeningTaskNumber', 0);
-                    commit('updateListeningQuestionNumber', -1);
-                    dispatch(UPDATE_STATE_LISTENING);
-                }
-            }
+        if (state.sectionNumber + 1 >= state.listening.length) {
+            dispatch(TIME_STOP);
+            dispatch(UPDATE_REMAINED_LISTENING_TIME, state.sectionNumber)
+            dispatch(NEXT_SECTION)
+        } else {
+            dispatch(TIME_STOP);
+            dispatch(UPDATE_REMAINED_LISTENING_TIME, state.sectionNumber);
+            commit('updateListeningSectionNumber', state.sectionNumber + 1)
+            dispatch(SET_NEW_TIME, state.sectionNumber)
+            commit('updateListeningTaskNumber', 0);
+            commit('updateListeningQuestionNumber', -1);
+            dispatch(UPDATE_STATE_LISTENING);
         }
     }
+
 }
 
 const mutations = {

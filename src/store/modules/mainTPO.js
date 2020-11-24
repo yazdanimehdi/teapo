@@ -41,6 +41,7 @@ import {
 import {UPDATE_TIME} from "@/store/actions/time";
 import router from '@/router'
 import {SET_REVIEW_USER_TEST_ID} from "@/store/actions/reviewExam";
+import {SET_MOCK_IDS} from "@/store/actions/mockExams";
 
 let knex = require('@/db/knex')
 
@@ -55,6 +56,7 @@ const state = {
     writingTimes: [],
     speakingTimes: [],
     userTestId: 0,
+    testId: 0,
 };
 
 const getters = {
@@ -75,17 +77,19 @@ const actions = {
         commit('updateMode', payload)
     },
     [RESUME_TPO]: async ({commit, dispatch}, payload) => {
-        commit('updateUserTestId', payload)
-        let usetTest = knex.select('*').from('tpousers_testuser').where({id: state.userTestId})
-        let time = 0;
-        let section_number = 0;
-        let task_number = 0;
-        let question_number = 0;
-        let test_id = 0;
+        return new Promise( (resolve) => {
+            commit('updateExamArray', [])
+            commit('updateUserTestId', payload)
+            let usetTest = knex.select('*').from('tpousers_testuser').where({id: state.userTestId})
+            let time = 0;
+            let section_number = 0;
+            let task_number = 0;
+            let question_number = 0;
+            let test_id = 0;
 
-        async function getData() {
-            await usetTest.then(async (rows) => {
+            usetTest.then(async (rows) => {
                 if (rows.length === 1) {
+                    commit('updateTestId', rows[0]['test_id'])
                     commit('updateMode', rows[0]['mode'])
                     if (rows[0]['array_slot_1'] !== null) {
                         commit('updateStepExamArray', rows[0]['array_slot_1'])
@@ -100,6 +104,7 @@ const actions = {
                         commit('updateStepExamArray', rows[0]['array_slot_4'])
                     }
                     commit('updateExamSectionNumber', rows[0]['exam_section'])
+
                     for (let i = 0; i < state.examArray.length; i++) {
                         if (state.examArray[i] === 'Reading') {
                             await knex.select('*').from('tpo_test').where({id: rows[0]['test_id']}).then(async (row) => {
@@ -153,67 +158,65 @@ const actions = {
                     }
                     await knex.select('*').from('tpousers_userreadinganswers').where({
                         user_test_id: payload
-                    }).then((row) => {
-                        dispatch(SET_READING_ANSWERS, row)
+                    }).then(async (row) => {
+                        await dispatch(SET_READING_ANSWERS, row)
                     })
 
                     await knex.select('*').from('tpousers_userlisteninganswers').where({
                         user_test_id: payload
-                    }).then((row) => {
-                        dispatch(SET_LISTENING_ANSWERS, row)
+                    }).then(async (row) => {
+                        await dispatch(SET_LISTENING_ANSWERS, row)
                     })
 
                     await knex.select('*').from('tpousers_userspeakinganswers').where({
                         user_test_id: payload
-                    }).then((row) => {
-                        dispatch(SET_SPEAKING_ANSWERS, row)
+                    }).then(async (row) => {
+                        await dispatch(SET_SPEAKING_ANSWERS, row)
                     })
 
                     await knex.select('*').from('tpousers_userwritinganswers').where({
                         user_test_id: payload
-                    }).then((row) => {
-                        dispatch(SET_WRITING_ANSWERS, row)
+                    }).then(async (row) => {
+                        await dispatch(SET_WRITING_ANSWERS, row)
                     })
                     time = rows[0]['remaining_time']
                     task_number = rows[0]['task_number']
                     question_number = rows[0]['question_number']
                     section_number = rows[0]['section_number']
                     test_id = rows[0]['test_id']
-
                 }
+            }).then(async () => {
+                if (state.examArray.indexOf('Listening') !== -1) {
+                    await dispatch(GET_DATA_LISTENING, test_id).then(() => {
+                    })
+                }
+                if (state.examArray.indexOf('Reading') !== -1) {
+                    await dispatch(GET_DATA_READING, test_id)
+                }
+                if (state.examArray.indexOf('Speaking') !== -1) {
+                    await dispatch(GET_DATA_SPEAKING, test_id)
+                }
+                if (state.examArray.indexOf('Writing') !== -1) {
+                    await dispatch(GET_DATA_WRITING, test_id)
+                }
+                if (state.examArray[state.examSectionNumber] === 'Reading') {
+                    dispatch(UPDATE_TIME, time)
+                    dispatch(GO_TO_READING_QUESTION, [task_number, question_number])
+                }
+                if (state.examArray[state.examSectionNumber] === 'Listening') {
+                    dispatch(UPDATE_TIME, time)
+                    dispatch(GO_TO_LISTENING_QUESTION, [section_number, task_number, question_number])
+                }
+                if (state.examArray[state.examSectionNumber] === 'Speaking') {
+                    dispatch(GO_TO_SPEAKING_QUESTION, task_number)
+                }
+                if (state.examArray[state.examSectionNumber] === 'Writing') {
+                    dispatch(UPDATE_TIME, time)
+                    dispatch(GO_TO_WRITING_QUESTION, task_number)
+                }
+            }).then(() => {
+                resolve()
             })
-        }
-
-        await getData()
-        let promises = []
-        if(state.examArray.indexOf('Listening') !== -1){
-            promises = [...promises, dispatch(GET_DATA_LISTENING, test_id)]
-        }
-        if(state.examArray.indexOf('Reading') !== -1){
-            promises = [...promises, dispatch(GET_DATA_READING, test_id)]
-        }
-        if(state.examArray.indexOf('Speaking') !== -1){
-            promises = [...promises, dispatch(GET_DATA_SPEAKING, test_id)]
-        }
-        if(state.examArray.indexOf('Writing') !== -1){
-            promises = [...promises, dispatch(GET_DATA_WRITING, test_id)]
-        }
-        Promise.all(promises).then(() => {
-            if (state.examArray[state.examSectionNumber] === 'Reading') {
-                dispatch(UPDATE_TIME, time)
-                dispatch(GO_TO_READING_QUESTION, [task_number, question_number])
-            }
-            if (state.examArray[state.examSectionNumber] === 'Listening') {
-                dispatch(UPDATE_TIME, time)
-                dispatch(GO_TO_LISTENING_QUESTION, [section_number, task_number, question_number])
-            }
-            if (state.examArray[state.examSectionNumber] === 'Speaking') {
-                dispatch(GO_TO_SPEAKING_QUESTION, task_number)
-            }
-            if (state.examArray[state.examSectionNumber] === 'Writing') {
-                dispatch(UPDATE_TIME, time)
-                dispatch(GO_TO_WRITING_QUESTION, task_number)
-            }
         })
     },
     [SAVE_TPO]: ({state, dispatch, rootState}) => {
@@ -293,26 +296,39 @@ const actions = {
                 mode: state.mode
             }
         }
-        knex('tpousers_testuser').where({id: state.userTestId}).update(data).then(() => {
-            dispatch(SET_REVIEW_USER_TEST_ID, state.userTestId)
-            dispatch(CORRECT_EXAM);
-            router.push('/review');
-        })
+        if (state.mode === 'mockMode') {
+            knex('tpousers_testuser').where({id: state.userTestId}).update(data).then(() => {
+                router.push('/')
+            })
+        } else {
+            knex('tpousers_testuser').where({id: state.userTestId}).update(data).then(() => {
+                dispatch(SET_REVIEW_USER_TEST_ID, state.userTestId)
+                dispatch(CORRECT_EXAM);
+                router.push('/review');
+            })
+        }
     },
     [END_TPO]: ({state, dispatch}) => {
         knex('tpousers_testuser').where({id: state.userTestId}).update({
             is_done: true,
         }).then(() => {
         })
-        dispatch(SET_REVIEW_USER_TEST_ID, state.userTestId)
+
         dispatch(CORRECT_EXAM);
-        router.push('/review');
+        if (state.mode === 'mockMode') {
+            dispatch(SET_MOCK_IDS, [state.testId, state.userTestId])
+            router.push('/mock_done')
+        } else {
+            dispatch(SET_REVIEW_USER_TEST_ID, state.userTestId)
+
+            router.push('/review');
+        }
+
     },
     [SET_WRITING_READING_TIME]: ({state, dispatch}, payload) => {
         if (state.mode === 'reviewMode' || state.mode === 'practiceMode') {
             dispatch(UPDATE_TIME, 0)
-        }
-        else{
+        } else {
             dispatch(UPDATE_TIME, state.writingTimes[payload]['reading_time'])
         }
     },
@@ -442,6 +458,7 @@ const actions = {
     },
 
     [START_TPO]: ({state, commit, dispatch}, payload) => {
+        commit('updateTestId', payload['TPO'])
         commit('updateExamArray', payload['examArray']);
         commit('updateMode', payload['mode'])
         let userId = localStorage.getItem('user-id')
@@ -451,6 +468,7 @@ const actions = {
             date_time: Date.now(),
             is_done: false,
             is_paid: true,
+            sent: false,
         }).then((id) => {
             commit('updateUserTestId', id[0])
             for (let i = 0; i < state.examArray.length; i++) {
@@ -512,7 +530,6 @@ const actions = {
 
     },
     [NEXT_SECTION]: ({state, commit, dispatch}) => {
-
         commit('updateSeenArray', state.examArray[state.examSectionNumber]);
         if (state.examSectionNumber + 1 < state.examArray.length) {
             commit('updateExamSectionNumber', state.examSectionNumber + 1)
@@ -625,6 +642,9 @@ const mutations = {
     },
     updateMode(state, payload) {
         state.mode = payload
+    },
+    updateTestId(state, payload) {
+        state.testId = payload
     }
 };
 

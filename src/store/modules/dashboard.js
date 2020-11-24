@@ -1,5 +1,13 @@
-import {CHANGE_TAB, SET_CONNECTION, SET_TOEFL_TIME, GET_DASHBOARD_DATA} from "@/store/actions/dashboard";
+import {
+    CHANGE_TAB,
+    SET_CONNECTION,
+    SET_TOEFL_TIME,
+    GET_DASHBOARD_DATA,
+    GET_NEWS
+} from "@/store/actions/dashboard";
 let knex = require('@/db/knex')
+
+import axios from 'axios'
 
 const state = {
     tabNumber: 0,
@@ -14,6 +22,7 @@ const state = {
     totalSpeaking: 0,
     totalWriting: 0,
     practiceTest: {},
+    news: [],
 
 }
 const getters = {
@@ -25,6 +34,7 @@ const getters = {
         return all !== 0 ? Math.ceil((done / all) * 100) : 0
     },
     practiceTest: state => state.practiceTest,
+    news: state => state.news,
 }
 const actions = {
     [CHANGE_TAB]: ({commit}, payload) => {
@@ -39,6 +49,11 @@ const actions = {
             knex('institutions_users').where({'id': rootGetters.getId}).update({toefl_time: payload}).then(() => {
                 resolve()
             })
+        })
+    },
+    [GET_NEWS]: ({commit}) => {
+        axios.get('api/v1/get_news/').then((resp) => {
+            commit('updateNews', resp.data)
         })
     },
     [GET_DASHBOARD_DATA]: async ({commit, rootGetters}) => {
@@ -164,6 +179,9 @@ const mutations = {
     },
     updatePracticeTest(state, payload) {
         state.practiceTest = payload;
+    },
+    updateNews(state, payload){
+        state.news = payload
     }
 }
 

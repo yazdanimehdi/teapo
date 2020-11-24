@@ -7,7 +7,8 @@ exports.up = function (knex) {
         table.text('word').notNullable();
         table.text('label').notNullable();
         table.integer('state').unsigned().notNullable();
-        table.dateTime('last_date').notNullable();
+        table.dateTime('last_date').nullable();
+        table.dateTime('last_time').notNullable();
         table.integer('user_id').unsigned().index().references('id').inTable('institutions_users').nullable();
     }).createTable('tpousers_studywordsexample', function (table) {
         table.increments('id').unsigned().primary().notNullable();

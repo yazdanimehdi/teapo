@@ -105,7 +105,7 @@ const getters = {
         }
     },
     readingQuestionAnswer: state => {
-        if (state.reading[state.taskNumber].questions[state.questionNumber].id in state.readingAnswers) {
+        if (state.readingAnswers[state.reading[state.taskNumber].questions[state.questionNumber].id] !== undefined) {
             return state.readingAnswers[state.reading[state.taskNumber].questions[state.questionNumber].id];
         } else {
             return []
@@ -118,9 +118,13 @@ const getters = {
 };
 const actions = {
         [SET_READING_ANSWERS]: ({commit}, payload) => {
-            for (let i = 0; i < payload.length; i++) {
-                commit('updateReadingAnswers', [payload[i]['question_id'], payload[i]['answer']])
-            }
+            return new Promise((resolve) => {
+                for (let i = 0; i < payload.length; i++) {
+                    commit('updateReadingAnswers', [payload[i]['question_id'], payload[i]['answer']])
+                }
+                resolve()
+            })
+
         },
         [GET_DATA_READING]: ({commit}, payload) => {
             commit('resetAllReading');

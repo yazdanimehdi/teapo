@@ -1,9 +1,24 @@
 <template>
+  <div :style="{'width': `${width}px`, 'font-family':'kalam'}">
   <div v-if="loading" style="text-align: center; margin-top: 100px">
     <v-progress-circular indeterminate size="50"></v-progress-circular>
   </div>
   <div :style="{'width': `${width}px`, 'font-family':'kalam'}" v-else>
     <v-container fluid style="overflow-y: scroll">
+      <template v-if="mockListPaginated.length === 0">
+        <v-row align="center" justify="center">
+          <v-col cols="6" sm="6" md="6" lg="6" xl="6" >
+            <v-card flat height="200">
+              <v-img src="../../assets/sad.png" height="60" contain style="margin-top: 30px;" position="center">
+              </v-img>
+              <h2 style="text-align: center; margin-top: 30px">Sorry, There is No New Mock Tests Available</h2>
+              <h3 style="text-align: center; margin-top: 5px">Check Back Later</h3>
+
+            </v-card>
+          </v-col>
+        </v-row>
+      </template>
+      <template v-else>
       <v-row>
         <v-col>
           <h2 style="font-size: 22px">
@@ -55,12 +70,17 @@
                 </v-col>
                 <!--Register/Start Button-->
                 <v-col cols="10" md="2" sm="2" lg="2" xl="2" style="padding-left: 5px; padding-right: 5px">
-                  <v-btn rounded width="100%" color="#bab5c4" class="my-title" v-if="!mock['is_paid']"
-                         @click="buyMock(mock)">
-                    Register
-                  </v-btn>
-                  <v-btn rounded width="100%" color="#bab5c4" class="my-title" @click="startMock(mock)" v-else>
-                    Start
+                  <template v-if="!isMockUnsent(mock['id'])">
+                    <v-btn rounded width="100%" color="#bab5c4" class="my-title" v-if="!mock['is_paid']"
+                           @click="buyMock(mock)">
+                      Register
+                    </v-btn>
+                    <v-btn rounded width="100%" color="#bab5c4" class="my-title" @click="startMock(mock)" v-else>
+                      Start
+                    </v-btn>
+                  </template>
+                  <v-btn rounded width="100%" color="#bab5c4" class="my-title" @click="sendAnswers(mock)" v-else>
+                    Send
                   </v-btn>
 
                 </v-col>
@@ -84,6 +104,7 @@
         </v-col>
 
       </v-row>
+      </template>
       <template v-if="mockResultList.length !== 0">
         <v-row>
           <v-col>
@@ -255,6 +276,7 @@
       </v-card>
     </v-dialog>
   </div>
+  </div>
 </template>
 
 <script>
@@ -264,7 +286,7 @@ import {
   mdiArrowRight
 } from '@mdi/js'
 import {mapGetters} from 'vuex'
-import {GET_LOCAL_MOCK_LIST, GET_MOCK_EXAMS, GET_MOCK_RESULTS, ORDER_MOCK} from "@/store/actions/mockExams";
+import {GET_LOCAL_MOCK_LIST, GET_MOCK_EXAMS, GET_MOCK_RESULTS, ORDER_MOCK, SET_MOCK_IDS, GET_DONE_MOCKS} from "@/store/actions/mockExams";
 import {DOWNLOAD_TPO} from "@/store/actions/download";
 import {CHECK_EXISTING_USER_TEST} from "@/store/actions/TPOPage";
 import {RESUME_TPO, START_TPO} from "@/store/actions/mainTPO";
@@ -298,9 +320,11 @@ export default {
   created() {
     let self = this
     this.$store.dispatch(GET_MOCK_EXAMS).then(() => {
-      this.$store.dispatch(GET_MOCK_RESULTS).then(() => {
-        this.$store.dispatch(GET_LOCAL_MOCK_LIST).then(() => {
-          self.loading = false
+      self.$store.dispatch(GET_MOCK_RESULTS).then(() => {
+        self.$store.dispatch(GET_LOCAL_MOCK_LIST).then(() => {
+          self.$store.dispatch(GET_DONE_MOCKS).then(() => {
+            self.loading = false
+          })
         })
       })
     })
@@ -309,8 +333,10 @@ export default {
         self.loading = true
         self.$store.dispatch(GET_MOCK_EXAMS).then(() => {
           self.$store.dispatch(GET_MOCK_RESULTS).then(() => {
-            this.$store.dispatch(GET_LOCAL_MOCK_LIST).then(() => {
-              self.loading = false
+            self.$store.dispatch(GET_LOCAL_MOCK_LIST).then(() => {
+              self.$store.dispatch(GET_DONE_MOCKS).then(() => {
+                self.loading = false
+              })
             })
           })
         })
@@ -329,9 +355,18 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['mockList', 'mockResultList', 'percentCompleted']),
+    ...mapGetters(['mockList', 'mockResultList', 'percentCompleted', 'doneUserTestIds', 'unSentMocks']),
+    mockListWithoutDone(){
+      let newMockList = []
+      for(let i = 0; i < this.mockList.length; i++){
+        if(!this.isMockDone(this.mockList[i]['id'])){
+          newMockList.push(this.mockList[i])
+        }
+      }
+      return newMockList
+    },
     mockListPaginated() {
-      return this.mockList.slice(this.pageMock - 1, 4)
+      return this.mockListWithoutDone.slice(this.pageMock - 1, 4)
     },
     mockListNumberOfPages() {
       return Math.ceil(this.mockList.length / 4)
@@ -344,9 +379,16 @@ export default {
     },
     isMockAvailable() {
       return this.$store.getters.isMockAvailable(this.selectedTest.id)
-    }
+    },
+
   },
   methods: {
+    isMockDone(id){
+      return this.$store.getters.isMockDone(id)
+    },
+    isMockUnsent(id){
+      return this.$store.getters.isMockUnsent(id)
+    },
     buyMock(test) {
       this.dialog = true;
       this.selectedTest = test;
@@ -377,25 +419,55 @@ export default {
       }
       if (!this.isMockAvailable) {
         this.startDialog = true
-        this.$store.dispatch(DOWNLOAD_TPO, this.selectedTest.id)
+        this.$store.dispatch(DOWNLOAD_TPO, this.selectedTest.id).then(() => {
+          this.$store.dispatch(CHECK_EXISTING_USER_TEST, [this.selectedTest.id, examArray, 'mockMode']).then((result) => {
+            if (!result.isAvailable) {
+              this.$store.dispatch(START_TPO, {
+                'examArray': examArray,
+                'TPO': this.selectedTest.id,
+                'mode': 'mockMode'
+              })
+              this.$router.push('/tpo')
+            } else {
+              this.userTestId = result.userTestId
+              this.examArray = examArray
+              this.$store.dispatch(RESUME_TPO, this.userTestId).then(() => {
+                this.$router.push('/tpo')
+              })
+            }
+          })
+        })
         this.downloadQuery = true
       }
-      this.$store.dispatch(CHECK_EXISTING_USER_TEST, [this.selectedTest.id, examArray, 'mockMode']).then((result) => {
-        if (!result.isAvailable) {
-          this.$store.dispatch(START_TPO, {
-            'examArray': examArray,
-            'TPO': this.selectedTest.id,
-            'mode': 'mockMode'
-          })
-          this.$router.push('/tpo')
-        } else {
-          this.userTestId = result.userTestId
-          this.examArray = examArray
-          this.$store.dispatch(RESUME_TPO, this.userTestId).then(() => {
+      else {
+        this.$store.dispatch(CHECK_EXISTING_USER_TEST, [this.selectedTest.id, examArray, 'mockMode']).then((result) => {
+          if (!result.isAvailable) {
+            this.$store.dispatch(START_TPO, {
+              'examArray': examArray,
+              'TPO': this.selectedTest.id,
+              'mode': 'mockMode'
+            })
             this.$router.push('/tpo')
-          })
-        }
-      })
+          } else {
+            this.userTestId = result.userTestId
+            this.examArray = examArray
+            this.$store.dispatch(RESUME_TPO, this.userTestId).then(() => {
+              this.$router.push('/tpo')
+            })
+          }
+        })
+      }
+
+    },
+    sendAnswers(mock){
+      console.log(this.doneUserTestIds)
+      console.log( this.doneUserTestIds[mock.id])
+      let userTestId = this.doneUserTestIds[mock.id]
+      console.log(userTestId)
+      console.log(mock.id)
+      this.$store.dispatch(SET_MOCK_IDS, [mock.id, userTestId])
+      this.$router.push('/mock_done')
+
     }
 
   }

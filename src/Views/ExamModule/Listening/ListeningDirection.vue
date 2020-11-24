@@ -40,13 +40,14 @@
                        min-height="40px"></v-img>
               </v-col>
 
-              <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">
-                <v-img src="../../../assets/backd.png" contain max-height="60px"
-                       min-height="40px" v-if="!backAvailable"></v-img>
+              <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0"  v-if="!backAvailable">
+
                 <v-img src="../../../assets/back.png" contain max-height="60px"
                        min-height="40px"
-                       v-else-if="listeningMode === 'practiceMode' || listeningMode === 'reviewMode'"
+                       v-if="listeningMode === 'practiceMode' || listeningMode === 'reviewMode'"
                        @click="goToBack"></v-img>
+                <v-img src="../../../assets/backd.png" contain max-height="60px"
+                       min-height="40px" v-else></v-img>
               </v-col>
 
               <v-col cols="2" md="2" lg="2" sm="2" style="padding: 0">

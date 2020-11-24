@@ -53,6 +53,7 @@ export default {
   },
   methods: {
     goToNext() {
+      console.log('salam')
       if (this.currentSection === 'Reading') {
         this.$store.dispatch(NEXT_SECTION)
       }

@@ -28,7 +28,6 @@ const actions = {
         commit('updateReviewUserTestId', payload)
     },
     [GO_TO_EXAM_REVIEW]: ({state, commit, dispatch}) => {
-
         let promises = []
         promises = [...promises, knex.select('*').from('tpousers_testuser').where({id: state.reviewUserTestId}).then((row) => {
             commit('updateUserTestDate', row[0]['date_time'])

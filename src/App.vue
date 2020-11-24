@@ -1,7 +1,8 @@
 <template>
   <div id="app">
       <router-view />
-        <v-dialog persistent width="300" v-model="dialog">
+        <v-app  v-if="dialog">
+        <v-dialog persistent width="300">
           <v-card width="600" height="300" style="text-align: center; font-family: kalam">
             <h2>Please Be Patient!</h2>
             <h3 style="margin: 20px;">Downloading The Dictionary</h3>
@@ -17,6 +18,7 @@
             </div>
           </v-card>
         </v-dialog>
+        </v-app>
   </div>
 </template>
 
@@ -55,7 +57,7 @@ export default {
     if(!fs.existsSync(dictDir)){
       console.log('salam')
       this.dialog = true;
-      let url = 'http://127.0.0.1:8000/media/Dictionary/longman.sqlite3'
+      let url = 'https://main.teapo.ir/media/Dictionary/longman.sqlite3'
       let file = fs.createWriteStream(dictDir);
       let http = require('http');
       http.get(url, function (response) {

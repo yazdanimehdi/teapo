@@ -1,4 +1,8 @@
-import {GET_ONLINE_TPO_LIST, GET_LOCAL_TPO_LIST, CHECK_EXISTING_USER_TEST} from "@/store/actions/TPOPage";
+import {
+    GET_ONLINE_TPO_LIST,
+    GET_LOCAL_TPO_LIST,
+    CHECK_EXISTING_USER_TEST,
+} from "@/store/actions/TPOPage";
 import axios from 'axios'
 
 let knex = require('@/db/knex')
@@ -14,8 +18,8 @@ const getters = {
         let localIds = state.localTPOList.map((val) => {
             return val.id
         })
-        for(let i = 0; i < state.onlineTPOList.length; i++){
-            if(localIds.indexOf(state.onlineTPOList[i]['id']) === -1){
+        for (let i = 0; i < state.onlineTPOList.length; i++) {
+            if (localIds.indexOf(state.onlineTPOList[i]['id']) === -1) {
                 myList.push(state.onlineTPOList[i])
             }
         }
@@ -31,7 +35,7 @@ const getters = {
 };
 const actions = {
     // eslint-disable-next-line no-unused-vars
-    [CHECK_EXISTING_USER_TEST]: ({_}, payload) =>{
+    [CHECK_EXISTING_USER_TEST]: ({_}, payload) => {
         return new Promise((resolve) => {
             let tpoId = payload[0]
             let examArray = payload[1]
@@ -40,19 +44,19 @@ const actions = {
             let array_slot_2 = null
             let array_slot_3 = null
             let array_slot_4 = null
-            if(examArray.length === 1){
+            if (examArray.length === 1) {
                 array_slot_1 = examArray[0]
             }
-            if(examArray.length === 2){
+            if (examArray.length === 2) {
                 array_slot_1 = examArray[0]
                 array_slot_2 = examArray[1]
             }
-            if(examArray.length === 3){
+            if (examArray.length === 3) {
                 array_slot_1 = examArray[0]
                 array_slot_2 = examArray[1]
                 array_slot_3 = examArray[2]
             }
-            if(examArray.length === 4){
+            if (examArray.length === 4) {
                 array_slot_1 = examArray[0]
                 array_slot_2 = examArray[1]
                 array_slot_3 = examArray[2]
@@ -68,11 +72,10 @@ const actions = {
                 array_slot_4: array_slot_4,
                 is_done: false,
                 mode: mode
-            }).then((row)=>{
-                if(row.length === 0){
+            }).then((row) => {
+                if (row.length === 0) {
                     resolve({isAvailable: false})
-                }
-                else {
+                } else {
                     resolve({isAvailable: true, userTestId: row[0]['id']})
                 }
             })
@@ -108,34 +111,34 @@ const actions = {
                         test_id: row[i]['id'],
                     }).then(async (userTests) => {
                         for (let j = 0; j < userTests.length; j++) {
-                                await knex.select("*").from('tpousers_userreadinganswers').where({
-                                    user_test_id: userTests[j]['id'],
-                                }).then((reading) => {
-                                    if (reading.length !== 0) {
-                                        readingCompleted = true
-                                    }
-                                })
-                                await knex.select("*").from('tpousers_userlisteninganswers').where({
-                                    user_test_id: userTests[j]['id'],
-                                }).then((listening) => {
-                                    if (listening.length !== 0) {
-                                        listeningCompleted = true
-                                    }
-                                })
-                                await knex.select("*").from('tpousers_userspeakinganswers').where({
-                                    user_test_id: userTests[j]['id'],
-                                }).then((speaking) => {
-                                    if (speaking.length !== 0) {
-                                        speakingCompleted = true
-                                    }
-                                })
+                            await knex.select("*").from('tpousers_userreadinganswers').where({
+                                user_test_id: userTests[j]['id'],
+                            }).then((reading) => {
+                                if (reading.length !== 0) {
+                                    readingCompleted = true
+                                }
+                            })
+                            await knex.select("*").from('tpousers_userlisteninganswers').where({
+                                user_test_id: userTests[j]['id'],
+                            }).then((listening) => {
+                                if (listening.length !== 0) {
+                                    listeningCompleted = true
+                                }
+                            })
+                            await knex.select("*").from('tpousers_userspeakinganswers').where({
+                                user_test_id: userTests[j]['id'],
+                            }).then((speaking) => {
+                                if (speaking.length !== 0) {
+                                    speakingCompleted = true
+                                }
+                            })
                             await knex.select("*").from('tpousers_userwritinganswers').where({
-                                    user_test_id: userTests[j]['id'],
-                                }).then((writing) => {
-                                    if (writing.length !== 0) {
-                                        writingCompleted = true
-                                    }
-                                })
+                                user_test_id: userTests[j]['id'],
+                            }).then((writing) => {
+                                if (writing.length !== 0) {
+                                    writingCompleted = true
+                                }
+                            })
                             if (userTests[j]['reading_score'] > readingScore) {
                                 readingScore = userTests[j]['reading_score']
                             }
@@ -150,7 +153,7 @@ const actions = {
                             }
                         }
 
-                    }).then(()=>{
+                    }).then(() => {
                         commit('updateLocalTPOList', {
                             'test': row[i],
                             'scores': {
@@ -198,7 +201,7 @@ const mutations = {
             return val.id
         })
 
-        if(localIds.indexOf(tpoObject['id']) === -1){
+        if (localIds.indexOf(tpoObject['id']) === -1) {
             state.localTPOList.push(tpoObject)
         }
     }

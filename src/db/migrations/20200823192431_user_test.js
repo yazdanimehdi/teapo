@@ -19,6 +19,7 @@ exports.up = function(knex) {
       table.string('array_slot_3', 20).nullable();
       table.string('array_slot_4', 20).nullable();
       table.string('mode', 20).nullable();
+      table.boolean('sent').nullable();
       table.integer('test_id').unsigned().index().references('id').inTable('tpo_test').nullable();
       table.integer('user_id').unsigned().index().references('id').inTable('institutions_users').nullable();
 

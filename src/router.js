@@ -10,6 +10,7 @@ import Review from "@/Views/MemriseModules/Review";
 import DifficultWords from "@/Views/MemriseModules/DifficultWords";
 import ExamReview from "@/Views/ExamModule/ExamReview";
 import OrderDetailPage from "@/Views/OrderDetailPage";
+import MockDone from "@/Views/MockDone";
 
 Vue.use(Router);
 
@@ -70,6 +71,11 @@ export default new Router({
             name: 'ReviewExam',
             component: ExamReview
         },
+        {
+            path: '/mock_done',
+            name: 'MockDone',
+            component: MockDone
+        }
 
     ]
 })

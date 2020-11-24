@@ -4,7 +4,7 @@
       <v-row>
         <v-col cols="12" sm="12" md="12" lg="12" xl="12">
           <v-card class="mx-auto"
-                  style="background-image: linear-gradient(#DF55B1, #CEA0BF); height: 300px; border-radius: 15px"
+                  style="background-image: linear-gradient(#DF55B1, #CEA0BF); height: 300px; border-radius: 15px; overflow-y: scroll"
           >
             <v-img src="../../assets/new_releases.png" class="white--text" contain
                    height="300px">
@@ -15,6 +15,11 @@
                 </div>
 
               </v-card-subtitle>
+              <v-card-text style="">
+                <v-card style="margin-bottom: 15px" height="45px" width="100%" color="rgba(206, 160, 191, 0.7)" v-for="newsInst in news" :key="newsInst.id" @click="goToNews(newsInst.link)">
+                  <v-card-title>{{newsInst.title}}</v-card-title>
+                </v-card>
+              </v-card-text>
 
             </v-img>
           </v-card>
@@ -250,7 +255,7 @@ import {
 import {mapGetters, mapState} from 'vuex';
 import StartStudyOverlay from "@/components/MemriseComponents/StartStudyOverlay";
 import {GET_STUDY_WORDS} from "@/store/actions/studyWords";
-import {GET_DASHBOARD_DATA, SET_TOEFL_TIME} from "@/store/actions/dashboard";
+import {GET_DASHBOARD_DATA, GET_NEWS, SET_TOEFL_TIME} from "@/store/actions/dashboard";
 import {GET_LOCAL_TPO_LIST} from "@/store/actions/TPOPage";
 
 export default {
@@ -268,6 +273,7 @@ export default {
   },
   created() {
     this.$store.dispatch(GET_STUDY_WORDS);
+    this.$store.dispatch(GET_NEWS);
     this.$store.dispatch(GET_LOCAL_TPO_LIST).then(() => {
       this.$store.dispatch(GET_DASHBOARD_DATA);
     })
@@ -290,7 +296,7 @@ export default {
       totalSpeaking: state => state.dashboard.totalSpeaking,
       totalWriting: state => state.dashboard.totalWriting,
     }),
-    ...mapGetters(['studyWordsItems', 'learningStateCount', 'reviewingStateCount', 'difficultStateCount', 'dayToTOEFL', 'progress', 'practiceTest']),
+    ...mapGetters(['studyWordsItems', 'learningStateCount', 'reviewingStateCount', 'difficultStateCount', 'dayToTOEFL', 'progress', 'practiceTest', 'news']),
     nextThreeYears() {
       let d = new Date();
       let year = d.getFullYear();
@@ -318,6 +324,12 @@ export default {
       picker: new Date().toISOString().substr(0, 10),
       datePickerDialog: false,
 
+    }
+  },
+  methods:{
+    goToNews(link){
+      const {shell} = require("electron");
+      shell.openExternal(link);
     }
   }
 }
