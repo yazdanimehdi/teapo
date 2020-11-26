@@ -18,8 +18,6 @@ module.exports = {
                 mac: {
                     category: "public.app-category.education"
                 },
-                icon: "./icon.icns",
-                extraResources: ['./db.sqlite3'],
             }
         }
     }

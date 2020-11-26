@@ -21,7 +21,7 @@
                             <v-container v-if="difficultWordsSession[index]['state'] === -1">
                                 <v-row>
                                     <v-col sm="8" md="8" lg="8" xl="8" style="border-bottom: gray thin solid">
-                                        <div style="font-weight: bold; font-size: 70px; margin-top: 30px">
+                                        <div style="font-weight: bold; font-size: 50px; margin-top: 30px">
                                             {{difficultWordsSession[index]['word']}}
                                         </div>
                                     </v-col>

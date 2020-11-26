@@ -427,8 +427,8 @@ const actions = {
             let listeningQuestionsCount = 0;
             for (let i = 0; i < rootState.listening.listening.length; i++) {
                 for (let j = 0; j < rootState.listening.listening[i].length; j++) {
+                    listeningQuestionsCount += rootState.listening.listening[i][j].questions.length;
                     for (let k = 0; k < rootState.listening.listening[i][j].questions.length; k++) {
-                        listeningQuestionsCount += rootState.listening.listening[i][j].questions.length;
                         if (rootState.listening.listeningAnswers[rootState.listening.listening[i][j].questions[k].id] !== undefined) {
                             if (rootState.listening.listening[i][j].questions[k].right_answer === rootState.listening.listeningAnswers[rootState.listening.listening[i][j].questions[k].id]) {
                                 correctListeningAnswers++;
@@ -448,6 +448,8 @@ const actions = {
                     }
                 }
             }
+            console.log(correctListeningAnswers)
+            console.log(listeningQuestionsCount)
             let listeningScore = Math.ceil((correctListeningAnswers / listeningQuestionsCount) * 30);
             knex('tpousers_testuser').where({id: state.userTestId}).update({
                 listening_score: listeningScore

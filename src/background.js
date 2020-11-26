@@ -1,7 +1,8 @@
 'use strict'
 /* global __static */
 
-import {app, protocol, BrowserWindow, Menu} from 'electron'
+import {app, protocol, BrowserWindow, Menu, nativeImage} from 'electron'
+
 import {
     createProtocol,
     installVueDevtools
@@ -87,16 +88,17 @@ if (gotTheLock) {
 
 function createWindow() {
     win = new BrowserWindow({
-        width: 904, height: 700,
+        height:700,
+        width:904,
         minWidth: 904,
         minHeight: 700,
+        transparent: process.platform === 'darwin',
+        frame: !(process.platform === 'darwin'),
         titleBarStyle: 'hidden',
-        frame: false,
-        transparent: true,
         webPreferences: {
             nodeIntegration:true,
         },
-        icon: path.join(__static, 'icon.png')
+        icon: nativeImage.createFromPath(path.join(__static, 'icon.png')),
     });
     const template = [
         // { role: 'appMenu' }
@@ -108,6 +110,9 @@ function createWindow() {
             ]
         }] : []),
     ];
+    win.setResizable(true)
+    win.setMovable(true)
+    win.setMaximizable(true)
 
     const menu = Menu.buildFromTemplate(template);
     Menu.setApplicationMenu(menu);

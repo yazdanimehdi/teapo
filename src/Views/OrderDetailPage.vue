@@ -55,7 +55,7 @@
           </div>
           <div style="font-size: 20px; margin-bottom: 10px"><span style="font-weight: bold; margin-right: 20px">Correction Files:</span>
             <span v-if="reviewModel.related_file === null || reviewModel.related_file === '' ">-</span>
-            <v-btn v-else @click="myUrlSaveAs(`http://127.0.0.1:8000${reviewModel.related_file}`)">Download</v-btn>
+            <v-btn v-else @click="myUrlSaveAs(`http://main.teapo.ir${reviewModel.related_file}`)">Download</v-btn>
           </div>
         </v-card>
         <template v-if="reviewModel.state === 1">

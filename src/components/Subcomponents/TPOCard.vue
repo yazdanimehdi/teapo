@@ -31,7 +31,7 @@
                 <v-row>
                   <v-col>
                     <v-progress-linear
-                        v-model="downloadValue"
+                        :value="downloadValue"
                         :active="downloadShow"
                         :indeterminate="downloadQuery"
                         :query="true"
@@ -39,7 +39,7 @@
                         striped
                         rounded
                         color="green"
-                    ><strong v-if="!downloadQuery">{{ Math.ceil(downloadValue) }}%</strong></v-progress-linear>
+                    ><strong v-if="!downloadQuery" style="user-select: none;">{{ Math.ceil(downloadValue) }}%</strong></v-progress-linear>
                   </v-col>
                 </v-row>
 
@@ -176,7 +176,7 @@
 import {RESUME_TPO, START_TPO} from "@/store/actions/mainTPO";
 import {DOWNLOAD_TPO} from "@/store/actions/download";
 import {mapGetters} from 'vuex'
-import {CHECK_EXISTING_USER_TEST} from "@/store/actions/TPOPage";
+import {CHECK_EXISTING_USER_TEST, GET_LOCAL_TPO_LIST} from "@/store/actions/TPOPage";
 
 export default {
   name: "TPOCard",
@@ -209,7 +209,12 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['percentCompleted', 'localTPOListId', 'localTPOList']),
+    ...mapGetters(['localTPOListId', 'localTPOList']),
+
+    percentDownloaded(){
+      return this.$store.getters.percentCompleted(this.tpoId)
+    },
+
     downloaded(){
       return this.localTPOListId.indexOf(this.tpoId) !== -1;
     },
@@ -237,11 +242,14 @@ export default {
     }
   },
   watch: {
-    percentCompleted(newVal) {
-      if (newVal > 0) {
+    percentDownloaded(newVal) {
+      console.log(newVal)
+      if (newVal > 0 && newVal !== Infinity) {
+        this.downloadValue = newVal
+        this.downloadShow = true
         this.downloadQuery = false
+
       }
-      this.downloadValue = newVal
       if (newVal === 100) {
         this.downloadShow = false
       }
@@ -334,7 +342,10 @@ export default {
       })
     },
     downloadTPO() {
-      this.$store.dispatch(DOWNLOAD_TPO, this.tpoId)
+      let self = this;
+      this.$store.dispatch(DOWNLOAD_TPO, this.tpoId).then( () => {
+        self.$store.dispatch(GET_LOCAL_TPO_LIST)
+      } )
       this.downloadQuery = true
       this.downloadShow = true
     },

@@ -101,16 +101,31 @@
              style="background-color: rgb(196, 199, 215); font-family: Verdana; width: 100%; height: 40px; text-align: center; margin-bottom: 5px">
           <span>Click on {{ listeningQuestionAnswerCount }} answers</span></div>
         <v-container>
-          <v-row v-for="ans in listeningQuestionAnswers" :key="ans.id" v-show="answers.enabled">
-            <label class="container_checkbox" v-if="listeningQuestionMulti === true">{{ ans.answer }}
-              <input type="checkbox" :value="ans.code" name="answer" v-model="answer">
-              <span class="checkmark_checkbox"></span>
-            </label>
-            <label class="container_radio" v-else>{{ ans.answer }}
+          <template v-if="listeningQuestionMulti === true" >
+              <v-checkbox
+                  v-show="answers.enabled"
+                  v-for="(ans, index) in listeningQuestionAnswers" :key="index"
+                  v-model="answer"
+                  :label="ans.answer"
+                  :value="ans.code"
+                  hide-details
+                  :on-icon="icons.mdiCheckboxBlank"
+                  multiple
+                  :off-icon="icons.mdiCheckboxBlankOutline"
+                  color="black"
+              ></v-checkbox>
+          </template>
+<!--            <label class="container_checkbox" v-if="listeningQuestionMulti === true">{{ ans.answer }}-->
+<!--              <input type="checkbox" :value="ans.code" name="answer" v-model="answer">-->
+<!--              <span class="checkmark_checkbox"></span>-->
+<!--            </label>-->
+          <template v-else >
+            <label class="container_radio" v-for="ans in listeningQuestionAnswers" :key="ans.id" v-show="answers.enabled">{{ ans.answer }}
               <input type="radio" v-bind:value="ans.code" name="answer" v-model="answer">
               <span class="checkmark_radio"></span>
             </label>
-          </v-row>
+          </template>
+
         </v-container>
       </v-row>
     </v-container>
@@ -156,6 +171,7 @@ import {mapState, mapGetters} from 'vuex'
 import {TIME_STOP} from '@/store/actions/time'
 import {SAVE_ANSWER_LISTENING, GO_TO_NEXT_LISTENING, GO_TO_PREVIOUS_LISTENING} from '@/store/actions/listening'
 import {SAVE_TPO} from "@/store/actions/mainTPO";
+import {mdiCheckboxBlank, mdiCheckboxBlankOutline} from "@mdi/js"
 
 export default {
   name: "ListeningQuestions",
@@ -181,6 +197,10 @@ export default {
       answer: [],
       dialogCorrect: false,
       endDialog: false,
+      icons:{
+        mdiCheckboxBlank,
+        mdiCheckboxBlankOutline
+      }
     }
   },
   watch: {

@@ -127,7 +127,7 @@
                 </v-col>
                 <v-col cols="6" sm="6" md="6" lg="6" xl="6"
                        style="text-align: right; padding: 0 20px 0 0; color: limegreen">
-                  Score: {{ listeningReviewScore === null ? '-' : listeningReviewScore }}/25
+                  Score: {{ listeningReviewScore === null ? '-' : listeningReviewScore }}/30
                 </v-col>
               </v-row>
             </v-container>
@@ -234,7 +234,7 @@
                 </v-col>
                 <v-col cols="2" sm="2" md="2" lg="2" xl="2"
                        style="text-align: right; padding: 0 20px 0 0; color: limegreen">
-                  Score: {{ speakingReviewScore === null ? '-' : speakingReviewScore }}/25
+                  Score: {{ speakingReviewScore === null ? '-' : speakingReviewScore }}/30
                 </v-col>
               </v-row>
             </v-container>
@@ -291,7 +291,7 @@
                 </v-col>
                 <v-col cols="2" sm="2" md="2" lg="2" xl="2"
                        style="text-align: right; padding: 0 20px 0 0; color: limegreen">
-                  Score: {{ writingReviewScore === null ? '-' : writingReviewScore }}/25
+                  Score: {{ writingReviewScore === null ? '-' : writingReviewScore }}/30
                 </v-col>
 
               </v-row>

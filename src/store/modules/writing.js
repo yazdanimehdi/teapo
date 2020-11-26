@@ -70,7 +70,6 @@ const actions = {
                 dispatch(UPDATE_COMPONENT, 'WritingPlayer')
             }
             if (state.stateNumber === 2) {
-                dispatch(SET_NEW_TIME, state.taskNumber)
                 dispatch(TIME_STOP, false)
                 dispatch(UPDATE_COMPONENT, 'WritingIntegrated')
             }
@@ -124,6 +123,7 @@ const actions = {
                 } else {
                     commit('updateTaskNumber', state.taskNumber + 1);
                     commit('updateStateNumber', -1);
+                    dispatch(SET_NEW_TIME, state.taskNumber)
                     dispatch(UPDATE_STATE_WRITING);
                 }
             } else {

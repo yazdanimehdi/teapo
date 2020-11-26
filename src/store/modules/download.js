@@ -1,14 +1,21 @@
 import {DOWNLOAD_TPO} from "@/store/actions/download";
 import axios from 'axios';
 import {GET_LOCAL_TPO_LIST} from "@/store/actions/TPOPage";
+
 let knex = require('@/db/knex')
 
 const state = {
-    percentCompleted: 0,
-    totalSize: 0,
+    percentCompleted: [],
 };
 const getters = {
-    percentCompleted: state => state.percentCompleted,
+    percentCompleted: (state) => (tpoId) => {
+        if (state.percentCompleted.find(obj => obj['tpoId'] === tpoId) !== undefined){
+            return state.percentCompleted.find(obj => obj['tpoId'] === tpoId)['percent']
+        }
+        else {
+            return 0
+        }
+    }
 };
 const actions = {
     [DOWNLOAD_TPO]: ({commit, dispatch}, payload) => {
@@ -19,8 +26,8 @@ const actions = {
                 },
                 onDownloadProgress: (progressEvent) => {
                     let percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-                    commit('updateFileSize', progressEvent.lengthComputable)
-                    commit('updatePercentCompleted', percentCompleted)
+                    // commit('updateFileSize', [progressEvent.lengthComputable, payload])
+                    commit('updatePercentCompleted', [percentCompleted, payload])
                 }
             }).then((resp) => {
                 let data = resp.data;
@@ -111,7 +118,8 @@ const actions = {
                                                 answer: data['listening'][i]['listening']['questions'][j]['answers'][k]['answer'],
                                                 code: data['listening'][i]['listening']['questions'][j]['answers'][k]['code'],
                                                 question_id: data['listening'][i]['listening']['questions'][j]['id']
-                                            }).then(() => {})
+                                            }).then(() => {
+                                            })
                                         }
 
                                     })
@@ -152,7 +160,8 @@ const actions = {
                         speaking_id: data['speaking'][i]['speaking']['id'],
                         test_id: data['id'],
                         part: data['speaking'][i]['part']
-                    }).then(() => {})
+                    }).then(() => {
+                    })
                 }
 
                 for (let i = 0; i < data['writing'].length; i++) {
@@ -167,13 +176,15 @@ const actions = {
                                 type: data['writing'][i]['writing']['type'],
                                 writing_listening_transcript: data['writing'][i]['writing']['writing_listening_transcript'],
                                 sections: data['writing'][i]['writing']['sections'],
-                            }).then(() => {})
+                            }).then(() => {
+                            })
                         }
                         knex('tpo_testwriting').insert({
                             test_id: data['id'],
                             writing_id: data['writing'][i]['writing']['id'],
                             part: data['writing'][i]['part'],
-                        }).then(() => {})
+                        }).then(() => {
+                        })
                     })
                 }
 
@@ -184,7 +195,8 @@ const actions = {
                         answering_time: data['speaking_times'][i]['answering_time'],
                         reading_time: data['speaking_times'][i]['reading_time'],
                         test_id: data['id'],
-                    }).then(() => {})
+                    }).then(() => {
+                    })
                 }
 
                 for (let i = 0; i < data['listening_times'].length; i++) {
@@ -192,7 +204,8 @@ const actions = {
                         number: data['listening_times'][i]['number'],
                         time: data['listening_times'][i]['time'],
                         test_id: data['id'],
-                    }).then(() => {})
+                    }).then(() => {
+                    })
                 }
 
                 for (let i = 0; i < data['writing_times'].length; i++) {
@@ -201,7 +214,8 @@ const actions = {
                         time: data['writing_times'][i]['time'],
                         reading_time: data['writing_times'][i]['reading_time'],
                         test_id: data['id'],
-                    }).then(() => {})
+                    }).then(() => {
+                    })
                 }
             }).then(() => {
                 resolve()
@@ -212,11 +226,16 @@ const actions = {
     }
 };
 const mutations = {
-    updateFileSize(state, payload) {
-        state.totalSize = payload;
-    },
+    // updateFileSize(state, payload) {
+    //     state.totalSize[payload[1]] = payload[0];
+    // },
     updatePercentCompleted(state, payload) {
-        state.percentCompleted = payload;
+        if (state.percentCompleted.find(obj => obj['tpoId'] === payload[1]) !== undefined) {
+            state.percentCompleted.find(obj => obj['tpoId'] === payload[1])['percent'] = payload[0];
+        }
+        else {
+            state.percentCompleted.push({'tpoId': payload[1], 'percent': payload[0]})
+        }
     }
 }
 export default {

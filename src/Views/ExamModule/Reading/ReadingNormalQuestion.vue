@@ -550,8 +550,6 @@ div {
   height: 130px;
   padding-top: 20px;
   background: linear-gradient(to right, rgb(61, 83, 135), rgb(113, 53, 60));
-  -webkit-user-select: none;
-  -webkit-app-region: drag;
 }
 
 ::-webkit-scrollbar {

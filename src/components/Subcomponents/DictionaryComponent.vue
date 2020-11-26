@@ -93,7 +93,7 @@
 <script>
     import {mapState} from 'vuex'
     import {mdiArrowRight, mdiPlusBox} from '@mdi/js'
-    import {LOAD_DICTIONARY} from "@/store/actions/dictionary";
+    import {LOAD_DICTIONARY, RESET_ALL_DICT_ITEMS} from "@/store/actions/dictionary";
     import {ADD_NEW_WORD} from "@/store/actions/studyWords";
 
     export default {
@@ -161,6 +161,7 @@
                 }
             },
             goToWord(word) {
+                this.$store.dispatch(RESET_ALL_DICT_ITEMS);
                 this.$store.dispatch(LOAD_DICTIONARY, word);
             }
         }

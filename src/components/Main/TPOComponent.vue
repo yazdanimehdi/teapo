@@ -75,20 +75,24 @@
               }
             }
         },
-        mounted(){
+        created(){
           if(this.connected === true){
               this.$store.dispatch(GET_ONLINE_TPO_LIST).then(() => {
-                this.loading = false
+                this.$store.dispatch(GET_LOCAL_TPO_LIST).then(() => {
+                  this.loading = false
+
+                })
               }).catch(() => {
                 this.loading = false
                 this.notConnected = true
               })
-              this.$store.dispatch(GET_LOCAL_TPO_LIST)
+
           }
           else{
-              this.loading = false
               this.notConnected = true
-              this.$store.dispatch(GET_LOCAL_TPO_LIST)
+              this.$store.dispatch(GET_LOCAL_TPO_LIST).then(() => {
+                this.loading = false
+              })
           }
         },
       data() {

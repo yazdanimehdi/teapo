@@ -1,6 +1,9 @@
 <template>
         <div :style="{'width': `${width}px`, 'font-family':'kalam'}">
-            <v-container fluid style="overflow-y: scroll">
+          <div v-if="loading" style="text-align: center; margin-top: 100px">
+            <v-progress-circular indeterminate size="50"></v-progress-circular>
+          </div>
+            <v-container fluid style="overflow-y: scroll" v-else>
                 <v-row>
                     <v-col cols="12" sm="12" lg="12" md="12" xl="12">
                         <v-card style="background-image: linear-gradient(#00bfa5, #4dd0e1); border-radius: 15px"
@@ -427,10 +430,13 @@
                 keys: [
                     'Name',
                 ],
+              loading: true,
             }
         },
         created(){
-            this.$store.dispatch(GET_STUDY_WORDS);
+            this.$store.dispatch(GET_STUDY_WORDS).then(() => {
+              this.loading = false
+            });
         },
         computed: {
             cardColor(index) {

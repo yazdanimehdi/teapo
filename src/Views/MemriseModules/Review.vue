@@ -9,7 +9,7 @@
                             <v-container>
                                 <v-row>
                                     <v-col sm="8" md="8" lg="8" xl="8" style="border-bottom: gray thin solid;">
-                                        <div style="font-weight: bold; font-size: 70px; margin-top: 30px; margin-bottom: 40px">
+                                        <div style="font-weight: bold; font-size: 50px; margin-top: 30px; margin-bottom: 40px">
                                             <span v-if="rand === 1">{{learningSession[index]['word']}}</span>
                                             <span v-if="rand === 2" style="font-weight: bold; font-size: 24px; margin-top: 30px; line-height: 30px">{{learningSession[index]['definition']}}</span>
                                         </div>

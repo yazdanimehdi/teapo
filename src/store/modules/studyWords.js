@@ -32,6 +32,7 @@ const state = {
 };
 
 let knex = require('@/db/knex')
+let dict = require('@/db/dictionary')
 const getters = {
     learntWordsCount: state => {
         let items = 0;
@@ -93,9 +94,8 @@ const actions = {
             {
                 'state': 0,
                 'label': 'Difficult',
-                'last_date': Date.now()
+                'last_time': Date.now()
             }).then(function () {
-            console.log('done')
         })
 
     },
@@ -103,17 +103,18 @@ const actions = {
         if (state.words.length <= 8) {
             dispatch(GET_RANDOM_WORDS);
         }
-        if(payload['word']['state'] === -1){
+        if (payload['word']['state'] === -1) {
             commit('updateStateDifficultWordsList', {'word': payload['word'], 'state': payload['word']['state'] + 1})
             knex('tpousers_studywords').where({'id': payload['word']['id']}).update({'state': 0}).then(
                 function () {
-                    console.log('done')
                 }
             )
-        }
-        else if (payload['word']['state'] === 0) {
+        } else if (payload['word']['state'] === 0) {
             if (payload['correct'] === true) {
-                commit('updateStateDifficultWordsList', {'word': payload['word'], 'state': payload['word']['state'] + 1})
+                commit('updateStateDifficultWordsList', {
+                    'word': payload['word'],
+                    'state': payload['word']['state'] + 1
+                })
                 commit('updateCorrectDifficultWordsList', {
                     'word': payload['word'],
                     'correct_times': payload['word']['correct_times'] + 1
@@ -123,10 +124,8 @@ const actions = {
                         'state': payload['word']['state'] + 1,
                         'correct_times': payload['word']['correct_times'] + 1,
                     }).then(function () {
-                    console.log('done')
                 })
-            }
-            else{
+            } else {
                 commit('updateStateDifficultWordsList', {'word': payload['word'], 'state': -1})
                 commit('updateUncorrectDifficultWordsList', {
                     'word': payload['word'],
@@ -137,13 +136,15 @@ const actions = {
                         'state': -1,
                         'uncorrect_times': payload['word']['uncorrect_times'] + 1,
                     }).then(function () {
-                    console.log('done')
                 })
             }
         } else {
             if (payload['correct'] === true) {
                 if (payload['correct'] === true && payload['word']['state'] <= 4) {
-                    commit('updateStateDifficultWordsList', {'word': payload['word'], 'state': payload['word']['state'] + 1})
+                    commit('updateStateDifficultWordsList', {
+                        'word': payload['word'],
+                        'state': payload['word']['state'] + 1
+                    })
                     commit('updateCorrectDifficultWordsList', {
                         'word': payload['word'],
                         'correct_times': payload['word']['correct_times'] + 1
@@ -153,7 +154,6 @@ const actions = {
                             'state': payload['word']['state'] + 1,
                             'correct_times': payload['word']['correct_times'] + 1,
                         }).then(function () {
-                        console.log('done')
                     })
                 } else {
                     commit('updateLabelDifficultWordsList', {'word': payload['word']})
@@ -161,9 +161,8 @@ const actions = {
                         {
                             'label': 'Master',
                             'correct_times': payload['word']['correct_times'] + 1,
-                            'last_date': Date.now()
+                            'last_time': Date.now()
                         }).then(function () {
-                        console.log('done')
                     })
                 }
             } else {
@@ -177,7 +176,6 @@ const actions = {
                         'state': 0,
                         'uncorrect_times': payload['word']['uncorrect_times'] + 1,
                     }).then(function () {
-                    console.log('done')
                 })
             }
         }
@@ -206,11 +204,10 @@ const actions = {
         if (payload['correct']) {
             knex('tpousers_studywords').where({'id': payload['word']['id']}).update({
                 'correct_times': payload['word']['correct_times'] + 1,
-                'last_date': Date.now(),
+                'last_time': Date.now(),
                 'label': 'Master'
             }).then(
                 function () {
-                    console.log('done')
                 }
             )
 
@@ -218,12 +215,11 @@ const actions = {
             knex('tpousers_studywords').where({'id': payload['word']['id']}).update({
                 'uncorrect_times': payload['word']['uncorrect_times'] + 1,
                 'label': 'Difficult',
-                'last_date': Date.now(),
+                'last_time': Date.now(),
                 'state': 0,
 
             }).then(
                 function () {
-                    console.log('done')
                 }
             )
 
@@ -237,10 +233,9 @@ const actions = {
         if (payload['correct']) {
             knex('tpousers_studywords').where({'id': payload['word']['id']}).update({
                 'correct_times': payload['word']['correct_times'] + 1,
-                'last_date': Date.now()
+                'last_time': Date.now()
             }).then(
                 function () {
-                    console.log('done')
                 }
             )
 
@@ -248,12 +243,11 @@ const actions = {
             knex('tpousers_studywords').where({'id': payload['word']['id']}).update({
                 'uncorrect_times': payload['word']['uncorrect_times'] + 1,
                 'label': 'Difficult',
-                'last_date': Date.now(),
+                'last_time': Date.now(),
                 'state': 0,
 
             }).then(
                 function () {
-                    console.log('done')
                 }
             )
 
@@ -267,13 +261,6 @@ const actions = {
             return Math.floor(Math.random() * (max - min)) + min;
         }
 
-        let dict = require('knex')({
-            client: 'sqlite3',
-            connection: {
-                filename: 'longman.sqlite3'
-            },
-            useNullAsDefault: true
-        });
         for (let i = 0; i < 8; i++) {
             let result = dict.select("word").from('longman_words').where({'id': getRandomInt(10642, 52740)});
             result.then(function (word) {
@@ -311,7 +298,6 @@ const actions = {
             commit('updateStateWordsList', {'word': payload['word'], 'state': 1})
             knex('tpousers_studywords').where({'id': payload['word']['id']}).update({'state': 1}).then(
                 function () {
-                    console.log('done')
                 }
             )
         } else {
@@ -327,18 +313,19 @@ const actions = {
                             'state': payload['word']['state'] + 1,
                             'correct_times': payload['word']['correct_times'] + 1,
                         }).then(function () {
-                        console.log('done')
+                    }).catch((err) => {
+                        console.log(err)
                     })
                 } else {
-                    console.log(payload['word']['state']);
                     commit('updateLabelWordsList', {'word': payload['word']})
                     knex('tpousers_studywords').where({'id': payload['word']['id']}).update(
                         {
                             'label': 'Master',
                             'correct_times': payload['word']['correct_times'] + 1,
-                            'last_date': Date.now()
+                            'last_time': Date.now()
                         }).then(function () {
-                        console.log('done')
+                    }).catch((err) => {
+                        console.log(err)
                     })
                 }
             } else {
@@ -352,7 +339,6 @@ const actions = {
                         'state': 0,
                         'uncorrect_times': payload['word']['uncorrect_times'] + 1,
                     }).then(function () {
-                    console.log('done')
                 })
             }
         }
@@ -372,6 +358,7 @@ const actions = {
 
     },
     [GET_STUDY_WORDS]: ({commit}) => {
+        commit('resetAllStudy')
         let userId = localStorage.getItem('user-id')
         let studyWords = knex.select('*').from('tpousers_studywords').where({'user_id': userId})
         return studyWords.then(async function (row) {
@@ -381,60 +368,55 @@ const actions = {
                     commit('updateReviewList', row[i]);
                 } else if (row[i]['label'] === 'Difficult') {
                     commit('updateDifficultList', row[i])
-                } else if(row[i]['label'] === 'Master'){
+                } else if (row[i]['label'] === 'Master') {
                     if (row[i]['correct_times'] + row[i]['uncorrect_times'] < 5) {
-                        if ((Date.now() - row[i]['last_date']) * 1.15741e-8 > 2) {
+                        if ((Date.now() - row[i]['last_time']) * 1.15741e-8 > 2) {
                             commit('updateReviewList', row[i]);
                             knex('tpousers_studywords').where({'id': row[i]['id']}).update(
                                 {
                                     'label': 'Reviewing',
                                 }).then(function () {
-                                console.log('done')
                             })
                         }
                     } else {
                         if (row[i]['correct_times'] / (row[i]['correct_times'] + row[i]['uncorrect_times']) < 0.3) {
-                            if ((Date.now() - row[i]['last_date']) * 1.15741e-8 > 1) {
+                            if ((Date.now() - row[i]['last_time']) * 1.15741e-8 > 1) {
                                 commit('updateReviewList', row[i]);
                                 knex('tpousers_studywords').where({'id': row[i]['id']}).update(
                                     {
                                         'label': 'Reviewing',
                                     }).then(function () {
-                                    console.log('done')
                                 })
                             }
                         }
                         if (0.3 <= row[i]['correct_times'] / (row[i]['correct_times'] + row[i]['uncorrect_times']) < 0.6) {
-                            if ((Date.now() - row[i]['last_date']) * 1.15741e-8 > 3) {
+                            if ((Date.now() - row[i]['last_time']) * 1.15741e-8 > 3) {
                                 commit('updateReviewList', row);
                                 knex('tpousers_studywords').where({'id': row[i]['id']}).update(
                                     {
                                         'label': 'Reviewing',
                                     }).then(function () {
-                                    console.log('done')
                                 })
                             }
                         }
 
                         if (0.6 <= row[i]['correct_times'] / (row[i]['correct_times'] + row[i]['uncorrect_times']) < 0.9) {
-                            if ((Date.now() - row[i]['last_date']) * 1.15741e-8 > 7) {
+                            if ((Date.now() - row[i]['last_time']) * 1.15741e-8 > 7) {
                                 commit('updateReviewList', row[i]);
                                 knex('tpousers_studywords').where({'id': row[i]['id']}).update(
                                     {
                                         'label': 'Reviewing',
                                     }).then(function () {
-                                    console.log('done')
                                 })
                             }
                         }
                         if (0.9 <= row[i]['correct_times'] / (row[i]['correct_times'] + row[i]['uncorrect_times']) <= 1) {
-                            if ((Date.now() - row[i]['last_date']) * 1.15741e-8 > 14) {
+                            if ((Date.now() - row[i]['last_time']) * 1.15741e-8 > 14) {
                                 commit('updateReviewList', row[i]);
                                 knex('tpousers_studywords').where({'id': row[i]['id']}).update(
                                     {
                                         'label': 'Reviewing',
                                     }).then(function () {
-                                    console.log('done')
                                 })
                             }
                         }
@@ -457,7 +439,7 @@ const actions = {
             'definition': payload['definition'],
             'user_id': userId
         })
-        return studyWordSearch.then(function (row) {
+        return studyWordSearch.then(async function (row) {
             if (row.length === 0) {
                 let studyWord = knex('tpousers_studywords').insert({
                     word: payload['word'],
@@ -469,17 +451,16 @@ const actions = {
                     state: 0,
                     user_id: userId,
                 })
-                studyWord.then(function (id) {
-                    dispatch(GET_STUDY_WORDS);
+                await studyWord.then(async function (id) {
                     for (let i = 0; i < payload['examples'].length; i++) {
-                        knex('tpousers_studywordsexample').insert({
+                        await knex('tpousers_studywordsexample').insert({
                             'tpo_sudywords_id': id[0],
                             'example': payload['examples'][i]['example']
-                        }).then(function (id) {
-                            dispatch(GET_STUDY_WORDS);
-                            return id
+                        }).then(() => {
                         })
                     }
+                    await dispatch(GET_STUDY_WORDS);
+                    return true
                 })
             } else {
                 return false
@@ -490,6 +471,23 @@ const actions = {
 };
 
 const mutations = {
+    resetAllStudy(state) {
+        state.words = [];
+        state.examples = [];
+        state.learningList = [];
+        state.learningSession = [];
+        state.learningExampleList = [];
+        state.reviewList = [];
+        state.difficultList = [];
+        state.loaded = false;
+        state.randomWords = [];
+        state.randomDefs = [];
+        state.denominator = 0;
+        state.SpeedReviewSession = [];
+        state.reviewSession = [];
+        state.difficultWordsSession = [];
+        state.difficultExampleList = [];
+    },
     updateWords(state, payload) {
         state.words = payload;
     },
@@ -594,7 +592,7 @@ const mutations = {
     updateDifficultList(state, payload) {
         state.difficultList.push(payload);
     },
-    updateDifficultWordsSession(state){
+    updateDifficultWordsSession(state) {
         state.difficultWordsSession = state.difficultList.slice(0, 4);
         let denominator = 0;
         for (let i = 0; i < state.difficultWordsSession.length; i++) {
@@ -602,7 +600,7 @@ const mutations = {
         }
         state.denominator = denominator;
     },
-    updateDifficultExampleList(state, payload){
+    updateDifficultExampleList(state, payload) {
         state.difficultExampleList.push(payload);
     },
 };

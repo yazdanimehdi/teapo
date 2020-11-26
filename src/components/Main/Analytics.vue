@@ -1,5 +1,5 @@
 <template>
-  <div :style="{'width': `${width}px`, 'font-family':'kalam'}">
+  <div :style="{'width': `${width}px`, 'font-family':'kalam'}" style="position: fixed">
     <v-container fluid style="overflow-y: scroll">
       <v-row>
         <v-col cols="9" sm="9" md="9" lg="9" xl="9" style="padding-right: 0">

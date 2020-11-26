@@ -3,7 +3,8 @@ import {
     LOAD_THESAURUS,
     LOAD_WORD_FAMILY,
     LOAD_ETYMOLOGY,
-    LOAD_OTHER_EXAMPLES
+    LOAD_OTHER_EXAMPLES,
+    RESET_ALL_DICT_ITEMS
 } from "@/store/actions/dictionary";
 
 let knex = require('@/db/dictionary')
@@ -59,7 +60,7 @@ const actions = {
 
     },
     [LOAD_DICTIONARY]: ({commit, dispatch}, payload) => {
-        commit('resetAll');
+        dispatch(RESET_ALL_DICT_ITEMS)
         let result = knex.select("*").from('longman_words').where({'word': payload});
         result.then(
             function (row) {
@@ -100,18 +101,24 @@ const actions = {
                     })
                 }
             })
+    },
+    [RESET_ALL_DICT_ITEMS]: ({commit}) => {
+        commit('resetAll');
     }
 };
 
 const mutations = {
     resetAll(state) {
+        state.word = '';
         state.wildCardSuggestion = [];
         state.wordDefinition = [];
-        state.wordThesaurus = [];
         state.wordFamily = [];
+        state.wordThesaurus = [];
         state.wordOtherExamples = [];
+        state.wordExamples = [];
         state.wordEtymology = [];
-        state.word = '';
+        state.wordCollocations = [];
+        state.isLoaded = false;
     },
     updateWildCardList(state, payload) {
         for (let i = 0; i < payload.length; i++) {
