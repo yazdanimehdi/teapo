@@ -11,6 +11,7 @@ import DifficultWords from "@/Views/MemriseModules/DifficultWords";
 import ExamReview from "@/Views/ExamModule/ExamReview";
 import OrderDetailPage from "@/Views/OrderDetailPage";
 import MockDone from "@/Views/MockDone";
+import TPOView from "@/Views/TPOView";
 
 Vue.use(Router);
 
@@ -75,6 +76,11 @@ export default new Router({
             path: '/mock_done',
             name: 'MockDone',
             component: MockDone
+        },
+        {
+            path: '/tpo_view',
+            name: 'TPOView',
+            component: TPOView
         }
 
     ]

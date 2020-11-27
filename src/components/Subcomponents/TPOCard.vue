@@ -1,9 +1,11 @@
 <template>
   <div>
-  <v-hover v-slot:default="{ hover }">
+<!--  <v-hover v-slot:default="{ hover }">-->
     <v-card width="100%" height="180px" flat
             style="border-radius: 30px"
-            :color="cardBackgroundColor">
+            :color="cardBackgroundColor"
+            @click="goToTPOView"
+    >
 
       <v-card-title class="tpo-title">
         {{ tpoTitle }}
@@ -126,57 +128,46 @@
           </v-container>
         </div>
       </v-card-text>
-      <v-expand-transition>
-        <div
-            v-if="hover && downloaded"
-            class="d-flex transition-fast-in-fast-out black darken-2 v-card--reveal display-3 white--text"
-            style="height: 100%;"
-        >
-          <v-container fluid>
-            <v-row align="center" justify="center">
-              <v-col>
-                <v-btn block @click="goToTPO">All</v-btn>
-              </v-col>
-            </v-row>
+<!--      <v-expand-transition>-->
+<!--        <div-->
+<!--            v-if="hover && downloaded"-->
+<!--            class="d-flex transition-fast-in-fast-out black darken-2 v-card&#45;&#45;reveal display-3 white&#45;&#45;text"-->
+<!--            style="height: 100%;"-->
+<!--        >-->
+<!--          <v-container fluid>-->
+<!--            <v-row align="center" justify="center">-->
+<!--              <v-col>-->
+<!--                <v-btn block @click="goToTPO">All</v-btn>-->
+<!--              </v-col>-->
+<!--            </v-row>-->
 
-            <v-row align="center" justify="center">
-              <v-col cols="6" sm="6" md="6" lg="6" xl="6">
-                <v-btn @click="goToReading" block color="teal accent-1">Reading</v-btn>
-              </v-col>
-              <v-col cols="6" sm="6" md="6" lg="6" xl="6">
-                <v-btn @click="goToListening" block color="indigo lighten-4">Listening</v-btn>
-              </v-col>
-              <v-col cols="6" sm="6" md="6" lg="6" xl="6">
-                <v-btn @click="goToSpeaking" block color="deep-orange lighten-3">Speaking</v-btn>
-              </v-col>
-              <v-col cols="6" sm="6" md="6" lg="6" xl="6">
-                <v-btn @click="goToWriting" block color="red accent-2">Writing</v-btn>
-              </v-col>
-            </v-row>
-          </v-container>
-        </div>
-      </v-expand-transition>
+<!--            <v-row align="center" justify="center">-->
+<!--              <v-col cols="6" sm="6" md="6" lg="6" xl="6">-->
+<!--                <v-btn @click="goToReading" block color="teal accent-1">Reading</v-btn>-->
+<!--              </v-col>-->
+<!--              <v-col cols="6" sm="6" md="6" lg="6" xl="6">-->
+<!--                <v-btn @click="goToListening" block color="indigo lighten-4">Listening</v-btn>-->
+<!--              </v-col>-->
+<!--              <v-col cols="6" sm="6" md="6" lg="6" xl="6">-->
+<!--                <v-btn @click="goToSpeaking" block color="deep-orange lighten-3">Speaking</v-btn>-->
+<!--              </v-col>-->
+<!--              <v-col cols="6" sm="6" md="6" lg="6" xl="6">-->
+<!--                <v-btn @click="goToWriting" block color="red accent-2">Writing</v-btn>-->
+<!--              </v-col>-->
+<!--            </v-row>-->
+<!--          </v-container>-->
+<!--        </div>-->
+<!--      </v-expand-transition>-->
     </v-card>
-  </v-hover>
-    <v-dialog max-width="500" v-model="dialog">
-      <v-card>
-        <v-card-title>
-          Do You Want To Continue Previous Session?
-        </v-card-title>
-        <v-card-actions>
-          <v-btn @click="startOver" color="red" style="color: white">Start Over</v-btn>
-          <v-btn @click="continueTest" color="green" style="color: white">Continue</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+<!--  </v-hover>-->
   </div>
 </template>
 
 <script>
-import {RESUME_TPO, START_TPO} from "@/store/actions/mainTPO";
 import {DOWNLOAD_TPO} from "@/store/actions/download";
 import {mapGetters} from 'vuex'
-import {CHECK_EXISTING_USER_TEST, GET_LOCAL_TPO_LIST} from "@/store/actions/TPOPage";
+import {GET_LOCAL_TPO_LIST} from "@/store/actions/TPOPage";
+import {SET_TPO_PARAMETERS} from "@/store/actions/TPOView";
 
 export default {
   name: "TPOCard",
@@ -256,90 +247,9 @@ export default {
     }
   },
   methods: {
-    goToTPO() {
-      this.$store.dispatch(CHECK_EXISTING_USER_TEST, [this.tpoId, ['Reading', 'Listening', 'Speaking', 'Writing'], this.mode]).then((result) => {
-        if(!result.isAvailable){
-          this.$store.dispatch(START_TPO, {
-            'examArray': ['Reading', 'Listening', 'Speaking', 'Writing'],
-            'TPO': this.tpoId,
-            'mode': this.mode
-          })
-          this.$router.push('/tpo')
-        }
-        else {
-          this.userTestId = result.userTestId
-          this.examArray = ['Reading', 'Listening', 'Speaking', 'Writing']
-          this.dialog = true
-        }
-      })
-    },
-    goToReading() {
-      this.$store.dispatch(CHECK_EXISTING_USER_TEST, [this.tpoId, ['Reading'], this.mode]).then((result) => {
-        if(!result.isAvailable){
-          this.$store.dispatch(START_TPO, {
-            'examArray': ['Reading'],
-            'TPO': this.tpoId,
-            'mode': this.mode
-          })
-          this.$router.push('/tpo')
-        }
-        else {
-          this.userTestId = result.userTestId
-          this.examArray = ['Reading']
-          this.dialog = true
-        }
-      })
-    },
-    goToListening() {
-      this.$store.dispatch(CHECK_EXISTING_USER_TEST, [this.tpoId, ['Listening'], this.mode]).then((result) => {
-        if(!result.isAvailable){
-          this.$store.dispatch(START_TPO, {
-            'examArray': ['Listening'],
-            'TPO': this.tpoId,
-            'mode': this.mode
-          })
-          this.$router.push('/tpo')
-        }
-        else {
-          this.userTestId = result.userTestId
-          this.examArray = ['Listening']
-          this.dialog = true
-        }
-      })
-    },
-    goToSpeaking() {
-      this.$store.dispatch(CHECK_EXISTING_USER_TEST, [this.tpoId, ['Speaking'], this.mode]).then((result) => {
-        if(!result.isAvailable){
-          this.$store.dispatch(START_TPO, {
-            'examArray': ['Speaking'],
-            'TPO': this.tpoId,
-            'mode': this.mode
-          })
-          this.$router.push('/tpo')
-        }
-        else {
-          this.userTestId = result.userTestId
-          this.examArray = ['Speaking']
-          this.dialog = true
-        }
-      })
-    },
-    goToWriting() {
-      this.$store.dispatch(CHECK_EXISTING_USER_TEST, [this.tpoId, ['Writing'], this.mode]).then((result) => {
-        if(!result.isAvailable){
-          this.$store.dispatch(START_TPO, {
-            'examArray': ['Writing'],
-            'TPO': this.tpoId,
-            'mode': this.mode
-          })
-          this.$router.push('/tpo')
-        }
-        else {
-          this.userTestId = result.userTestId
-          this.examArray = ['Writing']
-          this.dialog = true
-        }
-      })
+    goToTPOView() {
+      this.$store.dispatch(SET_TPO_PARAMETERS, [this.tpoId, this.tpoTitle])
+      this.$router.push('/tpo_view')
     },
     downloadTPO() {
       let self = this;
@@ -349,19 +259,7 @@ export default {
       this.downloadQuery = true
       this.downloadShow = true
     },
-    startOver(){
-      this.$store.dispatch(START_TPO, {
-        'examArray': this.examArray,
-        'TPO': this.tpoId,
-        'mode': this.mode
-      })
-      this.$router.push('/tpo')
-    },
-    continueTest(){
-      this.$store.dispatch(RESUME_TPO, this.userTestId).then(() => {
-        this.$router.push('/tpo')
-      })
-    },
+
   },
 }
 </script>

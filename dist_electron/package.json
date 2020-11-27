@@ -18,8 +18,8 @@
     "build:linux": "vue-cli-service electron:build --linux deb",
     "build:arch": "vue-cli-service electron:build --linux",
     "postinstall": "electron-builder install-app-deps",
-    "postuninstall": "electron- install-app-deps",
-    "electron:generate-icons": "elebuilderctron-icon-builder --input=./public/icon.png --output=build --flatten"
+    "postuninstall": "electron-builder install-app-deps",
+    "electron:generate-icons": "electron-icon-builder --input=./public/icon.png --output=build --flatten"
   },
   "main": "background.js",
   "dependencies": {

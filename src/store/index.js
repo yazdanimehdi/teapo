@@ -19,6 +19,7 @@ import reviewExam from "@/store/modules/reviewExam";
 import correction from "@/store/modules/correction";
 import correctionReview from "@/store/modules/correctionReview";
 import mockExams from "@/store/modules/mockExams";
+import TPOView from "@/store/modules/TPOView";
 
 
 Vue.use(Vuex);
@@ -45,7 +46,8 @@ export default new Vuex.Store({
         reviewExam: reviewExam,
         correction: correction,
         correctionReview: correctionReview,
-        mockExams: mockExams
+        mockExams: mockExams,
+        TPOView: TPOView,
     },
     strict: debug
 });
