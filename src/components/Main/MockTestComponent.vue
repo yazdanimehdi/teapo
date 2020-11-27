@@ -1,8 +1,16 @@
 <template>
   <div :style="{'width': `${width}px`, 'font-family':'kalam'}">
-  <div v-if="loading" style="text-align: center; margin-top: 100px">
-    <v-progress-circular indeterminate size="50"></v-progress-circular>
-  </div>
+    <div v-if="!connected">
+      <v-card flat height="200">
+        <v-img src="../../assets/sad.png" height="60" contain style="margin-top: 30px;" position="center">
+        </v-img>
+        <h2 style="text-align: center; margin-top: 30px">You are not connected to the internet</h2>
+
+      </v-card>
+    </div>
+    <div v-else-if="loading" style="text-align: center; margin-top: 100px">
+      <v-progress-circular indeterminate size="50"></v-progress-circular>
+    </div>
   <div :style="{'width': `${width}px`, 'font-family':'kalam'}" v-else>
     <v-container fluid style="overflow-y: scroll">
       <template v-if="mockListPaginated.length === 0">
@@ -355,7 +363,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['mockList', 'mockResultList', 'percentCompleted', 'doneUserTestIds', 'unSentMocks']),
+    ...mapGetters(['connected', 'mockList', 'mockResultList', 'percentCompleted', 'doneUserTestIds', 'unSentMocks']),
     mockListWithoutDone(){
       let newMockList = []
       for(let i = 0; i < this.mockList.length; i++){

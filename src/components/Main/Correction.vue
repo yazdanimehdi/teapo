@@ -1,17 +1,18 @@
 <template>
   <div :style="{'width': `${width}px`, 'font-family':'kalam'}">
-    <div v-if="loading" style="text-align: center; margin-top: 100px">
-      <v-progress-circular indeterminate size="50"></v-progress-circular>
-    </div>
-    <div v-else-if="!connected">
+    <div v-if="!connected">
       <v-card flat height="200">
         <v-img src="../../assets/sad.png" height="60" contain style="margin-top: 30px;" position="center">
         </v-img>
         <h2 style="text-align: center; margin-top: 30px">You are not connected to the internet</h2>
-        <h3 style="text-align: center; margin-top: 5px">Only local TPOs are showing here</h3>
 
       </v-card>
     </div>
+
+    <div v-else-if="loading" style="text-align: center; margin-top: 100px">
+      <v-progress-circular indeterminate size="50"></v-progress-circular>
+    </div>
+
     <div v-else-if="correctionTests.length === 0">
       <v-card flat height="200">
         <v-img src="../../assets/sad.png" height="60" contain style="margin-top: 30px;" position="center">
