@@ -5,9 +5,9 @@ import {
     LOAD_ETYMOLOGY,
     LOAD_OTHER_EXAMPLES,
     RESET_ALL_DICT_ITEMS
-} from "@/store/actions/dictionary";
+} from "../actions/dictionary";
 
-let knex = require('@/db/dictionary')
+let knex = require('../../db/dictionary')
 
 const state = {
     word: '',

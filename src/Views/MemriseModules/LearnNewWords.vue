@@ -9,7 +9,7 @@
                             <v-container v-if="learningSession[index]['state'] === 0">
                                 <v-row>
                                     <v-col sm="8" md="8" lg="8" xl="8" style="border-bottom: gray thin solid">
-                                        <div style="font-weight: bold; font-size: 50px; margin-top: 30px">
+                                        <div style="font-weight: bold; font-size: 30px; margin-top: 30px">
                                             {{learningSession[index]['word']}}
                                         </div>
                                     </v-col>
@@ -89,7 +89,7 @@
                                     v-if="learningSession[index]['state'] === 1 || learningSession[index]['state'] === 3">
                                 <v-row>
                                     <v-col sm="8" md="8" lg="8" xl="8" style="border-bottom: gray thin solid">
-                                        <div style="font-weight: bold; font-size: 70px; margin-top: 30px">
+                                        <div style="font-weight: bold; font-size: 30px; margin-top: 30px">
                                             {{learningSession[index]['word']}}
                                         </div>
                                     </v-col>

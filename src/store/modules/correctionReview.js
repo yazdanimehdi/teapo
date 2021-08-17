@@ -1,7 +1,7 @@
 import {
     GET_CORRECTION_REVIEW_DATA, SEND_CORRECTOR_REVIEW,
     SET_CORRECTION_REVIEW_PARAMETERS
-} from "@/store/actions/correctionReview";
+} from "../actions/correctionReview";
 import axios from 'axios';
 
 const state = {

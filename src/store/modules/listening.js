@@ -16,9 +16,9 @@ import {
     SET_NEW_TIME
 } from "../actions/mainTPO";
 
-import {TIME_STOP, UPDATE_REMAINED_LISTENING_TIME} from "@/store/actions/time";
+import {TIME_STOP, UPDATE_REMAINED_LISTENING_TIME} from "../actions/time";
 
-let knex = require('@/db/knex')
+let knex = require('../../db/knex')
 
 const state = {
     listening_player_component: 'Player',

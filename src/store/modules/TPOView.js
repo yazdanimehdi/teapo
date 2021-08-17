@@ -1,6 +1,6 @@
-import {SET_TPO_PARAMETERS, GET_TPO_HISTORY} from "@/store/actions/TPOView";
+import {SET_TPO_PARAMETERS, GET_TPO_HISTORY} from "../actions/TPOView";
 
-let knex = require('@/db/knex')
+let knex = require('../../db/knex')
 const state = {
     testId: 0,
     tpoHistory: [],
@@ -19,7 +19,13 @@ const actions = {
     },
     [GET_TPO_HISTORY]: ({commit}) => {
         commit('resetTPOView')
-        return knex('tpousers_testuser').where({test_id: state.testId, is_done: true}).then((rows) => {
+        let userId = localStorage.getItem('user-id')
+        return knex('tpousers_testuser').where(
+            {
+                test_id: state.testId,
+                is_done: true,
+                user_id: userId
+            }).then((rows) => {
             commit('updateTPOHistory', rows)
         })
 
@@ -43,10 +49,9 @@ const mutations = {
             data['speaking'] = payload[i]['speaking_score'] === null ? '-' : payload[i]['speaking_score']
             data['writing'] = payload[i]['writing_score'] === null ? '-' : payload[i]['writing_score']
             data['id'] = payload[i]['id']
-            if(payload[i]['reading_score'] !== null && payload[i]['listening_score'] !== null && payload[i]['speaking_score'] !== null && payload[i]['writing_score'] !== null){
+            if (payload[i]['reading_score'] !== null && payload[i]['listening_score'] !== null && payload[i]['speaking_score'] !== null && payload[i]['writing_score'] !== null) {
                 data['total'] = payload[i]['reading_score'] + payload[i]['listening_score'] + payload[i]['speaking_score'] + payload[i]['writing_score']
-            }
-            else {
+            } else {
                 data['total'] = '-'
             }
             state.tpoHistory.push(data)

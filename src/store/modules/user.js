@@ -2,7 +2,7 @@ import {USER_REQUEST, USER_ERROR, USER_SUCCESS, GET_USER_DATA} from "../actions/
 import {AUTH_LOGOUT} from "../actions/auth";
 import axios from 'axios'
 
-let knex = require('@/db/knex')
+let knex = require('../../db/knex')
 const state = {userId: 0, firstName: null, lastName: null, email: null, phone: null};
 
 const getters = {

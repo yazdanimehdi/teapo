@@ -71,13 +71,13 @@
           <v-row justify="center" align="start">
             <v-container fluid style="margin: 0; padding:0">
               <v-row justify="end" align="start">
-                <v-col sm="8" lg="10" md="9" style="padding: 0">
+                <v-col sm="8" lg="9" md="9" style="padding: 0">
                   <div class="qanounce">
                     Question {{ questionCount + questionNumber + 1 }} of
                     {{ readingAllQuestionsNumber }}
                   </div>
                 </v-col>
-                <v-col sm="4" lg="2" md="3" style="padding: 0; max-width: 250px">
+                <v-col sm="4" lg="3" md="3" style="padding: 0; max-width: 250px">
                   <template v-if="time_component.enable">
                     <img src="../../../assets/hidetime.png" class="clock" @click="toggleTimeShow">
                   </template>

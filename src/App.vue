@@ -27,6 +27,7 @@
 <script>
 
 import {mapGetters} from 'vuex'
+import fs from "fs";
 
 export default {
   name: 'app',
@@ -60,7 +61,7 @@ export default {
     let fs = require('fs')
     if (!fs.existsSync(dictDir)) {
       this.dialog = true;
-      let url = 'http://main.teapo.ir/media/Dictionary/longman.sqlite3'
+      let url = 'http://127.0.0.1:8000/media/Dictionary/longman.sqlite3'
       let file = fs.createWriteStream(dictDir);
       let http = require('http');
       http.get(url, function (response) {

@@ -2,10 +2,10 @@ import {
     GET_ONLINE_TPO_LIST,
     GET_LOCAL_TPO_LIST,
     CHECK_EXISTING_USER_TEST,
-} from "@/store/actions/TPOPage";
+} from "../actions/TPOPage";
 import axios from 'axios'
 
-let knex = require('@/db/knex')
+let knex = require('../../db/knex')
 
 const state = {
     onlineTPOList: [],

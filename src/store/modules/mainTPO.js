@@ -21,29 +21,29 @@ import {
     GO_TO_READING_QUESTION,
     SET_READING_ANSWERS,
     UPDATE_STATE_READING
-} from "@/store/actions/reading";
+} from "../actions/reading";
 import {
     GET_DATA_LISTENING,
     GO_TO_LISTENING_QUESTION,
     SET_LISTENING_ANSWERS,
     UPDATE_STATE_LISTENING
-} from "@/store/actions/listening";
+} from "../actions/listening";
 import {
     GET_DATA_SPEAKING,
     GO_TO_SPEAKING_QUESTION,
     SET_SPEAKING_ANSWERS,
     UPDATE_STATE_SPEAKING
-} from "@/store/actions/speaking";
+} from "../actions/speaking";
 import {
     GET_DATA_WRITING, GO_TO_WRITING_QUESTION,
     SET_WRITING_ANSWERS, UPDATE_STATE_WRITING, WRITING_TIME_ENDED
-} from "@/store/actions/writing";
-import {UPDATE_TIME} from "@/store/actions/time";
-import router from '@/router'
-import {SET_REVIEW_USER_TEST_ID} from "@/store/actions/reviewExam";
-import {SET_MOCK_IDS} from "@/store/actions/mockExams";
+} from "../actions/writing";
+import {UPDATE_TIME} from "../actions/time";
+import router from '../../router'
+import {SET_REVIEW_USER_TEST_ID} from "../actions/reviewExam";
+import {SET_MOCK_IDS} from "../actions/mockExams";
 
-let knex = require('@/db/knex')
+let knex = require('../../db/knex')
 
 const state = {
     mode: 'practiceMode',

@@ -1,10 +1,10 @@
-import {GO_TO_EXAM_REVIEW, SET_REVIEW_USER_TEST_ID} from "@/store/actions/reviewExam";
-import {GET_DATA_READING, SET_READING_ANSWERS} from "@/store/actions/reading";
-import {GET_DATA_LISTENING, SET_LISTENING_ANSWERS} from "@/store/actions/listening";
-import {GET_DATA_SPEAKING, SET_SPEAKING_ANSWERS} from "@/store/actions/speaking";
-import {GET_DATA_WRITING, SET_WRITING_ANSWERS} from "@/store/actions/writing";
+import {GO_TO_EXAM_REVIEW, SET_REVIEW_USER_TEST_ID} from "../actions/reviewExam";
+import {GET_DATA_READING, SET_READING_ANSWERS} from "../actions/reading";
+import {GET_DATA_LISTENING, SET_LISTENING_ANSWERS} from "../actions/listening";
+import {GET_DATA_SPEAKING, SET_SPEAKING_ANSWERS} from "../actions/speaking";
+import {GET_DATA_WRITING, SET_WRITING_ANSWERS} from "../actions/writing";
 
-let knex = require('@/db/knex')
+let knex = require('../../db/knex')
 
 const state = {
     readingScore: 0,

@@ -5,8 +5,8 @@ import {
 
 } from '../actions/speaking'
 
-import {NEXT_SECTION, PREVIOUS_SECTION, UPDATE_COMPONENT} from "@/store/actions/mainTPO";
-import {TIME_STOP} from "@/store/actions/time";
+import {NEXT_SECTION, PREVIOUS_SECTION, UPDATE_COMPONENT} from "../actions/mainTPO";
+import {TIME_STOP} from "../actions/time";
 
 
 const SpeakingDirections = 'SpeakingDirections';
@@ -15,7 +15,7 @@ const Recorder = 'Recorder';
 const SpeakingReading = 'SpeakingReading';
 const SpeakingPlayer = 'SpeakingPlayer';
 
-let knex = require('@/db/knex')
+let knex = require('../../db/knex')
 
 const state = {
     speaking: [],

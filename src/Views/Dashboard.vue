@@ -220,7 +220,7 @@
       <MockTestComponent :width="mini? width*0.91 : width*0.76" v-if="linkSelected.mockTest"
                          :style="{'margin-left': mini? `${width*0.08 + 10}px`:`${width*0.23 + 10}px`, 'margin-right': '50px', 'margin-top': `${height*0.08}px`}"/>
       <TPOComponent :width="mini? width*0.91 : width*0.76" v-if="linkSelected.TPO"
-                    :style="{'margin-left': mini? `${width*0.08 + 10}px`:`${width*0.23 + 10}px`, 'margin-right': '50px', 'margin-top': `${height*0.08}px`}"/>
+                    :style="{'margin-left': mini? `${width*0.08 + 10}px`:`${width*0.23 + 10}px`, 'margin-right': '50px', 'margin-top': `${height*0.1}px`}"/>
       <Analytics :width="mini? width*0.91 : width*0.76" v-if="linkSelected.analytics"
                  :style="{'margin-left': mini? `${width*0.08 + 10}px`:`${width*0.23 + 10}px`, 'margin-right': '50px', 'margin-top': `${height*0.08}px`}"/>
       <Courses :width="mini? width*0.91 : width*0.76" v-if="linkSelected.onlineCourses"

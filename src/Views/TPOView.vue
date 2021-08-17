@@ -7,7 +7,7 @@
 
                src="../assets/icon_group.png"
                style="padding-top:8px;margin: 0;position: fixed; z-index: 10; font-family: Kalam">
-      <div style="font-weight: bold; font-size: 20px">{{TPOViewTestTitle}}</div>
+      <div style="font-weight: bold; font-size: 20px">{{ TPOViewTestTitle }}</div>
       <v-spacer></v-spacer>
       <v-btn icon @click="goToDashboard">
         <v-icon>{{ icons.mdiChevronRight }}</v-icon>
@@ -15,7 +15,8 @@
     </v-app-bar>
 
     <div
-        :style="{'margin-left':`${width*0.06}px`, 'margin-right': `${width*0.06}px`, 'margin-top': `${height*0.1 + 30}px`}" style="font-family: kalam">
+        :style="{'margin-left':`${width*0.06}px`, 'margin-right': `${width*0.06}px`, 'margin-top': `${height*0.1 + 30}px`}"
+        style="font-family: kalam">
       <div v-if="loading" style="text-align: center;">
         <v-progress-circular indeterminate size="50" style="margin-top: 20px"></v-progress-circular>
       </div>
@@ -48,7 +49,7 @@
               <v-card height="60"
                       flat
                       style="background-image: linear-gradient(to right, #CE1BC1 , #1BCE21, #D9962E, #8D7DF9); border-radius: 15px; padding: 0">
-                <v-container style="padding: 0; width: 100%;" fluid >
+                <v-container style="padding: 0; width: 100%;" fluid>
                   <v-row style="margin: 0; width: 100%;" align="center" justify="end">
                     <v-col cols="2" sm="2" md="2" lg="2" xl="2" style="padding: 0; padding-left: 20px">
                       <span class="correction-title">ALL</span>
@@ -57,174 +58,185 @@
                       <span class="correction-title"></span>
                     </v-col>
                     <v-col cols="2" sm="2" md="2" lg="2" xl="2" style="padding: 0; text-align: right">
-                      <v-container style="padding: 0; height: 60px" @click="goToTPO">
-                        <v-row justify="center" align="center" style="margin: 0">
-                          <v-col style="padding: 0; text-align: right; height: 60px">
-                            <div class="triangle"></div>
-                          </v-col>
-                          <v-col style="padding: 0; text-align: right; height: 60px">
-                            <div class="box">
+                      <v-hover v-slot:default="{ hover }">
+                        <v-container style="padding: 0; height: 60px" @click="goToTPO" :style="{ 'cursor': hover ? 'pointer' : ''}">
+                          <v-row justify="center" align="center" style="margin: 0">
+                            <v-col style="padding: 0; text-align: right; height: 60px">
+                              <div class="triangle" :style="{'border-top-color': hover ? '#8D7DF9' : '#1C0153'}"></div>
+                            </v-col>
+                            <v-col style="padding: 0; text-align: right; height: 60px">
+                              <div class="box" :style="{'background-color': hover ? '#8D7DF9' : '#1C0153'}">
                           <span>
                             Start
                           </span>
 
-                            </div>
-                          </v-col>
-                        </v-row>
-                      </v-container>
+                              </div>
+                            </v-col>
+                          </v-row>
+                        </v-container>
+                      </v-hover>
                     </v-col>
                   </v-row>
                 </v-container>
               </v-card>
             </v-col>
           </v-row>
-        </v-container>
-
-        <v-container fluid style="padding-bottom: 0">
-          <v-row justify="center" align="center">
-            <v-col style="padding-bottom: 0">
-              <v-card height="60"
-                      flat
-                      style="background-image: linear-gradient(45deg, #CE1BC1, #CF7CC3); border-radius: 15px; padding: 0">
-                <v-container style="padding: 0; width: 100%;" fluid >
-                  <v-row style="margin: 0; width: 100%;" align="center" justify="end">
-                    <v-col cols="2" sm="2" md="2" lg="2" xl="2" style="padding: 0; padding-left: 20px">
-                      <span class="correction-title">Reading</span>
-                    </v-col>
-                    <v-col cols="8" sm="8" md="8" lg="8" xl="8" style="padding: 0; padding-left: 12px">
-                      <span class="correction-title"></span>
-                    </v-col>
-                    <v-col cols="2" sm="2" md="2" lg="2" xl="2" style="padding: 0; text-align: right">
-                      <v-container style="padding: 0; height: 60px" @click="goToReading">
-                        <v-row justify="center" align="center" style="margin: 0">
-                          <v-col style="padding: 0; text-align: right; height: 60px">
-                            <div class="triangle"></div>
+          <v-row>
+            <v-col cols="12" sm="6" md="6" lg="6" xl="6" style="padding: 0">
+              <v-container fluid style="padding-bottom: 10px">
+                <v-row justify="center" align="center">
+                  <v-col style="padding-bottom: 0">
+                    <v-card height="60"
+                            flat
+                            style="background-image: linear-gradient(45deg, #CE1BC1, #CF7CC3); border-radius: 15px; padding: 0">
+                      <v-container style="padding: 0; width: 100%;" fluid>
+                        <v-row style="margin: 0; width: 100%;" align="center" justify="end">
+                          <v-col cols="6" sm="6" md="6" lg="6" xl="6" style="padding: 0; padding-left: 20px">
+                            <span class="correction-title">Reading</span>
                           </v-col>
-                          <v-col style="padding: 0; text-align: right; height: 60px">
-                            <div class="box">
+                          <v-col cols="6" sm="6" md="6" lg="6" xl="6" style="padding: 0; text-align: right">
+                            <v-hover v-slot:default="{ hover }">
+                              <v-container style="padding: 0; height: 60px" @click="goToReading" :style="{ 'cursor': hover ? 'pointer' : ''}">
+                                <v-row justify="center" align="center" style="margin: 0">
+                                  <v-col style="padding: 0; text-align: right; height: 60px">
+                                    <div class="triangle"
+                                         :style="{'border-top-color': hover ? '#8D7DF9' : '#1C0153'}"></div>
+                                  </v-col>
+                                  <v-col style="padding: 0; text-align: right; height: 60px">
+                                    <div class="box" :style="{'background-color': hover ? '#8D7DF9' : '#1C0153'}">
                           <span>
                             Start
                           </span>
 
-                            </div>
+                                    </div>
+                                  </v-col>
+                                </v-row>
+                              </v-container>
+                            </v-hover>
                           </v-col>
                         </v-row>
                       </v-container>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-card>
+                    </v-card>
+                  </v-col>
+                </v-row>
+              </v-container>
             </v-col>
-          </v-row>
-        </v-container>
-        <v-container fluid style="padding-bottom: 0">
-          <v-row justify="center" align="center">
-            <v-col style="padding-bottom: 0">
-              <v-card height="60"
-                      flat
-                      style="background-image: linear-gradient(45deg, #1BCE21, #7CCF9A); border-radius: 15px; padding: 0">
-                <v-container style="padding: 0; width: 100%;" fluid >
-                  <v-row style="margin: 0; width: 100%;" align="center" justify="end">
-                    <v-col cols="2" sm="2" md="2" lg="2" xl="2" style="padding: 0; padding-left: 20px">
-                      <span class="correction-title">Listening</span>
-                    </v-col>
-                    <v-col cols="8" sm="8" md="8" lg="8" xl="8" style="padding: 0; padding-left: 12px">
-                      <span class="correction-title"></span>
-                    </v-col>
-                    <v-col cols="2" sm="2" md="2" lg="2" xl="2" style="padding: 0; text-align: right">
-                      <v-container style="padding: 0; height: 60px" @click="goToListening">
-                        <v-row justify="center" align="center" style="margin: 0">
-                          <v-col style="padding: 0; text-align: right; height: 60px">
-                            <div class="triangle"></div>
+            <v-col cols="12" sm="6" md="6" lg="6" xl="6" style="padding: 0">
+              <v-container fluid style="padding-bottom: 0">
+                <v-row justify="center" align="center">
+                  <v-col style="padding-bottom: 0">
+                    <v-card height="60"
+                            flat
+                            style="background-image: linear-gradient(45deg, #1BCE21, #7CCF9A); border-radius: 15px; padding: 0">
+                      <v-container style="padding: 0; width: 100%;" fluid>
+                        <v-row style="margin: 0; width: 100%;" align="center" justify="end">
+                          <v-col cols="6" sm="6" md="6" lg="6" xl="6" style="padding: 0; padding-left: 20px">
+                            <span class="correction-title">Listening</span>
                           </v-col>
-                          <v-col style="padding: 0; text-align: right; height: 60px">
-                            <div class="box">
+                          <v-col cols="6" sm="6" md="6" lg="6" xl="6" style="padding: 0; text-align: right">
+                            <v-hover v-slot:default="{ hover }">
+                              <v-container style="padding: 0; height: 60px" @click="goToListening" :style="{ 'cursor': hover ? 'pointer' : ''}">
+                                <v-row justify="center" align="center" style="margin: 0">
+                                  <v-col style="padding: 0; text-align: right; height: 60px">
+                                    <div class="triangle"
+                                         :style="{'border-top-color': hover ? '#8D7DF9' : '#1C0153'}"></div>
+                                  </v-col>
+                                  <v-col style="padding: 0; text-align: right; height: 60px">
+                                    <div class="box" :style="{'background-color': hover ? '#8D7DF9' : '#1C0153'}">
                           <span>
                             Start
                           </span>
 
-                            </div>
+                                    </div>
+                                  </v-col>
+                                </v-row>
+                              </v-container>
+                            </v-hover>
                           </v-col>
                         </v-row>
                       </v-container>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-card>
+                    </v-card>
+                  </v-col>
+                </v-row>
+              </v-container>
             </v-col>
-          </v-row>
-        </v-container>
-        <v-container fluid style="padding-bottom: 0">
-          <v-row justify="center" align="center">
-            <v-col style="padding-bottom: 0">
-              <v-card height="60"
-                      flat
-                      style="background-image: linear-gradient(45deg, #D9962E, #DEC39B); border-radius: 15px; padding: 0">
-                <v-container style="padding: 0; width: 100%;" fluid >
-                  <v-row style="margin: 0; width: 100%;" align="center" justify="end">
-                    <v-col cols="2" sm="2" md="2" lg="2" xl="2" style="padding: 0; padding-left: 20px">
-                      <span class="correction-title">Speaking</span>
-                    </v-col>
-                    <v-col cols="8" sm="8" md="8" lg="8" xl="8" style="padding: 0; padding-left: 12px">
-                      <span class="correction-title"></span>
-                    </v-col>
-                    <v-col cols="2" sm="2" md="2" lg="2" xl="2" style="padding: 0; text-align: right">
-                      <v-container style="padding: 0; height: 60px" @click="goToSpeaking">
-                        <v-row justify="center" align="center" style="margin: 0">
-                          <v-col style="padding: 0; text-align: right; height: 60px">
-                            <div class="triangle"></div>
+            <v-col cols="12" sm="6" md="6" lg="6" xl="6" style="padding: 0">
+              <v-container fluid style="padding-bottom: 0">
+                <v-row justify="center" align="center">
+                  <v-col style="padding-bottom: 0">
+                    <v-card height="60"
+                            flat
+                            style="background-image: linear-gradient(45deg, #D9962E, #DEC39B); border-radius: 15px; padding: 0">
+                      <v-container style="padding: 0; width: 100%;" fluid>
+                        <v-row style="margin: 0; width: 100%;" align="center" justify="end">
+                          <v-col cols="6" sm="6" md="6" lg="6" xl="6" style="padding: 0; padding-left: 20px">
+                            <span class="correction-title">Speaking</span>
                           </v-col>
-                          <v-col style="padding: 0; text-align: right; height: 60px">
-                            <div class="box">
+                          <v-col cols="6" sm="6" md="6" lg="6" xl="6" style="padding: 0; text-align: right">
+                            <v-hover v-slot:default="{ hover }">
+                              <v-container style="padding: 0; height: 60px" @click="goToSpeaking" :style="{ 'cursor': hover ? 'pointer' : ''}">
+                                <v-row justify="center" align="center" style="margin: 0">
+                                  <v-col style="padding: 0; text-align: right; height: 60px">
+                                    <div class="triangle"
+                                         :style="{'border-top-color': hover ? '#8D7DF9' : '#1C0153'}"></div>
+                                  </v-col>
+                                  <v-col style="padding: 0; text-align: right; height: 60px">
+                                    <div class="box" :style="{'background-color': hover ? '#8D7DF9' : '#1C0153'}">
                           <span>
                             Start
                           </span>
 
-                            </div>
+                                    </div>
+                                  </v-col>
+                                </v-row>
+                              </v-container>
+                            </v-hover>
                           </v-col>
                         </v-row>
                       </v-container>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-card>
+                    </v-card>
+                  </v-col>
+                </v-row>
+              </v-container>
             </v-col>
-          </v-row>
-        </v-container>
-        <v-container fluid>
-          <v-row justify="center" align="center">
-            <v-col style="padding-bottom: 0">
-              <v-card height="60"
-                      flat
-                      style="background-image: linear-gradient(45deg, #8D7DF9, #B3ABE6); border-radius: 15px; padding: 0">
-                <v-container style="padding: 0; width: 100%;" fluid >
-                  <v-row style="margin: 0; width: 100%;" align="center" justify="end">
-                    <v-col cols="2" sm="2" md="2" lg="2" xl="2" style="padding: 0; padding-left: 20px">
-                      <span class="correction-title">Writing</span>
-                    </v-col>
-                    <v-col cols="8" sm="8" md="8" lg="8" xl="8" style="padding: 0; padding-left: 12px">
-                      <span class="correction-title"></span>
-                    </v-col>
-                    <v-col cols="2" sm="2" md="2" lg="2" xl="2" style="padding: 0; text-align: right">
-                      <v-container style="padding: 0; height: 60px" @click="goToWriting">
-                        <v-row justify="center" align="center" style="margin: 0">
-                          <v-col style="padding: 0; text-align: right; height: 60px">
-                            <div class="triangle"></div>
+            <v-col cols="12" sm="6" md="6" lg="6" xl="6" style="padding: 0">
+              <v-container fluid>
+                <v-row justify="center" align="center">
+                  <v-col style="padding-bottom: 0">
+                    <v-card height="60"
+                            flat
+                            style="background-image: linear-gradient(45deg, #8D7DF9, #B3ABE6); border-radius: 15px; padding: 0">
+                      <v-container style="padding: 0; width: 100%;" fluid>
+                        <v-row style="margin: 0; width: 100%;" align="center" justify="end">
+                          <v-col cols="6" sm="6" md="6" lg="6" xl="6" style="padding: 0; padding-left: 20px">
+                            <span class="correction-title">Writing</span>
                           </v-col>
-                          <v-col style="padding: 0; text-align: right; height: 60px">
-                            <div class="box">
+                          <v-col cols="6" sm="6" md="6" lg="6" xl="6" style="padding: 0; text-align: right">
+                            <v-hover v-slot:default="{ hover }">
+                              <v-container style="padding: 0; height: 60px" @click="goToWriting" :style="{ 'cursor': hover ? 'pointer' : ''}">
+                                <v-row justify="center" align="center" style="margin: 0">
+                                  <v-col style="padding: 0; text-align: right; height: 60px">
+                                    <div class="triangle"
+                                         :style="{'border-top-color': hover ? '#8D7DF9' : '#1C0153'}"></div>
+                                  </v-col>
+                                  <v-col style="padding: 0; text-align: right; height: 60px">
+                                    <div class="box" :style="{'background-color': hover ? '#8D7DF9' : '#1C0153'}">
                           <span>
                             Start
                           </span>
 
-                            </div>
+                                    </div>
+                                  </v-col>
+                                </v-row>
+                              </v-container>
+                            </v-hover>
                           </v-col>
                         </v-row>
                       </v-container>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-card>
+                    </v-card>
+                  </v-col>
+                </v-row>
+              </v-container>
             </v-col>
           </v-row>
         </v-container>
@@ -296,7 +308,7 @@ export default {
       loading: true,
       width: 0,
       height: 0,
-      icons:{
+      icons: {
         mdiChevronRight,
         mdiChevronLeft,
         mdiChevronDown
@@ -309,12 +321,12 @@ export default {
           sortable: true,
           value: 'date',
         },
-        { text: 'Reading', value: 'reading' },
-        { text: 'Listening', value: 'listening' },
-        { text: 'Speaking', value: 'speaking' },
-        { text: 'Writing', value: 'writing' },
-        { text: 'total', value: 'total' },
-        {text: 'Action', value: 'actions', sortable: false }
+        {text: 'Reading', value: 'reading'},
+        {text: 'Listening', value: 'listening'},
+        {text: 'Speaking', value: 'speaking'},
+        {text: 'Writing', value: 'writing'},
+        {text: 'total', value: 'total'},
+        {text: 'Action', value: 'actions', sortable: false}
       ],
       dialog: false,
     }
@@ -326,13 +338,12 @@ export default {
       this.loading = false
     })
   },
-  computed:{
+  computed: {
     ...mapGetters(['TPOViewTestId', 'TPOHistory', 'TPOViewTestTitle']),
-    mode(){
-      if(this.practice){
+    mode() {
+      if (this.practice) {
         return 'practiceMode'
-      }
-      else {
+      } else {
         return 'testMode'
       }
     }
@@ -351,15 +362,14 @@ export default {
     },
     goToTPO() {
       this.$store.dispatch(CHECK_EXISTING_USER_TEST, [this.TPOViewTestId, ['Reading', 'Listening', 'Speaking', 'Writing'], this.mode]).then((result) => {
-        if(!result.isAvailable){
+        if (!result.isAvailable) {
           this.$store.dispatch(START_TPO, {
             'examArray': ['Reading', 'Listening', 'Speaking', 'Writing'],
             'TPO': this.TPOViewTestId,
             'mode': this.mode
           })
           this.$router.push('/tpo')
-        }
-        else {
+        } else {
           this.userTestId = result.userTestId
           this.examArray = ['Reading', 'Listening', 'Speaking', 'Writing']
           this.dialog = true
@@ -368,15 +378,14 @@ export default {
     },
     goToReading() {
       this.$store.dispatch(CHECK_EXISTING_USER_TEST, [this.TPOViewTestId, ['Reading'], this.mode]).then((result) => {
-        if(!result.isAvailable){
+        if (!result.isAvailable) {
           this.$store.dispatch(START_TPO, {
             'examArray': ['Reading'],
             'TPO': this.TPOViewTestId,
             'mode': this.mode
           })
           this.$router.push('/tpo')
-        }
-        else {
+        } else {
           this.userTestId = result.userTestId
           this.examArray = ['Reading']
           this.dialog = true
@@ -385,15 +394,14 @@ export default {
     },
     goToListening() {
       this.$store.dispatch(CHECK_EXISTING_USER_TEST, [this.TPOViewTestId, ['Listening'], this.mode]).then((result) => {
-        if(!result.isAvailable){
+        if (!result.isAvailable) {
           this.$store.dispatch(START_TPO, {
             'examArray': ['Listening'],
             'TPO': this.TPOViewTestId,
             'mode': this.mode
           })
           this.$router.push('/tpo')
-        }
-        else {
+        } else {
           this.userTestId = result.userTestId
           this.examArray = ['Listening']
           this.dialog = true
@@ -402,15 +410,14 @@ export default {
     },
     goToSpeaking() {
       this.$store.dispatch(CHECK_EXISTING_USER_TEST, [this.TPOViewTestId, ['Speaking'], this.mode]).then((result) => {
-        if(!result.isAvailable){
+        if (!result.isAvailable) {
           this.$store.dispatch(START_TPO, {
             'examArray': ['Speaking'],
             'TPO': this.TPOViewTestId,
             'mode': this.mode
           })
           this.$router.push('/tpo')
-        }
-        else {
+        } else {
           this.userTestId = result.userTestId
           this.examArray = ['Speaking']
           this.dialog = true
@@ -419,22 +426,21 @@ export default {
     },
     goToWriting() {
       this.$store.dispatch(CHECK_EXISTING_USER_TEST, [this.TPOViewTestId, ['Writing'], this.mode]).then((result) => {
-        if(!result.isAvailable){
+        if (!result.isAvailable) {
           this.$store.dispatch(START_TPO, {
             'examArray': ['Writing'],
             'TPO': this.TPOViewTestId,
             'mode': this.mode
           })
           this.$router.push('/tpo')
-        }
-        else {
+        } else {
           this.userTestId = result.userTestId
           this.examArray = ['Writing']
           this.dialog = true
         }
       })
     },
-    startOver(){
+    startOver() {
       this.$store.dispatch(START_TPO, {
         'examArray': this.examArray,
         'TPO': this.TPOViewTestId,
@@ -442,12 +448,12 @@ export default {
       })
       this.$router.push('/tpo')
     },
-    continueTest(){
+    continueTest() {
       this.$store.dispatch(RESUME_TPO, this.userTestId).then(() => {
         this.$router.push('/tpo')
       })
     },
-    goToReview(item){
+    goToReview(item) {
       console.log(item)
     }
   }

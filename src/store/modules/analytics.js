@@ -1,5 +1,6 @@
-import {FETCH_ANALYTICS} from "@/store/actions/analytics";
-let knex = require('@/db/knex')
+import {FETCH_ANALYTICS} from "../actions/analytics";
+
+let knex = require('../../db/knex')
 
 const state = {
     categoriesReading: [],
@@ -42,8 +43,9 @@ const getters = {
             }
         }
         if (state.readingChartData.length > 0) {
-            return [totalSum / state.readingChartData.length,
-                lastFiveSum / (state.readingChartData.length > 5 ? 5 : state.readingChartData.length)]
+            return [Math.round((totalSum / state.readingChartData.length + Number.EPSILON) * 100) / 100,
+                Math.round((lastFiveSum / (state.readingChartData.length > 5 ? 5 : state.readingChartData.length) + Number.EPSILON) * 100) / 100
+            ]
         } else {
             return ['-', '-']
         }
@@ -60,8 +62,10 @@ const getters = {
             }
         }
         if (state.listeningChartData.length > 0) {
-            return [totalSum / state.listeningChartData.length,
-                lastFiveSum / (state.listeningChartData.length > 5 ? 5 : state.listeningChartData.length)]
+            return [
+                Math.round((totalSum / state.listeningChartData.length + Number.EPSILON) * 100) / 100,
+                Math.round((lastFiveSum / (state.listeningChartData.length > 5 ? 5 : state.listeningChartData.length) + Number.EPSILON) * 100) / 100,
+            ]
         } else {
             return ['-', '-']
         }
@@ -78,8 +82,10 @@ const getters = {
             }
         }
         if (state.speakingChartData.length > 0) {
-            return [totalSum / state.speakingChartData.length,
-                lastFiveSum / (state.speakingChartData.length > 5 ? 5 : state.speakingChartData.length)]
+            return [
+                Math.round((totalSum / state.speakingChartData.length + Number.EPSILON) * 100) / 100,
+                Math.round((lastFiveSum / (state.speakingChartData.length > 5 ? 5 : state.speakingChartData.length) + Number.EPSILON) * 100) / 100
+            ]
         } else {
             return ['-', '-']
         }
@@ -96,8 +102,10 @@ const getters = {
             }
         }
         if (state.writingChartData.length > 0) {
-            return [totalSum / state.writingChartData.length,
-                lastFiveSum / (state.writingChartData.length > 5 ? 5 : state.writingChartData.length)]
+            return [
+                Math.round((totalSum / state.writingChartData.length + Number.EPSILON) * 100) / 100,
+                Math.round((lastFiveSum / (state.writingChartData.length > 5 ? 5 : state.writingChartData.length) + Number.EPSILON) * 100) / 100
+            ]
         } else {
             return ['-', '-']
         }
@@ -111,9 +119,10 @@ const actions = {
         return new Promise((resolve) => {
             knex.select("*").from('tpousers_testuser').where({
                 user_id: userId,
+                is_done: true,
             }).then((userTests) => {
                 for (let j = 0; j < userTests.length; j++) {
-                    if(rootGetters.getTPOById(userTests[j]['test_id']) !== undefined) {
+                    if (rootGetters.getTPOById(userTests[j]['test_id']) !== undefined) {
                         if (userTests[j]['reading_score'] !== null) {
                             commit('updateReadingChartData', [userTests[j]['date_time'], rootGetters.getTPOById(userTests[j]['test_id']), userTests[j]['reading_score']])
                         }

@@ -1,96 +1,35 @@
 {
-  "name": "teapo",
-  "description": "Best Software for Acing The TOEFL YET!!",
-  "homepage": "www.teapo.ir",
-  "author": {
-    "name": "Mehdi Yazdani",
-    "email": "info@teapo.ir"
-  },
-  "version": "0.1.0",
-  "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "rebuild": "electron-rebuild -f -w sqlite3",
     "electron:build": "vue-cli-service electron:build",
     "electron:serve": "vue-cli-service electron:serve",
-    "build:win": "vue-cli-service electron:build --windows",
-    "build:linux": "vue-cli-service electron:build --linux deb",
-    "build:arch": "vue-cli-service electron:build --linux",
     "postinstall": "electron-builder install-app-deps",
-    "postuninstall": "electron-builder install-app-deps",
-    "electron:generate-icons": "electron-icon-builder --input=./public/icon.png --output=build --flatten"
+    "postuninstall": "electron-builder install-app-deps"
   },
   "main": "background.js",
   "dependencies": {
-    "@mdi/font": "^5.8.55",
-    "@mdi/js": "^5.8.55",
-    "apexcharts": "^3.22.2",
-    "axios": "^0.19.0",
-    "core-js": "^3.8.0",
-    "electron-is-dev": "^1.2.0",
-    "electron-updater": "^4.3.5",
-    "jquery": "^3.5.1",
+    "@mdi/js": "^5.9.55",
+    "@vue/cli": "^4.5.13",
+    "axios": "^0.21.1",
+    "jquery": "^3.6.0",
     "jquery-ui": "^1.12.1",
-    "knex": "^0.20.15",
-    "lamejs": "^1.2.0",
-    "material-design-icons-iconfont": "^5.0.1",
-    "mssql": "^6.2.3",
-    "mysql": "^2.18.0",
-    "mysql2": "^2.2.5",
-    "oracle": "^0.4.1",
-    "oracledb": "^4.2.0",
-    "pg": "^7.17.1",
-    "pg-native": "^3.0.0",
-    "pg-query-stream": "^3.4.2",
-    "request": "^2.88.2",
-    "shelljs": "^0.8.4",
-    "sqlite3": "^4.2.0",
-    "tedious": "^8.3.1",
-    "vue": "^2.6.12",
-    "vue-apexcharts": "^1.6.0",
-    "vue-router": "^3.4.9",
-    "vuetify": "^2.3.19",
-    "vuex": "^3.6.0"
+    "knex": "^0.21.21",
+    "material-design-icons-iconfont": "^6.1.0",
+    "sqlite3": "^5.0.2",
+    "vue-apexcharts": "^1.6.2",
+    "vue-router": "^3.5.2",
+    "vuetify": "^2.4.0",
+    "vuex": "^3.6.2"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "~4.2.0",
-    "@vue/cli-plugin-eslint": "~4.2.0",
-    "@vue/cli-service": "~4.2.0",
-    "babel-eslint": "^10.0.3",
-    "electron": "^8.5.5",
-    "electron-builder-squirrel-windows": "^22.9.1",
-    "electron-icon-builder": "^1.0.2",
-    "electron-packager": "^14.0.6",
-    "electron-rebuild": "^1.11.0",
-    "eslint": "^6.7.2",
-    "eslint-plugin-vue": "^6.1.2",
-    "sass": "^1.29.0",
-    "sass-loader": "^10.1.0",
-    "vue-cli-plugin-electron-builder": "^1.4.0",
-    "vue-cli-plugin-vuetify": "^0.6.3",
-    "vue-devtools": "^5.1.4",
-    "vue-template-compiler": "^2.6.12",
-    "vuetify-loader": "^1.6.0"
-  },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "extends": [
-      "plugin:vue/essential",
-      "eslint:recommended"
-    ],
-    "parserOptions": {
-      "parser": "babel-eslint"
-    },
-    "rules": {
-      "no-console": "off"
-    }
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions"
-  ]
+    "@vue/cli-service": "^4.5.13",
+    "electron": "^13.1.9",
+    "electron-devtools-installer": "^3.1.0",
+    "electron-prebuilt": "^1.4.13",
+    "sass": "~1.32.0",
+    "sass-loader": "^10.0.0",
+    "vue-cli-plugin-electron-builder": "~2.1.1",
+    "vue-cli-plugin-vuetify": "~2.4.2",
+    "vue-template-compiler": "^2.6.14",
+    "vuetify-loader": "^1.7.0"
+  }
 }

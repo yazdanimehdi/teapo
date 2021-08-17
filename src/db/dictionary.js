@@ -1,4 +1,4 @@
-const electron = window.require('electron');
+const electron = require('electron');
 const app = (electron.app || electron.remote.app);
 
 let knex = require('knex')(

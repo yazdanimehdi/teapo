@@ -4,8 +4,8 @@ import {
     SET_TOEFL_TIME,
     GET_DASHBOARD_DATA,
     GET_NEWS
-} from "@/store/actions/dashboard";
-let knex = require('@/db/knex')
+} from "../actions/dashboard";
+let knex = require('../../db/knex')
 
 import axios from 'axios'
 

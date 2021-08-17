@@ -1,8 +1,8 @@
-import {DOWNLOAD_TPO} from "@/store/actions/download";
+import {DOWNLOAD_TPO} from "../actions/download";
 import axios from 'axios';
-import {GET_LOCAL_TPO_LIST} from "@/store/actions/TPOPage";
+import {GET_LOCAL_TPO_LIST} from "../actions/TPOPage";
 
-let knex = require('@/db/knex')
+let knex = require('../../db/knex')
 
 const state = {
     percentCompleted: [],

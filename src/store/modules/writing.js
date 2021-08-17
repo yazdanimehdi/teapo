@@ -13,9 +13,9 @@ import {
     SET_WRITING_READING_TIME,
     SET_NEW_TIME
 } from "../actions/mainTPO";
-import {TIME_STOP, UPDATE_REMAINED_WRITING_TIME} from "@/store/actions/time";
+import {TIME_STOP, UPDATE_REMAINED_WRITING_TIME} from "../actions/time";
 
-let knex = require('@/db/knex')
+let knex = require('../../db/knex')
 
 const state = {
     taskNumber: 0,

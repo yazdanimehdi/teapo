@@ -11,7 +11,7 @@ import {
     START_DIFFICULT_WORDS,
     GO_TO_NEXT_DIFFICULT_WORD,
     ADD_TO_DIFFICULT,
-} from "@/store/actions/studyWords";
+} from "../actions/studyWords";
 
 const state = {
     words: [],
@@ -31,8 +31,8 @@ const state = {
     difficultExampleList: [],
 };
 
-let knex = require('@/db/knex')
-let dict = require('@/db/dictionary')
+let knex = require('../../db/knex')
+let dict = require('../../db/dictionary')
 const getters = {
     learntWordsCount: state => {
         let items = 0;

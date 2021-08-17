@@ -3,12 +3,12 @@ import {
     GET_CORRECTION_CONTENT,
     ORDER_CORRECTION,
     GET_PRICES
-} from '@/store/actions/correction';
+} from '../actions/correction';
 import axios from 'axios';
-import {DOWNLOAD_TPO} from "@/store/actions/download";
-import {GET_LOCAL_TPO_LIST} from "@/store/actions/TPOPage";
+import {DOWNLOAD_TPO} from "../actions/download";
+import {GET_LOCAL_TPO_LIST} from "../actions/TPOPage";
 
-let knex = require('@/db/knex')
+let knex = require('../../db/knex')
 
 const state = {
     tests: [],

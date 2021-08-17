@@ -11,9 +11,9 @@ import {
 
 import {NEXT_SECTION, PREVIOUS_SECTION, UPDATE_COMPONENT} from "../actions/mainTPO";
 
-import {TIME_STOP, UPDATE_REMAINED_READING_TIME} from "@/store/actions/time";
+import {TIME_STOP, UPDATE_REMAINED_READING_TIME} from "../actions/time";
 
-let knex = require('@/db/knex')
+let knex = require('/src/db/knex.js')
 
 const state = {
     reading_passage_component: 'ReadingPassage',

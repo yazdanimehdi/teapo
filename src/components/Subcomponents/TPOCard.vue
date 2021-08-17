@@ -1,6 +1,6 @@
 <template>
   <div>
-<!--  <v-hover v-slot:default="{ hover }">-->
+    <!--  <v-hover v-slot:default="{ hover }">-->
     <v-card width="100%" height="180px" flat
             style="border-radius: 30px"
             :color="cardBackgroundColor"
@@ -41,7 +41,8 @@
                         striped
                         rounded
                         color="green"
-                    ><strong v-if="!downloadQuery" style="user-select: none;">{{ Math.ceil(downloadValue) }}%</strong></v-progress-linear>
+                    ><strong v-if="!downloadQuery" style="user-select: none;">{{ Math.ceil(downloadValue) }}%</strong>
+                    </v-progress-linear>
                   </v-col>
                 </v-row>
 
@@ -128,38 +129,38 @@
           </v-container>
         </div>
       </v-card-text>
-<!--      <v-expand-transition>-->
-<!--        <div-->
-<!--            v-if="hover && downloaded"-->
-<!--            class="d-flex transition-fast-in-fast-out black darken-2 v-card&#45;&#45;reveal display-3 white&#45;&#45;text"-->
-<!--            style="height: 100%;"-->
-<!--        >-->
-<!--          <v-container fluid>-->
-<!--            <v-row align="center" justify="center">-->
-<!--              <v-col>-->
-<!--                <v-btn block @click="goToTPO">All</v-btn>-->
-<!--              </v-col>-->
-<!--            </v-row>-->
+      <!--      <v-expand-transition>-->
+      <!--        <div-->
+      <!--            v-if="hover && downloaded"-->
+      <!--            class="d-flex transition-fast-in-fast-out black darken-2 v-card&#45;&#45;reveal display-3 white&#45;&#45;text"-->
+      <!--            style="height: 100%;"-->
+      <!--        >-->
+      <!--          <v-container fluid>-->
+      <!--            <v-row align="center" justify="center">-->
+      <!--              <v-col>-->
+      <!--                <v-btn block @click="goToTPO">All</v-btn>-->
+      <!--              </v-col>-->
+      <!--            </v-row>-->
 
-<!--            <v-row align="center" justify="center">-->
-<!--              <v-col cols="6" sm="6" md="6" lg="6" xl="6">-->
-<!--                <v-btn @click="goToReading" block color="teal accent-1">Reading</v-btn>-->
-<!--              </v-col>-->
-<!--              <v-col cols="6" sm="6" md="6" lg="6" xl="6">-->
-<!--                <v-btn @click="goToListening" block color="indigo lighten-4">Listening</v-btn>-->
-<!--              </v-col>-->
-<!--              <v-col cols="6" sm="6" md="6" lg="6" xl="6">-->
-<!--                <v-btn @click="goToSpeaking" block color="deep-orange lighten-3">Speaking</v-btn>-->
-<!--              </v-col>-->
-<!--              <v-col cols="6" sm="6" md="6" lg="6" xl="6">-->
-<!--                <v-btn @click="goToWriting" block color="red accent-2">Writing</v-btn>-->
-<!--              </v-col>-->
-<!--            </v-row>-->
-<!--          </v-container>-->
-<!--        </div>-->
-<!--      </v-expand-transition>-->
+      <!--            <v-row align="center" justify="center">-->
+      <!--              <v-col cols="6" sm="6" md="6" lg="6" xl="6">-->
+      <!--                <v-btn @click="goToReading" block color="teal accent-1">Reading</v-btn>-->
+      <!--              </v-col>-->
+      <!--              <v-col cols="6" sm="6" md="6" lg="6" xl="6">-->
+      <!--                <v-btn @click="goToListening" block color="indigo lighten-4">Listening</v-btn>-->
+      <!--              </v-col>-->
+      <!--              <v-col cols="6" sm="6" md="6" lg="6" xl="6">-->
+      <!--                <v-btn @click="goToSpeaking" block color="deep-orange lighten-3">Speaking</v-btn>-->
+      <!--              </v-col>-->
+      <!--              <v-col cols="6" sm="6" md="6" lg="6" xl="6">-->
+      <!--                <v-btn @click="goToWriting" block color="red accent-2">Writing</v-btn>-->
+      <!--              </v-col>-->
+      <!--            </v-row>-->
+      <!--          </v-container>-->
+      <!--        </div>-->
+      <!--      </v-expand-transition>-->
     </v-card>
-<!--  </v-hover>-->
+    <!--  </v-hover>-->
   </div>
 </template>
 
@@ -202,11 +203,11 @@ export default {
   computed: {
     ...mapGetters(['localTPOListId', 'localTPOList']),
 
-    percentDownloaded(){
+    percentDownloaded() {
       return this.$store.getters.percentCompleted(this.tpoId)
     },
 
-    downloaded(){
+    downloaded() {
       return this.localTPOListId.indexOf(this.tpoId) !== -1;
     },
     TPOInst() {
@@ -248,14 +249,16 @@ export default {
   },
   methods: {
     goToTPOView() {
-      this.$store.dispatch(SET_TPO_PARAMETERS, [this.tpoId, this.tpoTitle])
-      this.$router.push('/tpo_view')
+      if (this.downloaded) {
+        this.$store.dispatch(SET_TPO_PARAMETERS, [this.tpoId, this.tpoTitle])
+        this.$router.push('/tpo_view')
+      }
     },
     downloadTPO() {
       let self = this;
-      this.$store.dispatch(DOWNLOAD_TPO, this.tpoId).then( () => {
+      this.$store.dispatch(DOWNLOAD_TPO, this.tpoId).then(() => {
         self.$store.dispatch(GET_LOCAL_TPO_LIST)
-      } )
+      })
       this.downloadQuery = true
       this.downloadShow = true
     },

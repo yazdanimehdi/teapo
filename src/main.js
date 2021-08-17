@@ -17,7 +17,7 @@ if (token) {
   axios.defaults.headers.common['Authorization'] = `Token ${token}`
 }
 
-axios.defaults.baseURL = 'https://main.teapo.ir'
+axios.defaults.baseURL = 'http://127.0.0.1:8000/'
 
 new Vue({
   store,

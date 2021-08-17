@@ -87,38 +87,30 @@
             <v-row class="control_buttons" style="margin: 0; padding: 0">
               <v-container fluid>
                 <v-row align="start" justify="start">
-                  <v-col cols="7" sm="7" lg="7" md="7" style="padding: 0; margin: 0">
+                  <v-col cols="6" sm="6" lg="6" md="6" xl="6" style="padding: 0; margin: 0">
                     <v-row align="start" justify="start" style="padding: 0; margin: 0">
                       <v-col cols="2" sm="2" lg="2" md="2"
-                             style="padding: 0; margin: 0; margin-bottom: 10px;">
+                             style="padding: 0; margin: 0; margin-bottom: 10px; padding-right: 10px">
                         <img class="btn_writing" src="../../../assets/paste.png"
                              @click="triggerPaste">
                       </v-col>
-                      <v-col cols="2" sm="2" lg="2" md="2" style="padding: 0; margin: 0;">
+                      <v-col cols="2" sm="2" lg="2" md="2" style="padding: 0; margin: 0; padding-left: 20px">
                         <img class="btn_writing" src="../../../assets/cut.png" @click="triggerCut">
-                      </v-col>
-                      <v-col cols="2" sm="2" lg="2" md="2" style="padding: 0; margin: 0;">
-                        <img class="btn_writing" src="../../../assets/undo.png"
-                             @click="triggerUndo">
-                      </v-col>
-                      <v-col cols="2" sm="2" lg="2" md="2" style="padding: 0; margin: 0;">
-                        <img class="btn_writing" src="../../../assets/redo.png"
-                             @click="triggerRedo">
                       </v-col>
                     </v-row>
                   </v-col>
-                  <v-col cols="5" sm="5" lg="5" md="5"
+                  <v-col cols="6" sm="6" lg="6" md="6" xl="6"
                          style="margin: 0; padding: 0">
                     <v-row justify="start" align="start">
-                      <v-col cols="10" sm="10" lg="10" md="10" style="padding: 0; margin: 0;">
-                        <div v-if="wordCount" style="padding: 0; margin: 0;"><img class="btn_writing"
+                      <v-col cols="8" sm="8" lg="8" md="8" style="padding: 0; margin: 0;">
+                        <div v-if="wordCount.show" style="padding: 0; margin: 0;"><img class="btn_writing"
                                                                                   src="../../../assets/hide_word_count.png"
                                                                                   @click="triggerWordCount"></div>
                         <div v-else style="padding: 0; margin: 0;"><img class="btn_writing"
                                                                         src="../../../assets/show_word_count.png"
                                                                         @click="triggerWordCount"></div>
                       </v-col>
-                      <v-col cols="2" sm="2" lg="2" md="2"
+                      <v-col cols="4" sm="4" lg="4" md="4"
                              style="padding: 0; margin: 0;padding-top: 5px; padding-right: 20px">
                         <div v-show="wordCount.show">{{ wordCount.count }}</div>
                       </v-col>

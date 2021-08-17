@@ -1,6 +1,7 @@
 module.exports = {
     pluginOptions: {
         electronBuilder: {
+            nodeIntegration: true,
             builderOptions: {
                 appId: "ir.teapo.tpo",
                 productName: "TEAPO",
@@ -18,7 +19,12 @@ module.exports = {
                 mac: {
                     category: "public.app-category.education"
                 },
-            }
+            },
+            externals: ['knex','sqlite3'],
         }
-    }
+    },
+
+    transpileDependencies: [
+      'vuetify'
+    ]
 }

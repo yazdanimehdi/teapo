@@ -11,7 +11,7 @@ import {
     UPDATE_REMAINING_TIME_READING,
     UPDATE_REMAINING_TIME_WRITING,
     TIME_ENDED
-} from "@/store/actions/mainTPO";
+} from "../actions/mainTPO";
 
 const state = {
     totalUnchangedTime: 600,

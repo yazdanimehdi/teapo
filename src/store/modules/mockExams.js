@@ -3,11 +3,11 @@ import {
     GET_MOCK_RESULTS,
     ORDER_MOCK,
     GET_LOCAL_MOCK_LIST, END_MOCK_EXAM, SET_MOCK_IDS, GET_DONE_MOCKS
-} from "@/store/actions/mockExams";
+} from "../actions/mockExams";
 
 import axios from 'axios'
 
-let knex = require('@/db/knex')
+let knex = require('../../db/knex')
 
 const state = {
     mockList: [],
