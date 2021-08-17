@@ -1,7 +1,17 @@
 {
+  "name": "teapo",
+  "description": "Best Software for Acing The TOEFL YET!!",
+  "homepage": "www.teapo.ir",
+  "author": {
+    "name": "Mehdi Yazdani",
+    "email": "info@teapo.ir"
+  },
   "scripts": {
     "electron:build": "vue-cli-service electron:build",
     "electron:serve": "vue-cli-service electron:serve",
+    "build:win": "vue-cli-service electron:build --windows",
+    "build:linux": "vue-cli-service electron:build --linux deb",
+    "build:arch": "vue-cli-service electron:build --linux",
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps"
   },

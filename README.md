@@ -1,18 +1,22 @@
-# untitled
+# TEAPO
 
 ## Project setup
 ```
 npm install
 ```
 
+## Project postinstall
+```
+npm run postinstall
+```
 ### Compiles and hot-reloads for development
 ```
-npm run serve
+npm run electron:serve
 ```
 
-### Compiles and minifies for production
+### Compiles and minifies for production Windows
 ```
-npm run build
+npm run build:win
 ```
 
 ### Lints and fixes files
